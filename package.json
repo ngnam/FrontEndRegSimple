@@ -1,0 +1,28 @@
+{
+  "name": "regsimple",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server-dev": "nodemon --exec babel-node ./server/src/index.js",
+    "client-dev": "cd client && elm-app start",
+    "server-build": "babel ./server/src --out-dir ./server/build",
+    "client-build": "cd client && elm-app build",
+    "lint": "prettier --write ./server/**/*.js",
+    "server-test": "echo \"No tests yet mate\"",
+    "client-test": "cd client && elm-app test",
+    "test": "npm run client-test && npm run server-test"
+  },
+  "author": "",
+  "pre-commit": ["test", "lint"],
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "prettier": "1.12.1",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "nodemon": "^1.17.4"
+  }
+}
