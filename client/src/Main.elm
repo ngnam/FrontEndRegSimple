@@ -5,6 +5,7 @@ import Html.Attributes exposing (src)
 import Types exposing (..)
 import Router exposing (..)
 import Navigation
+import Ted exposing (requestLoginCodeCmd)
 
 
 ---- MODEL ----
@@ -12,7 +13,7 @@ import Navigation
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
-    ( { location = location }, Cmd.none )
+    ( { location = location, email = "" }, Cmd.none )
 
 
 
@@ -21,7 +22,15 @@ init location =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        SubmitLoginEmailForm ->
+            ( model, requestLoginCodeCmd model )
+
+        LoginEmailFormOnInput email ->
+            ( { model | email = email }, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 
