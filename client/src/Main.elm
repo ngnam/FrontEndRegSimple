@@ -2,26 +2,21 @@ module Main exposing (..)
 
 import Html exposing (Html, text, div, h1, img)
 import Html.Attributes exposing (src)
+import Types exposing (..)
+import Router exposing (..)
+import Navigation
 
 
 ---- MODEL ----
 
 
-type alias Model =
-    {}
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( {}, Cmd.none )
+init : Navigation.Location -> ( Model, Cmd Msg )
+init location =
+    ( { location = location }, Cmd.none )
 
 
 
 ---- UPDATE ----
-
-
-type Msg
-    = NoOp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -38,6 +33,7 @@ view model =
     div []
         [ img [ src "/logo.svg" ] []
         , h1 [] [ text "RegSimple" ]
+        , matchView model
         ]
 
 
@@ -47,7 +43,7 @@ view model =
 
 main : Program Never Model Msg
 main =
-    Html.program
+    Navigation.program UrlChange
         { view = view
         , init = init
         , update = update
