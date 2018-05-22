@@ -22,7 +22,7 @@ requestLoginCodeUrl =
 emailEncoder : Model -> Encode.Value
 emailEncoder model =
     Encode.object
-        [ ( "email", Encode.string model.email )
+        [ ( "user", Encode.string model.email )
         ]
 
 

@@ -8,8 +8,8 @@
     "client-dev": "cd client && elm-app start",
     "server-build": "babel ./server/src --out-dir ./server/build",
     "client-build": "cd client && elm-app build",
-    "lint": "prettier --write ./server/**/*.js",
-    "server-test": "echo \"No tests yet mate\"",
+    "lint": "prettier --write './server/**/*.js'",
+    "server-test": "jest",
     "client-test": "cd client && elm-app test",
     "test": "npm run client-test && npm run server-test"
   },
@@ -20,14 +20,22 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^2.0.1",
+    "cookie-session": "^2.0.0-beta.3",
     "express": "^4.16.3",
-    "morgan": "^1.9.0"
+    "morgan": "^1.9.0",
+    "nodemailer": "^4.6.4",
+    "passwordless": "^1.1.2",
+    "passwordless-postgrestore": "github:Battochon/passwordless-postgrestore"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "env2": "^2.2.0",
+    "jest": "^22.4.4",
     "nodemon": "^1.17.4",
     "pre-commit": "^1.2.2",
-    "prettier": "1.12.1"
+    "prettier": "1.12.1",
+    "supertest": "^3.1.0"
   }
 }
