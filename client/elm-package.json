@@ -6,6 +6,7 @@
     "source-directories": [
         "src"
     ],
+    "proxy" : "http://localhost:4000",
     "exposed-modules": [],
     "dependencies": {
       "elm-lang/core": "5.0.0 <= v < 6.0.0",
