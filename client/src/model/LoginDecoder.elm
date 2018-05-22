@@ -1,4 +1,4 @@
-module Ted exposing (..)
+module LoginDecoder exposing (requestLoginCodeCmd)
 
 import Http
 import Types exposing (..)

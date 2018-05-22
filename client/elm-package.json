@@ -4,7 +4,10 @@
     "repository": "https://github.com/kierangarvey/frontendregsimple.git",
     "license": "BSD3",
     "source-directories": [
-        "src"
+        "src",
+        "src/model",
+        "src/views",
+        "src/update"
     ],
     "proxy" : "http://localhost:4000",
     "exposed-modules": [],
