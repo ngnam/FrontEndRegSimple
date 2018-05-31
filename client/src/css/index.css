@@ -56,4 +56,5 @@
 @import './_variables';
 
 /* your own custom styles */
+@import './_fonts';
 @import './_custom';
