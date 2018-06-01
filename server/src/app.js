@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import morgan from 'morgan';
 import cookieSession from 'cookie-session';
@@ -12,7 +13,9 @@ import router from './router';
 const app = express();
 
 const { SESSION_SECRET } = process.env;
+const publicDir = path.join(__dirname, '..', '..', 'client', 'public');
 
+app.use(express.static(publicDir));
 app.use(bodyParser.json());
 
 app.use(
