@@ -89,13 +89,13 @@
   --box-shadow-4: 2px 2px 8px 0px rgba( 0, 0, 0, 0.2 );
   --box-shadow-5: 4px 4px 8px 0px rgba( 0, 0, 0, 0.2 );
 
+  --white: #fff;
   --black: #000;
   --dark-gray:#333;
   --silver: #999;
   --light-silver: #aaa;
   --moon-gray: #dedede;
   --light-gray: #e8e8e8;
-  --near-white: #f4f4f4;
 
   --transparent:transparent;
 
@@ -153,7 +153,7 @@
   --dark-blue:  #253655;
   --blue:  #0071BC;
   --light-blue:  #29ABE2;
-  --white: #FDFDFF;
+  --near-white: #FDFDFF;
   --near-black: #171C36;
   --mid-gray:#F4F4F6;
   --gray: #F2F3F4;
