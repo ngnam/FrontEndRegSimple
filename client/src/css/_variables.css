@@ -10,7 +10,7 @@
 
 :root {
 
-  --sans-serif: 'lato', 'helvetica neue', helvetica, arial;
+  --sans-serif: Metropolis, 'lato', 'helvetica neue', helvetica, arial;
   --serif: georgia, serif;
   --handwriting: Caveat;
   --code: consolas, monaco, monospace;
