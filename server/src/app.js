@@ -15,6 +15,7 @@ const app = express();
 const { SESSION_SECRET } = process.env;
 const publicDir = path.join(__dirname, '..', '..', 'client', 'public');
 
+app.use(morgan('tiny'));
 app.use(express.static(publicDir));
 app.use(bodyParser.json());
 
@@ -28,7 +29,6 @@ app.use(
   })
 );
 app.use(cors());
-app.use(morgan('tiny'));
 app.use(passwordless.sessionSupport());
 app.use(passwordless.acceptToken());
 
