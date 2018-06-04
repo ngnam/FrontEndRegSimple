@@ -1,14 +1,9 @@
-import express from 'express';
-import morgan from 'morgan';
+import env from 'env2';
+env('./.env');
 
-const PORT = 4000;
+import app from './app';
 
-const app = express();
-
-app.use(morgan('combined'));
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
+const { PORT } = process.env;
 
 app.listen(PORT, () => {
   console.log(`Listening at http://localhost:${PORT}`);
