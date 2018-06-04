@@ -1,6 +1,3 @@
-import env from 'env2';
-env('./.env');
-
 import { Router } from 'express';
 
 import loginEmail from './login-email';
@@ -10,11 +7,11 @@ const createRouter = dependencies => {
 
   router.post(
     '/login/email',
-    dependencies.passwordlessService.requestToken(
-      (user, delivery, callback, req) => {
-        callback(null, user);
-      }
-    ),
+    // dependencies.passwordlessService.requestToken(
+    //   (user, delivery, callback, req) => {
+    //     callback(null, user);
+    //   }
+    // ),
     loginEmail()
   );
 

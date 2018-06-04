@@ -4,38 +4,40 @@ import morgan from 'morgan';
 import cookieSession from 'cookie-session';
 import bodyParser from 'body-parser';
 
+import createEmailService from './services/email';
+import createPasswordlessService from './services/passwordless';
+
 import cors from './middleware/cors';
 
-import passwordless from './services/passwordless';
+import createRouter from './router';
 
-import router from './router';
+const createApp = async function({ config }) {
+  const emailService = await createEmailService({ config });
+  const passwordlessService = null; //createPasswordlessService({ config, emailService });
 
-const app = express();
+  const app = express();
 
-const { SESSION_SECRET } = process.env;
-const publicDir = path.join(__dirname, '..', '..', 'client', 'public');
+  const { SESSION_SECRET } = config;
+  const publicDir = path.join(__dirname, '..', '..', 'client', 'public');
 
-app.use(morgan('tiny'));
-app.use(express.static(publicDir));
-app.use(bodyParser.json());
+  app.use(morgan('tiny'));
+  app.use(express.static(publicDir));
+  app.use(bodyParser.json());
+  app.use(
+    cookieSession({
+      name: 'session',
+      secret: SESSION_SECRET,
 
-app.use(
-  cookieSession({
-    name: 'session',
-    secret: SESSION_SECRET,
+      // Cookie Options
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    })
+  );
+  app.use(cors());
+  // app.use(passwordlessService.sessionSupport());
+  // app.use(passwordlessService.acceptToken());
+  app.use(createRouter({ passwordlessService }));
 
-    // Cookie Options
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  })
-);
-app.use(cors());
-app.use(passwordless.sessionSupport());
-app.use(passwordless.acceptToken());
+  return app;
+};
 
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
-
-app.use(router({ passwordlessService: passwordless }));
-
-export default app;
+export default createApp;
