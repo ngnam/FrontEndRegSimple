@@ -4,20 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node ./dist/server/index.js",
     "server-dev": "NODE_ENV=development nodemon --exec babel-node ./server/src/index.js",
     "client-dev": "cd client && elm-app start",
-    "server-build": "babel ./server/src --out-dir ./server/build",
+    "server-build": "babel ./server/src --out-dir ./dist/server",
     "client-build": "npm run css-build && cd client && elm-app build ",
-    "css-build": "postcss ./client/src/css/index.css --output ./client/public/style.min.css --config ./postcss.config.js",
+    "css-build": "postcss ./client/src/css/index.css --output ./client/build/style.min.css --config ./postcss.config.js",
     "css-dev": "postcss ./client/src/css/index.css --output ./client/public/style.min.css --watch --config ./postcss.config.js",
     "lint": "prettier --write './server/**/*.js'",
     "server-test": "NODE_ENV=test jest",
     "client-test": "cd client && elm-app test",
-    "test": "npm run client-test && npm run server-test"
+    "test": "npm run server-test"
   },
   "author": "",
   "pre-commit": [
-    "test",
+    "server-test",
+    "client-test",
     "lint"
   ],
   "license": "ISC",

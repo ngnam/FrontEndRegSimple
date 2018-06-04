@@ -11,8 +11,8 @@ import cors from './middleware/cors';
 
 import createRouter from './router';
 
-const createApp = async function({ config }) {
-  const emailService = await createEmailService({ config });
+const createApp = async function({ config, emailService }) {
+  emailService = emailService || (await createEmailService({ config }));
   const passwordlessService = null; //createPasswordlessService({ config, emailService });
 
   const app = express();
