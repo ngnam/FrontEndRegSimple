@@ -25,7 +25,7 @@ app.use(
   })
 );
 app.use(cors());
-app.use(morgan('combined'));
+app.use(morgan('tiny'));
 app.use(passwordless.sessionSupport());
 app.use(passwordless.acceptToken());
 
