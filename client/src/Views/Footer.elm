@@ -8,6 +8,6 @@ import Types exposing (..)
 view : Model -> Html Msg
 view model =
     footer []
-        [ a [ href "/" ] [ img [ src "/assets/icons/twitter_icn.svg" ] [] ]
+        [ a [ href "/" ] [ img [ src "/assets/icons/twitter.svg" ] [] ]
         , div [] [ a [ class "f6", href "/" ] [ text "Terms of Use" ] ]
         ]

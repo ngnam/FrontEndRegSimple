@@ -4,27 +4,22 @@ import Types exposing (..)
 import Html exposing (Html, text, div, form, input, button, span)
 import Html.Attributes exposing (type_, placeholder, value, class)
 import Html.Events exposing (onSubmit, onInput)
+import CountrySelect
 
 
 view : Model -> Html Msg
 view model =
     div [ class "flex justify-center" ]
         [ div [ class "relative w-60 bg-white pa3 br-pill ba b--light-gray" ]
-            [ div [ class "pr3" ] [ queryForm ]
+            [ div [ class "pr3" ] [ queryForm model ]
             ]
         ]
 
 
-queryForm : Html Msg
-queryForm =
+queryForm : Model -> Html Msg
+queryForm model =
     form [ onSubmit SubmitLoginEmailForm ]
-        [ input
-            [ class inputClass
-            , type_ "text"
-            , placeholder "Type your country"
-            , onInput LoginEmailFormOnInput
-            ]
-            []
+        [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
         , divider
         , input
             [ class inputClass
@@ -37,7 +32,7 @@ queryForm =
         , input
             [ class inputClass
             , type_ "text"
-            , placeholder "Catergory"
+            , placeholder "Category"
             , onInput LoginEmailFormOnInput
             ]
             []

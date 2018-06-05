@@ -5,6 +5,7 @@ import Html.Attributes exposing (class, href)
 import Types exposing (..)
 
 
+aboutPath : String
 aboutPath =
     "/about"
 

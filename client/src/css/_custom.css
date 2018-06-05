@@ -1,3 +1,7 @@
+html {
+  font-size: 19px;
+}
+
 body {
   font-family: Metropolis, sans-serif;
   margin: 0;
@@ -31,4 +35,15 @@ img {
 
 .w-05 {
   width: 5%;
+}
+
+.w15rem {
+  width: 15rem;
+}
+
+.top-125 {
+  top: 125%;
+}
+.top-150 {
+  top: 150%;
 }
