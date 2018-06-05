@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server-dev": "nodemon --exec babel-node ./server/src/index.js",
+    "server-dev": "NODE_ENV=development nodemon --exec babel-node ./server/src/index.js",
     "client-dev": "cd client && elm-app start",
     "server-build": "babel ./server/src --out-dir ./server/build",
     "client-build": "npm run css-build && cd client && elm-app build ",
     "css-build": "postcss ./client/src/css/index.css --output ./client/public/style.min.css --config ./postcss.config.js",
     "css-dev": "postcss ./client/src/css/index.css --output ./client/public/style.min.css --watch --config ./postcss.config.js",
     "lint": "prettier --write './server/**/*.js'",
-    "server-test": "jest",
+    "server-test": "NODE_ENV=test jest",
     "client-test": "cd client && elm-app test",
     "test": "npm run client-test && npm run server-test"
   },
@@ -28,7 +28,8 @@
     "morgan": "^1.9.0",
     "nodemailer": "^4.6.4",
     "passwordless": "^1.1.2",
-    "passwordless-postgrestore": "github:Battochon/passwordless-postgrestore"
+    "passwordless-postgrestore": "github:Battochon/passwordless-postgrestore",
+    "pg": "^7.4.3"
   },
   "devDependencies": {
     "autoprefixer": "^8.5.2",

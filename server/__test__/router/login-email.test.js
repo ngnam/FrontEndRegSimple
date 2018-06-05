@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import app from '../app';
+const app = process.app;
 
 test('POST /login/email 200', done => {
   const email = 'test@regsimple.com';

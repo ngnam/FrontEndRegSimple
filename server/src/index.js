@@ -1,10 +1,14 @@
-import env from 'env2';
-env('./.env');
-
-import app from './app';
+import createApp from './app';
+import config from './config';
 
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
-  console.log(`Listening at http://localhost:${PORT}`);
-});
+async function startApp() {
+  const app = await createApp({ config });
+
+  app.listen(PORT, () => {
+    console.log(`Listening at http://localhost:${PORT}`);
+  });
+}
+
+startApp();
