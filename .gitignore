@@ -14,6 +14,4 @@ node_modules
 .DS_Store
 
 # Environment variables
-
 *.env
-style.min.css

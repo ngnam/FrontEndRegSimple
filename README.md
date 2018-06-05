@@ -22,11 +22,12 @@ Follow these steps to run the app locally:
 1. To compile the css: `npm run css-dev`
 
 ## Build
-Follow these steps to compile the app for production:
 
-1. To compile the node server: `npm run server-build`
-1. To build the elm app: `npm run client-build`
-1. To compile the css: `npm run css-build`
+To build the app ready for deploying to production run `make build` - see `Makefile` for more details.
+
+## Deploy
+
+We've set up Travis and Heroku to deploy the `master` branch of this repo. So when a new commit goes into `master`, Travis will run and deploy to heroku (see `.travis.yml` for config)
 
 ## CSS - Tachyons & Postcss
 
