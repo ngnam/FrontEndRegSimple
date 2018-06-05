@@ -5,9 +5,9 @@
     "license": "BSD3",
     "source-directories": [
         "src",
-        "src/model",
-        "src/views",
-        "src/update"
+        "src/Model",
+        "src/Views",
+        "src/Update"
     ],
     "proxy" : "http://localhost:4000",
     "exposed-modules": [],
