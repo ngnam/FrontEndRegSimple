@@ -6,11 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _environments = require('../constants/environments');
 
-var env2 = require('env2');
-var NODE_ENV = process.env.NODE_ENV;
+const env2 = require('env2');
+const { NODE_ENV } = process.env;
 
-
-var loadEnv = function loadEnv() {
+const loadEnv = () => {
   switch (NODE_ENV) {
     case _environments.TEST:
       env2('./.test.env');
