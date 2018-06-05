@@ -12,3 +12,20 @@ img {
   margin: 20px 0;
   max-width: 200px;
 }
+
+.metro {
+  font-family: Metropolis
+}
+.metro-b {
+  font-family: MetropolisBold
+}
+.metro-b-i {
+  font-family: MetropolisBoldItalic
+}
+.metro-i {
+  font-family: MetropolisItalic
+}
+.metro-sb {
+  font-family: MetropolisSemiBold
+
+}
