@@ -14,18 +14,21 @@ img {
 }
 
 .metro {
-  font-family: Metropolis
+  font-family: Metropolis;
 }
 .metro-b {
-  font-family: MetropolisBold
+  font-family: MetropolisBold;
 }
 .metro-b-i {
-  font-family: MetropolisBoldItalic
+  font-family: MetropolisBoldItalic;
 }
 .metro-i {
-  font-family: MetropolisItalic
+  font-family: MetropolisItalic;
 }
 .metro-sb {
-  font-family: MetropolisSemiBold
+  font-family: MetropolisSemiBold;
+}
 
+.w-05 {
+  width: 5%;
 }
