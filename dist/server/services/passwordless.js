@@ -14,18 +14,14 @@ var _passwordlessPostgrestore2 = _interopRequireDefault(_passwordlessPostgrestor
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var createPasswordlessMiddleware = function createPasswordlessMiddleware(_ref) {
-  var emailService = _ref.emailService,
-      config = _ref.config;
-  var POSTGRES_CONNECTION_STRING = config.POSTGRES_CONNECTION_STRING,
-      CLIENT_APP_BASE_URL = config.CLIENT_APP_BASE_URL;
+const createPasswordlessMiddleware = ({ emailService, config }) => {
+  const { POSTGRES_CONNECTION_STRING, CLIENT_APP_BASE_URL } = config;
 
-
-  var sendToken = function sendToken(tokenToSend, uidToSend, recipient, cb, req) {
-    var emailContent = 'Hello!\nAccess your account here: ' + CLIENT_APP_BASE_URL + '?token=' + tokenToSend + '&uid=' + encodeURIComponent(uidToSend);
+  const sendToken = (tokenToSend, uidToSend, recipient, cb, req) => {
+    const emailContent = 'Hello!\nAccess your account here: ' + CLIENT_APP_BASE_URL + '?token=' + tokenToSend + '&uid=' + encodeURIComponent(uidToSend);
 
     emailService.send({
-      recipient: recipient,
+      recipient,
       subject: "Here's your token, friend",
       plainText: emailContent,
       html: emailContent

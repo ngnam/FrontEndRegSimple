@@ -12,8 +12,8 @@ var _loginEmail2 = _interopRequireDefault(_loginEmail);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var createRouter = function createRouter(dependencies) {
-  var router = (0, _express.Router)();
+const createRouter = dependencies => {
+  const router = (0, _express.Router)();
 
   router.post('/login/email',
   // dependencies.passwordlessService.requestToken(

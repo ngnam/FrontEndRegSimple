@@ -4,11 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports.default = function () {
-  return function (req, res) {
-    var user = req.body.user;
+exports.default = () => (req, res) => {
+  const { user } = req.body;
 
-
-    res.json({ email: user, foo: 'bar' });
-  };
+  res.json({ email: user, foo: 'bar' });
 };
