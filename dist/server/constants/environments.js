@@ -5,6 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 /*  Not using CAPS_CAMEL_CASE due to convention  */
 
-var TEST = exports.TEST = 'test';
-var DEVELOPMENT = exports.DEVELOPMENT = 'development';
-var PRODUCTION = exports.PRODUCTION = 'production';
+const TEST = exports.TEST = 'test';
+const DEVELOPMENT = exports.DEVELOPMENT = 'development';
+const PRODUCTION = exports.PRODUCTION = 'production';
