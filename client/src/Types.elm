@@ -2,6 +2,7 @@ module Types exposing (..)
 
 import Navigation
 import CountrySelect
+import ActivitySelect
 
 
 type alias Model =
@@ -10,6 +11,7 @@ type alias Model =
     , isLoggedIn : Bool
     , countryInputValue : String
     , countrySelect : CountrySelect.Model
+    , activitySelect : ActivitySelect.Model
     }
 
 
@@ -20,4 +22,5 @@ type Msg
     | CountryOnInput String
     | RequestLoginCodeCompleted
     | CountrySelectMsg CountrySelect.Msg
+    | ActivitySelectMsg ActivitySelect.Msg
     | NoOp

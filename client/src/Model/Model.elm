@@ -1,8 +1,9 @@
 module Model exposing (..)
 
-import CountrySelect
 import Navigation
 import Types exposing (..)
+import CountrySelect
+import ActivitySelect
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
@@ -12,6 +13,7 @@ init location =
       , isLoggedIn = False
       , countryInputValue = ""
       , countrySelect = CountrySelect.initialModel
+      , activitySelect = ActivitySelect.initialModel
       }
     , Cmd.none
     )
