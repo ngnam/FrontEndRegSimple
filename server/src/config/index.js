@@ -1,6 +1,9 @@
-import loadEnv from './loadEnv';
+import { PRODUCTION } from '../constants/environments';
 
-loadEnv();
+if (process.env.NODE_ENV !== PRODUCTION) {
+  const loadEnv = require('./loadEnv');
+  loadEnv();
+}
 
 const envVarNames = [
   'SMTP_HOST',
