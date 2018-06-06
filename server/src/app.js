@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 
 import createEmailService from './services/email';
 import createPasswordlessService from './services/passwordless';
-
+import { PRODUCTION } from './constants/environments';
 import cors from './middleware/cors';
 
 import createRouter from './router';
@@ -14,11 +14,13 @@ import createRouter from './router';
 const createApp = async function({ config, emailService }) {
   emailService = emailService || (await createEmailService({ config }));
   const passwordlessService = null; //createPasswordlessService({ config, emailService });
-
   const app = express();
 
   const { SESSION_SECRET } = config;
-  const publicDir = path.join(__dirname, '..', '..', 'client', 'public');
+  const publicDir =
+    process.env.NODE_ENV === PRODUCTION
+      ? path.join(__dirname, '..', 'client')
+      : path.join(__dirname, '..', '..', 'client', 'public');
 
   app.use(morgan('tiny'));
   app.use(express.static(publicDir));

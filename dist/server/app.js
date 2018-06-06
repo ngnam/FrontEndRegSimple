@@ -32,6 +32,8 @@ var _passwordless = require('./services/passwordless');
 
 var _passwordless2 = _interopRequireDefault(_passwordless);
 
+var _environments = require('./constants/environments');
+
 var _cors = require('./middleware/cors');
 
 var _cors2 = _interopRequireDefault(_cors);
@@ -45,11 +47,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const createApp = async function ({ config, emailService }) {
   emailService = emailService || (await (0, _email2.default)({ config }));
   const passwordlessService = null; //createPasswordlessService({ config, emailService });
-
   const app = (0, _express2.default)();
 
   const { SESSION_SECRET } = config;
-  const publicDir = _path2.default.join(__dirname, '..', '..', 'client', 'public');
+  const publicDir = process.env.NODE_ENV === _environments.PRODUCTION ? _path2.default.join(__dirname, '..', 'client') : _path2.default.join(__dirname, '..', '..', 'client', 'public');
 
   app.use((0, _morgan2.default)('tiny'));
   app.use(_express2.default.static(publicDir));

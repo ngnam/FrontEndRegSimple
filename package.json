@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "8.11.2"
+  },
   "scripts": {
     "start": "node ./dist/server/index.js",
     "server-dev": "NODE_ENV=development nodemon --exec babel-node ./server/src/index.js",

@@ -4,13 +4,12 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _loadEnv = require('./loadEnv');
+var _environments = require('../constants/environments');
 
-var _loadEnv2 = _interopRequireDefault(_loadEnv);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-(0, _loadEnv2.default)();
+if (process.env.NODE_ENV !== _environments.PRODUCTION) {
+  const loadEnv = require('./loadEnv');
+  loadEnv();
+}
 
 const envVarNames = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'POSTGRES_CONNECTION_STRING', 'PORT', 'SESSION_SECRET', 'CLIENT_APP_BASE_URL'];
 

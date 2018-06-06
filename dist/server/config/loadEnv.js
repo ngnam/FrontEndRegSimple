@@ -1,9 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _environments = require('../constants/environments');
 
 const env2 = require('env2');
@@ -21,4 +17,4 @@ const loadEnv = () => {
   }
 };
 
-exports.default = loadEnv;
+module.exports = loadEnv;

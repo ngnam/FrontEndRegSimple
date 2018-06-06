@@ -15,4 +15,4 @@ const loadEnv = () => {
   }
 };
 
-export default loadEnv;
+module.exports = loadEnv;
