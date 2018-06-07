@@ -1,4 +1,9 @@
-module Util exposing (boolStr, (!!))
+module Util exposing (boolStr, (!!), viewIf)
+
+import Html exposing (Attribute, Html)
+
+
+-- (!!) is a getter for lists --
 
 
 (!!) : Int -> List a -> Maybe a
@@ -11,7 +16,23 @@ module Util exposing (boolStr, (!!))
         Nothing
 
 
+
+-- boolStr converts True to "true" and False to "false"--
+
+
 boolStr : Bool -> String
 boolStr bool =
     toString bool
         |> String.toLower
+
+
+
+-- from https://github.com/rtfeldman/elm-spa-example/blob/master/src/Util.elm --
+
+
+viewIf : Bool -> Html msg -> Html msg
+viewIf condition content =
+    if condition then
+        content
+    else
+        Html.text ""

@@ -44,6 +44,11 @@ countries =
     ]
 
 
+emptyCountry : Country
+emptyCountry =
+    { name = "", id = "" }
+
+
 source : String -> List Country
 source query =
     List.filter (\c -> String.contains (String.toLower query) (String.toLower c.name)) countries
@@ -91,7 +96,7 @@ onKeyDown model =
 view : Model -> Html Msg
 view model =
     let
-        { menuOpen, focused, hovered } =
+        { menuOpen, focused, hovered, selected } =
             model
 
         optionFocused =
@@ -126,6 +131,22 @@ view model =
                 [ ( "absolute absolute--fill", True )
                 , ( "bg-blue o-20", active )
                 ]
+
+        showInputFlag =
+            selected /= -1 && not menuOpen
+
+        selectedCountry =
+            Maybe.withDefault emptyCountry (selected !! countries)
+
+        selectedCountryCode =
+            selectedCountry.id
+
+        inputClass =
+            classNames
+                [ ( "w-100 h2 pv2 pr3 br-pill ba b--solid b--blue outline-0", True )
+                , ( "pl3", not showInputFlag )
+                , ( "pl4", showInputFlag )
+                ]
     in
         div
             [ class "w-30 fl relative"
@@ -134,7 +155,7 @@ view model =
             , ariaExpanded (boolStr menuOpen)
             ]
             [ input
-                [ class "mw-100 h2 pv2 ph3 br-pill ba b--solid b--blue outline-0"
+                [ class inputClass
                 , type_ "text"
                 , placeholder "Type your country"
                 , onInput SetQuery
@@ -144,6 +165,12 @@ view model =
                 , ariaActiveDescendant activeDescendant
                 ]
                 []
+            , viewIf showInputFlag
+                (div
+                    [ class "absolute top-0 bottom-0 flex flex-column justify-center pl2" ]
+                    [ span [ class (flagClass selectedCountryCode) ] []
+                    ]
+                )
             , div [ class (inputUnderlineClass menuOpen) ] []
             , ul [ class menuClass, role "listbox" ]
                 (List.indexedMap
@@ -203,7 +230,7 @@ newQuery index model =
                     a
 
                 Nothing ->
-                    { name = "", id = "" }
+                    emptyCountry
 
         newQuery =
             templateInputValue selectedOption
