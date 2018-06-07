@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Util exposing (..)
+import ClassNames exposing (classNames)
 
 
 -- MODEL --
@@ -15,13 +16,11 @@ type alias Index =
 
 
 type alias Activity =
-    { name : String, shortName : String, id : Int }
+    { name : String, id : Int }
 
 
 type alias Model =
-    { focused : Int
-    , hovered : Int
-    , menuOpen : Bool
+    { menuOpen : Bool
     , selected : Index
     , options : List Activity
     }
@@ -29,9 +28,7 @@ type alias Model =
 
 initialModel : Model
 initialModel =
-    { focused = -1
-    , hovered = -1
-    , menuOpen = False
+    { menuOpen = False
     , selected = -1
     , options = activities
     }
@@ -39,22 +36,27 @@ initialModel =
 
 emptyActivity : Activity
 emptyActivity =
-    { name = "", shortName = "", id = -1 }
+    { name = "Choose your activity", id = -1 }
 
 
 activities : List Activity
 activities =
-    [ { name = "big long name here", shortName = "BLNH", id = 1 }
-    , { name = "big long name here2", shortName = "BLNH2", id = 2 }
+    [ { name = "big long name here", id = 1 }
+    , { name = "big long name here2", id = 2 }
     ]
 
 
 activityMenu : List Activity -> Int -> Bool -> String -> Html Msg
 activityMenu activities selected menuIsVisible menuClass =
-    div [ id "activity-list", class (menuClass ++ " list bottom-0 bg-blue"), ariaExpanded (String.toLower (toString menuIsVisible)), ariaHidden (not menuIsVisible) ]
-        (List.concat
-            (List.indexedMap
-                (\index activity ->
+    div
+        [ id "activity-list"
+        , class menuClass
+        , ariaExpanded (String.toLower (toString menuIsVisible))
+        , ariaHidden (not menuIsVisible)
+        ]
+        (List.indexedMap
+            (\index activity ->
+                label [ for ("activity-" ++ (toString index)) ]
                     [ input
                         [ type_ "radio"
                         , onClick (SetSelected index)
@@ -68,11 +70,11 @@ activityMenu activities selected menuIsVisible menuClass =
                             )
                         ]
                         []
-                    , label [ for ("activity-" ++ (toString index)) ] [ text activity.name ]
+                    , text
+                        activity.name
                     ]
-                )
-                activities
             )
+            activities
         )
 
 
@@ -86,16 +88,17 @@ view { menuOpen, selected, options } inputClass =
             Maybe.withDefault emptyActivity (selected !! options)
 
         menuClass =
-            if menuIsVisible then
-                "absolute"
-            else
-                "dn"
+            classNames
+                [ ( "list bottom-0 bg-blue", True )
+                , ( "dn", not menuIsVisible )
+                , ( "absolute ", menuIsVisible )
+                ]
     in
         div
             []
             [ button
                 [ onClick
-                    ToggleMenu
+                    HandleButtonClick
                 , type_ "button"
                 , placeholder "Choose your activity"
                 , class inputClass
@@ -116,7 +119,7 @@ view { menuOpen, selected, options } inputClass =
 
 type Msg
     = SetSelected Index
-    | ToggleMenu
+    | HandleButtonClick
     | NoOp
 
 
@@ -131,7 +134,7 @@ update msg model =
             , Cmd.none
             )
 
-        ToggleMenu ->
+        HandleButtonClick ->
             ( { model | menuOpen = not model.menuOpen }, Cmd.none )
 
         NoOp ->
