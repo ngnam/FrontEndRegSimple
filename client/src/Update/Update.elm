@@ -4,6 +4,7 @@ import Types exposing (..)
 import LoginDecoder exposing (requestLoginCodeCmd)
 import CountrySelect
 import ActivitySelect
+import CategorySelect
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -14,9 +15,6 @@ update msg model =
 
         LoginEmailFormOnInput email ->
             ( { model | email = email }, Cmd.none )
-
-        CountryOnInput country ->
-            ( { model | countryInputValue = country }, Cmd.none )
 
         CountrySelectMsg subMsg ->
             let
@@ -31,6 +29,13 @@ update msg model =
                     ActivitySelect.update subMsg model.activitySelect
             in
                 ( { model | activitySelect = updatedActivitySelectModel }, Cmd.map ActivitySelectMsg activitySelectCmd )
+
+        CategorySelectMsg subMsg ->
+            let
+                ( updatedCategorySelectModel, categorySelectCmd ) =
+                    CategorySelect.update subMsg model.categorySelect
+            in
+                ( { model | categorySelect = updatedCategorySelectModel }, Cmd.map CategorySelectMsg categorySelectCmd )
 
         _ ->
             ( model, Cmd.none )
