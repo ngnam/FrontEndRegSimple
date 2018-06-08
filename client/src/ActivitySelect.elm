@@ -123,7 +123,7 @@ view { menuOpen, selected, options } inputClass =
                 ]
 
         buttonClass =
-            inputClass ++ " tl truncate " ++ classNames [ ( "bg-blue white", menuOpen ), ( "black-60", selectedActivity.name == emptyActivity.name ) ]
+            inputClass ++ " tl truncate bg-white " ++ classNames [ ( "bg-blue white", menuOpen ), ( "black-60", selectedActivity.name == emptyActivity.name ) ]
     in
         div
             [ class "relative" ]
