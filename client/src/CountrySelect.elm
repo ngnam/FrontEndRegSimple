@@ -256,16 +256,26 @@ handleOptionFocus index model =
 handleInputBlur : Model -> Model
 handleInputBlur model =
     let
-        { focused, menuOpen, options, query, selected } =
+        { focused, hovered, menuOpen, options, query, selected } =
             model
+
+        hoveringAnOption =
+            hovered /= -1
 
         focusingAnOption =
             focused /= -1
     in
         if focusingAnOption then
             { model | focused = -1, menuOpen = False, query = newQuery selected model }
+        else if not hoveringAnOption then
+            { model | focused = -1, menuOpen = False }
         else
-            model
+            { model
+                | focused = -1
+                , menuOpen = False
+                , query = newQuery hovered model
+                , selected = hovered
+            }
 
 
 handleOptionClick : Int -> Model -> Model
