@@ -12,7 +12,6 @@ view : Model -> Html Msg
 view model =
     div [ class "bg-near-white min-vh-100" ]
         [ Views.Header.view model
-        , img [ src "/logo.svg" ] []
         , h1 [] [ text "RegSimple" ]
         , matchView model
         , Views.Footer.view model
