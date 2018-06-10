@@ -6,6 +6,7 @@ import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Util exposing (..)
 import ClassNames exposing (classNames)
+import Json.Decode as Json
 
 
 -- MODEL --
@@ -21,6 +22,8 @@ type alias Activity =
 
 type alias Model =
     { menuOpen : Bool
+    , hovered : Index
+    , focussed : Index
     , selected : Index
     , options : List Activity
     }
@@ -29,6 +32,8 @@ type alias Model =
 initialModel : Model
 initialModel =
     { menuOpen = False
+    , hovered = -1
+    , focussed = -1
     , selected = -1
     , options = activities
     }
@@ -67,53 +72,88 @@ activities =
     ]
 
 
-activityMenu : List Activity -> Int -> Bool -> String -> Html Msg
-activityMenu activities selected menuOpen menuClass =
-    div
-        [ id "activity-list"
-        , class menuClass
-        , ariaExpanded (String.toLower (toString menuOpen))
-        , ariaHidden (not menuOpen)
-        ]
-        (List.indexedMap
-            (\index activity ->
-                label
-                    [ class "relative pl4 ma1 w-40 tl f6 pointer flex items-center"
-                    , for ("activity-" ++ (toString index))
-                    ]
-                    [ div
-                        [ class
-                            "absolute left-0 w1 h1 br-100 bg-white b--blue ba fl flex flex-column justify-center items-center mr1"
+onKeyDown : Model -> Attribute Msg
+onKeyDown model =
+    let
+        options =
+            { defaultOptions | preventDefault = True }
+
+        filterKey code =
+            if code == 13 then
+                Json.succeed HandleEnter
+            else if code == 27 then
+                Json.succeed HandleEscape
+            else
+                Json.fail "ignored input"
+
+        decoder =
+            Html.Events.keyCode
+                |> Json.andThen filterKey
+    in
+        onWithOptions "keydown" options decoder
+
+
+activityMenu : Model -> String -> Html Msg
+activityMenu model menuClass =
+    let
+        { options, selected, menuOpen } =
+            model
+    in
+        div
+            [ id "activity-list"
+            , class menuClass
+            , ariaExpanded (String.toLower (toString menuOpen))
+            , ariaHidden (not menuOpen)
+            ]
+            (List.indexedMap
+                (\index activity ->
+                    label
+                        [ class "relative pl4 ma1 w-40 tl f6 pointer flex items-center"
+                        , for ("activity-" ++ (toString index))
+                        , tabindex 0
+                        , onFocus (HandleOptionFocussed index)
+                        , onMouseOver (HandleOptionHovered index)
+                        , onMouseOut (HandleOptionHovered -1)
+                        , onKeyDown
+                            model
                         ]
                         [ div
                             [ class
-                                (classNames
-                                    [ ( "absolute w-75 h-75 bg-blue br-100", index == selected ) ]
-                                )
+                                "absolute left-0 w1 h1 br-100 bg-white b--blue ba fl flex flex-column justify-center items-center mr1"
+                            ]
+                            [ div
+                                [ class
+                                    (classNames
+                                        [ ( "absolute w-75 h-75 bg-blue br-100", index == selected ) ]
+                                    )
+                                ]
+                                []
+                            ]
+                        , input
+                            [ type_ "radio"
+                            , onClick (SetSelected index)
+                            , name "activity"
+                            , tabindex -1
+                            , id ("activity-" ++ (toString index))
+                            , class "clip"
                             ]
                             []
+                        , text
+                            activity.name
                         ]
-                    , input
-                        [ type_ "radio"
-                        , onClick (SetSelected index)
-                        , name "activity"
-                        , id ("activity-" ++ (toString index))
-                        , class "clip"
-                        ]
-                        []
-                    , text
-                        activity.name
-                    ]
+                )
+                options
             )
-            activities
-        )
 
 
 view : Model -> String -> Html Msg
-view { menuOpen, selected, options } inputClass =
+view model inputClass =
     let
         selectedActivity =
-            Maybe.withDefault emptyActivity (selected !! options)
+            Maybe.withDefault emptyActivity (model.selected !! model.options)
+
+        menuOpen =
+            model.menuOpen
 
         menuClass =
             classNames
@@ -126,10 +166,11 @@ view { menuOpen, selected, options } inputClass =
             inputClass ++ " tl truncate bg-white " ++ classNames [ ( "bg-blue white", menuOpen ), ( "black-60", selectedActivity.name == emptyActivity.name ) ]
     in
         div
-            [ class "relative" ]
+            [ class "relative", onKeyDown model ]
             [ button
                 [ onClick
                     HandleButtonClick
+                , type_ "button"
                 , type_ "button"
                 , placeholder "Choose your activity"
                 , class buttonClass
@@ -137,9 +178,7 @@ view { menuOpen, selected, options } inputClass =
                 ]
                 [ text selectedActivity.name ]
             , activityMenu
-                options
-                selected
-                menuOpen
+                model
                 menuClass
             ]
 
@@ -151,6 +190,10 @@ view { menuOpen, selected, options } inputClass =
 type Msg
     = SetSelected Index
     | HandleButtonClick
+    | HandleEscape
+    | HandleOptionFocussed Index
+    | HandleOptionHovered Index
+    | HandleEnter
     | NoOp
 
 
@@ -164,6 +207,18 @@ update msg model =
               }
             , Cmd.none
             )
+
+        HandleOptionFocussed index ->
+            ( { model | focussed = index }, Cmd.none )
+
+        HandleOptionHovered index ->
+            ( { model | hovered = index }, Cmd.none )
+
+        HandleEscape ->
+            ( { model | menuOpen = False }, Cmd.none )
+
+        HandleEnter ->
+            ( { model | selected = model.focussed }, Cmd.none )
 
         HandleButtonClick ->
             ( { model | menuOpen = not model.menuOpen }, Cmd.none )
