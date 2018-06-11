@@ -47,9 +47,18 @@ img {
   width: 15rem;
 }
 
+.w30rem {
+  width: 30rem;
+}
+
 .top-125 {
   top: 125%;
 }
 .top-150 {
   top: 150%;
+}
+
+.translate-center {
+  transform: translateX(-50%);
+  left: 50%;
 }

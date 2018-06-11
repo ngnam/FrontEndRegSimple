@@ -158,16 +158,19 @@ view model inputClass =
 
         menuClass =
             classNames
-                [ ( "list top-2 bg-white ttc w-80 ba b--gray shadow-1 pv1 ph2", True )
+                [ ( "list bg-white ttc w30rem translate-center top-150 ba b--gray shadow-1 pv1 ph2", True )
                 , ( "absolute flex flex-wrap justify-between ma1", menuOpen )
                 , ( "dn", not menuOpen )
                 ]
 
         buttonClass =
             inputClass ++ " tl truncate bg-white " ++ classNames [ ( "bg-blue white", menuOpen ), ( "black-60", selectedActivity.name == emptyActivity.name ) ]
+
+        buttonUnderlineClass =
+            "absolute top-125 w-100 ba b--blue"
     in
         div
-            [ class "relative", onKeyDown model ]
+            [ class "relative w-30 fl", onKeyDown model ]
             [ button
                 [ onClick HandleButtonClick
                 , onBlur HandleButtonBlur
@@ -178,6 +181,7 @@ view model inputClass =
                 , ariaControls "activity-list"
                 ]
                 [ text selectedActivity.name ]
+            , viewIf menuOpen (div [ class buttonUnderlineClass ] [])
             , activityMenu
                 model
                 menuClass

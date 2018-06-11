@@ -24,13 +24,15 @@ queryForm model =
         , divider
         , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect inputClass)
         , divider
-        , input
-            [ class inputClass
-            , type_ "text"
-            , placeholder "Category"
-            , onInput LoginEmailFormOnInput
+        , div [ class "w-30 fl" ]
+            [ input
+                [ class inputClass
+                , type_ "text"
+                , placeholder "Category"
+                , onInput LoginEmailFormOnInput
+                ]
+                []
             ]
-            []
         , submitButton
         ]
 
@@ -42,7 +44,7 @@ divider =
 
 inputClass : String
 inputClass =
-    "w-30 h2 fl pv2 ph3 br-pill ba b--solid b--blue"
+    "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue"
 
 
 submitButton : Html msg
