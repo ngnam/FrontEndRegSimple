@@ -4,7 +4,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
+import Json.Decode as Json
 import ClassNames exposing (classNames)
+import Util exposing (..)
 
 
 -- MODEL --
@@ -56,15 +58,36 @@ categories =
     ]
 
 
+onKeyDown : Model -> Attribute Msg
+onKeyDown model =
+    let
+        options =
+            { defaultOptions | preventDefault = True }
+
+        filterKey code =
+            if code == 13 then
+                Json.succeed HandleEnter
+            else if code == 27 then
+                Json.succeed HandleEscape
+            else
+                Json.fail "ignored input"
+
+        decoder =
+            Html.Events.keyCode
+                |> Json.andThen filterKey
+    in
+        onWithOptions "keydown" options decoder
+
+
 view : Model -> Html Msg
 view model =
     let
-        { selected, menuOpen } =
+        { selected, menuOpen, focused } =
             model
 
         menuClass =
             classNames
-                [ ( "absolute list bg-white absolute ma0 ph0 pv2 list tl bg-white shadow-1 top-150 right-0 b--solid b--light-gray ba w30rem outline-0", menuOpen )
+                [ ( "list bg-white absolute ma0 ph0 pv2 list tl bg-white shadow-1 top-150 right-0 b--solid b--light-gray ba w30rem", menuOpen )
                 , ( "dn", not menuOpen )
                 ]
 
@@ -73,6 +96,12 @@ view model =
 
         atLeastOneSelected =
             List.length selected > 0
+
+        buttonClass =
+            classNames
+                [ ( "w-100 h2 pv2 ph3 tl br-pill ba b--solid b--blue bg-white truncate-ns", True )
+                , ( "bg-blue white b", menuOpen )
+                ]
 
         buttonText =
             if numberSelected == 0 then
@@ -90,9 +119,11 @@ view model =
                 ]
     in
         div
-            [ class "fl w-30 relative" ]
+            [ class "fl w-30 relative"
+            , onKeyDown model
+            ]
             [ button
-                [ class "w-100 h2 pv2 ph3 tl br-pill ba b--solid b--blue outline-0 bg-white truncate-ns"
+                [ class buttonClass
                 , onClick HandleButtonClick
                 , onFocus HandleButtonFocus
                 , onBlur HandleButtonBlur
@@ -116,6 +147,9 @@ view model =
                             isDisabled =
                                 not category.enabled
 
+                            isFocused =
+                                focused == index
+
                             isSelected =
                                 List.member category selected
 
@@ -130,8 +164,14 @@ view model =
 
                             labelClass =
                                 classNames
-                                    [ ( "relative db fl w-50 pv1 pl4 pr2 outline-0", True )
+                                    [ ( "relative db fl w-50 pt1 pb2 pl4 pr2 pointer outline-0 f6", True )
                                     , ( "o-30", isDisabled )
+                                    ]
+
+                            optionBgClass =
+                                classNames
+                                    [ ( "absolute absolute--fill", True )
+                                    , ( "bg-blue o-20", isFocused )
                                     ]
                         in
                             label
@@ -146,7 +186,7 @@ view model =
                                     , onClick (HandleCheckboxClick category)
                                     , checked isSelected
                                     , disabled isDisabled
-                                    , onFocus HandleCheckboxFocus
+                                    , onFocus (HandleCheckboxFocus index)
                                     , onBlur HandleCheckboxBlur
                                     , name "category"
                                     , id ("category-" ++ (toString index))
@@ -154,8 +194,8 @@ view model =
                                     ]
                                     []
                                 , span [ class checkmarkClass ] []
-                                , div [ class "checkbox__focus absolute w1 h1 bg-blue o-20 ba bw1 b--blue br1 left-1 dn" ] []
                                 , div [ class "ml2" ] [ text category.name ]
+                                , div [ class optionBgClass ] []
                                 ]
                     )
                     model.options
@@ -172,13 +212,20 @@ type Msg
     | HandleButtonFocus
     | HandleButtonClick
     | HandleButtonBlur
-    | HandleCheckboxFocus
+    | HandleCheckboxFocus Int
     | HandleCheckboxBlur
     | HandleLabelFocus
     | HandleLabelBlur
     | HandleMenuFocus
     | HandleMenuBlur
+    | HandleEnter
+    | HandleEscape
     | NoOp
+
+
+handleCheckboxFocus : Int -> Model -> Model
+handleCheckboxFocus index model =
+    { model | focused = index }
 
 
 handleComponentFocus : Model -> Model
@@ -188,7 +235,7 @@ handleComponentFocus model =
 
 handleComponentBlur : Model -> Model
 handleComponentBlur model =
-    { model | menuOpen = False }
+    { model | menuOpen = False, hovered = -1, focused = -1 }
 
 
 handleButtonFocus : Model -> Model
@@ -201,21 +248,26 @@ handleButtonBlur model =
     { model | buttonFocused = False }
 
 
+toggleCategorySelected : Category -> Model -> Model
+toggleCategorySelected category model =
+    let
+        alreadySelected =
+            List.member category model.selected
+
+        exclude option el =
+            option /= el
+    in
+        if alreadySelected then
+            { model | selected = List.filter (exclude category) model.selected }
+        else
+            { model | selected = model.selected ++ [ category ] }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         HandleCheckboxClick clickedCategory ->
-            let
-                alreadySelected =
-                    List.member clickedCategory model.selected
-
-                exclude category el =
-                    category /= el
-            in
-                if alreadySelected then
-                    ( { model | selected = List.filter (exclude clickedCategory) model.selected }, Cmd.none )
-                else
-                    ( { model | selected = model.selected ++ [ clickedCategory ] }, Cmd.none )
+            ( toggleCategorySelected clickedCategory model, Cmd.none )
 
         HandleButtonClick ->
             let
@@ -250,8 +302,8 @@ update msg model =
         HandleButtonBlur ->
             ( handleButtonBlur (handleComponentBlur model), Cmd.none )
 
-        HandleCheckboxFocus ->
-            ( handleComponentFocus model, Cmd.none )
+        HandleCheckboxFocus index ->
+            ( handleComponentFocus (handleCheckboxFocus index model), Cmd.none )
 
         HandleCheckboxBlur ->
             ( handleComponentBlur model, Cmd.none )
@@ -267,6 +319,25 @@ update msg model =
 
         HandleMenuBlur ->
             ( handleComponentBlur model, Cmd.none )
+
+        HandleEscape ->
+            ( handleComponentBlur model, Cmd.none )
+
+        HandleEnter ->
+            let
+                { focused } =
+                    model
+
+                shouldToggle =
+                    focused > -1
+
+                category =
+                    Maybe.withDefault emptyCategory (focused !! categories)
+            in
+                if shouldToggle then
+                    ( toggleCategorySelected category model, Cmd.none )
+                else
+                    ( model, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )

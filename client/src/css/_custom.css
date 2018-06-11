@@ -78,6 +78,3 @@ img {
 .checkbox:checked ~ .checkbox__checkmark::after {
   display: block;
 }
-.checkbox:focus ~ .checkbox__focus {
-  display: block;
-}

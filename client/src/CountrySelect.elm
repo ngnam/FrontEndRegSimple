@@ -124,7 +124,7 @@ view model =
                 ]
 
         optionClass =
-            "relative pv1 ph3 lh-copy"
+            "relative pv1 ph3 lh-copy pointer"
 
         optionBgClass active =
             classNames
@@ -143,7 +143,7 @@ view model =
 
         inputClass =
             classNames
-                [ ( "w-100 h2 pv2 pr3 br-pill ba b--solid b--blue outline-0", True )
+                [ ( "w-100 h2 pv2 pr3 br-pill ba b--solid b--blue", True )
                 , ( "pl3", not showInputFlag )
                 , ( "pl4", showInputFlag )
                 ]
