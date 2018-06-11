@@ -7,7 +7,7 @@ import Types exposing (..)
 
 aboutPath : String
 aboutPath =
-    "/about"
+    "/#/about"
 
 
 view : Model -> Html Msg
@@ -22,11 +22,11 @@ view model =
 viewLoginButton : Model -> Html Msg
 viewLoginButton { location, isLoggedIn } =
     case location.pathname of
-        "/login" ->
+        "/#/login" ->
             div [] []
 
         _ ->
-            a [ href aboutPath, class loggedInLinkClass ]
+            a [ href "/#/login", class loggedInLinkClass ]
                 [ text (ifLoggedIn isLoggedIn) ]
 
 

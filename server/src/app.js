@@ -5,9 +5,11 @@ import cookieSession from 'cookie-session';
 import bodyParser from 'body-parser';
 
 import createEmailService from './services/email';
-import createPasswordlessService from './services/passwordless';
+// import createPasswordlessService from './services/passwordless';
 import { PRODUCTION } from './constants/environments';
-import cors from './middleware/cors';
+
+import cors from './middleware/cors.middleware';
+import errorHandler from './middleware/error-handling.middleware';
 
 import createRouter from './router';
 
@@ -38,6 +40,7 @@ const createApp = async function({ config, emailService }) {
   // app.use(passwordlessService.sessionSupport());
   // app.use(passwordlessService.acceptToken());
   app.use(createRouter({ passwordlessService }));
+  app.use(errorHandler());
 
   return app;
 };
