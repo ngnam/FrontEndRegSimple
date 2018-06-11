@@ -2,22 +2,27 @@ sudo: required
 language: node_js
 node_js:
 - '8'
-
+branches:
+  only:
+  - master
 cache:
   directories:
-  - node_modules
-
+  - "node_modules"
+  - "$TRAVIS_BUILD_DIR/elm-stuff/build-artifacts"
+  - "$TRAVIS_BUILD_DIR/tests/elm-stuff/build-artifacts"
 notifications:
   email: false
-
-cache:
-  directories:
-    - $TRAVIS_BUILD_DIR/elm-stuff/build-artifacts
-    - $TRAVIS_BUILD_DIR/tests/elm-stuff/build-artifacts
-
 install:
-  - npm i create-elm-app -g
-
+- npm i create-elm-app -g
+- npm i
 script:
-  - elm-app test
-  - elm-app build
+- npm test
+- npm run server-build
+- npm run client-build
+- mv client/build dist/client
+deploy:
+  provider: heroku
+  app: reg-simple
+  skip_cleanup: true
+  api_key:
+    secure: fM7yEJaxHr+10w0WyiVfmVjwWUOiDWuH6gnAUQcVLsH2F5tMhRH6n2rUdCg1y9g1knzcOe4FHeDs0wgMKCnQIs0k0UiYUenZ4bX1DBXO7gsfFq7EFnKLJdJYuvQ8YFyYZXdPC47dl8IzcfzLbYO4Q9PDoCLO4YDcB3cOFWVKOCRgEQ3GqOdOn9mrJ5CJQ2KzPurewbhmrXiUKeBQxkvEkIQJ26ZrrF4RwMchms4cE+wsqTg0HxmQKLAOTl1DJODN+YVHPKpgvtQLGo4lxP25HZ1cLTEcbu+u8z0C0J8DemMs3fakbUTlB37mmM3GdQmMtnM1v6MrfJYWwwNom7B9p/MUb/myK9RSOchntJjlGVWOk2rFInANpMxVD+apjiWSa/k5tZXJYUv73K9DHQLRt+CQ1Sjb6cBJXNxrUXRmFDXYLeDVz5aWg93ajJYAGSWFKMTKfl1gA7zmGWHzPNO13junfE+uxRjNz6dAMVI5c6qmD9RYC+ZkHmqqeIG59lXFVPNUzaV5/j+scpL4g0ywvmZHCqMDLJkYNWDeaml5QhohovAKLY5kM1tvsF95PQ6yTbCMriiCzG9J9J0eVzQwpoSZkEQzRfBN8lvIfiBLClxpSTPu9dqCwfHLQxvnOw3Brz6JoTHRf1auXzc5SazNdqU2qSROs18qLe/kyH94tX4=

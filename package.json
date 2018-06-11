@@ -17,7 +17,7 @@
     "lint": "prettier --write './server/**/*.js'",
     "server-test": "NODE_ENV=test jest",
     "client-test": "cd client && elm-app test",
-    "test": "npm run server-test"
+    "test": "npm run server-test && npm run client-test"
   },
   "author": "",
   "pre-commit": [

@@ -21,13 +21,16 @@ Follow these steps to run the app locally:
 1. To start elm app: `npm run client-dev`
 1. To compile the css: `npm run css-dev`
 
-## Build
-
-To build the app ready for deploying to production run `make build` - see `Makefile` for more details.
-
 ## Deploy
 
-We've set up Travis and Heroku to deploy the `master` branch of this repo. So when a new commit goes into `master`, Travis will run and deploy to heroku (see `.travis.yml` for config)
+We've set up Travis and Heroku to deploy the `master` branch of this repo. So when a new commit goes into `master`, Travis will build and deploy to heroku (see `.travis.yml` for config)
+
+NB. The heroku deploy api token will expire 06/01/2019
+
+## Build
+
+You only need to do this if you want to manually deploy.
+To build the app ready for deploying to production run `make build` - see `Makefile` for more details.
 
 ## CSS - Tachyons & Postcss
 
