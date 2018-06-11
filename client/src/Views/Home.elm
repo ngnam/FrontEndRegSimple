@@ -6,6 +6,7 @@ import Html.Attributes exposing (type_, placeholder, value, class)
 import Html.Events exposing (onSubmit, onInput)
 import CountrySelect
 import ActivitySelect
+import CategorySelect
 
 
 view : Model -> Html Msg
@@ -24,15 +25,7 @@ queryForm model =
         , divider
         , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect inputClass)
         , divider
-        , div [ class "w-30 fl" ]
-            [ input
-                [ class inputClass
-                , type_ "text"
-                , placeholder "Category"
-                , onInput LoginEmailFormOnInput
-                ]
-                []
-            ]
+        , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect)
         , submitButton
         ]
 
