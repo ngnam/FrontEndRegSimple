@@ -23,7 +23,7 @@ type alias Activity =
 type alias Model =
     { menuOpen : Bool
     , hovered : Index
-    , focussed : Index
+    , focused : Index
     , selected : Index
     , options : List Activity
     }
@@ -33,7 +33,7 @@ initialModel : Model
 initialModel =
     { menuOpen = False
     , hovered = -1
-    , focussed = -1
+    , focused = -1
     , selected = -1
     , options = activities
     }
@@ -111,7 +111,7 @@ activityMenu model menuClass =
                         [ class "relative pl4 ma1 w-40 tl f6 pointer flex items-center"
                         , for ("activity-" ++ (toString index))
                         , tabindex 0
-                        , onFocus (HandleOptionFocussed index)
+                        , onFocus (HandleOptionFocused index)
                         , onMouseOver (HandleOptionHovered index)
                         , onMouseOut (HandleOptionHovered -1)
                         , onKeyDown
@@ -191,7 +191,7 @@ type Msg
     = SetSelected Index
     | HandleButtonClick
     | HandleEscape
-    | HandleOptionFocussed Index
+    | HandleOptionFocused Index
     | HandleOptionHovered Index
     | HandleEnter
     | NoOp
@@ -208,8 +208,8 @@ update msg model =
             , Cmd.none
             )
 
-        HandleOptionFocussed index ->
-            ( { model | focussed = index }, Cmd.none )
+        HandleOptionFocused index ->
+            ( { model | focused = index }, Cmd.none )
 
         HandleOptionHovered index ->
             ( { model | hovered = index }, Cmd.none )
@@ -218,7 +218,7 @@ update msg model =
             ( { model | menuOpen = False }, Cmd.none )
 
         HandleEnter ->
-            ( { model | selected = model.focussed }, Cmd.none )
+            ( { model | selected = model.focused }, Cmd.none )
 
         HandleButtonClick ->
             ( { model | menuOpen = not model.menuOpen }, Cmd.none )
