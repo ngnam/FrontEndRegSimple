@@ -108,10 +108,11 @@ activityMenu model menuClass =
             (List.indexedMap
                 (\index activity ->
                     label
-                        [ class "relative pl4 ma1 w-40 tl f6 pointer flex items-center"
+                        [ class "relative pl4 ma1 w-40 tl f6 pointer"
                         , for ("activity-" ++ (toString index))
                         , tabindex 0
                         , onFocus (HandleOptionFocused index)
+                        , onBlur HandleOptionBlur
                         , onMouseOver (HandleOptionHovered index)
                         , onMouseOut (HandleOptionHovered -1)
                         , onKeyDown
@@ -168,8 +169,8 @@ view model inputClass =
         div
             [ class "relative", onKeyDown model ]
             [ button
-                [ onClick
-                    HandleButtonClick
+                [ onClick HandleButtonClick
+                , onBlur HandleButtonBlur
                 , type_ "button"
                 , type_ "button"
                 , placeholder "Choose your activity"
@@ -190,7 +191,9 @@ view model inputClass =
 type Msg
     = SetSelected Index
     | HandleButtonClick
+    | HandleButtonBlur
     | HandleEscape
+    | HandleOptionBlur
     | HandleOptionFocused Index
     | HandleOptionHovered Index
     | HandleEnter
@@ -203,13 +206,16 @@ update msg model =
         SetSelected selected ->
             ( { model
                 | selected = selected
-                , menuOpen = not model.menuOpen
+                , menuOpen = False
               }
             , Cmd.none
             )
 
+        HandleOptionBlur ->
+            ( { model | focused = -1, menuOpen = False }, Cmd.none )
+
         HandleOptionFocused index ->
-            ( { model | focused = index }, Cmd.none )
+            ( { model | focused = index, menuOpen = True }, Cmd.none )
 
         HandleOptionHovered index ->
             ( { model | hovered = index }, Cmd.none )
@@ -219,6 +225,9 @@ update msg model =
 
         HandleEnter ->
             ( { model | selected = model.focused }, Cmd.none )
+
+        HandleButtonBlur ->
+            ( { model | menuOpen = False }, Cmd.none )
 
         HandleButtonClick ->
             ( { model | menuOpen = not model.menuOpen }, Cmd.none )
