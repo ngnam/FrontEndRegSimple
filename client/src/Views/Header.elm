@@ -2,6 +2,7 @@ module Views.Header exposing (..)
 
 import Html exposing (Html, header, div, button, a, text)
 import Html.Attributes exposing (class, href)
+import Util exposing (viewIf)
 import Types exposing (..)
 
 
@@ -11,23 +12,18 @@ aboutPath =
 
 
 view : Model -> Html Msg
-view model =
+view { location, isLoggedIn } =
     header [ class "flex ph5 pv4 justify-between f6" ]
         [ a [ href aboutPath, class "b ttu no-underline near-black" ]
             [ text "about" ]
-        , viewLoginButton model
+        , viewIf (location.hash /= "#/login") (loginButton isLoggedIn)
         ]
 
 
-viewLoginButton : Model -> Html Msg
-viewLoginButton { location, isLoggedIn } =
-    case location.pathname of
-        "/#/login" ->
-            div [] []
-
-        _ ->
-            a [ href "/#/login", class loggedInLinkClass ]
-                [ text (ifLoggedIn isLoggedIn) ]
+loginButton : Bool -> Html Msg
+loginButton isLoggedIn =
+    a [ href "/#/login", class loggedInLinkClass ]
+        [ text (ifLoggedIn isLoggedIn) ]
 
 
 loggedInLinkClass : String
