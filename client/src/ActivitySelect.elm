@@ -16,6 +16,10 @@ type alias Index =
     Int
 
 
+type alias Id =
+    Int
+
+
 type alias Activity =
     { name : String, id : Int }
 
@@ -125,14 +129,14 @@ activityMenu model menuClass =
                             [ div
                                 [ class
                                     (classNames
-                                        [ ( "absolute w-75 h-75 bg-blue br-100", index == selected ) ]
+                                        [ ( "absolute w-75 h-75 bg-blue br-100", activity.id == selected ) ]
                                     )
                                 ]
                                 []
                             ]
                         , input
                             [ type_ "radio"
-                            , onClick (SetSelected index)
+                            , onClick (SetSelected activity.id)
                             , name "activity"
                             , tabindex -1
                             , id ("activity-" ++ (toString index))
@@ -151,7 +155,7 @@ view : Model -> String -> Html Msg
 view model inputClass =
     let
         selectedActivity =
-            Maybe.withDefault emptyActivity (model.selected !! model.options)
+            Maybe.withDefault emptyActivity ((model.selected - 1) !! model.options)
 
         menuOpen =
             model.menuOpen
@@ -193,7 +197,7 @@ view model inputClass =
 
 
 type Msg
-    = SetSelected Index
+    = SetSelected Id
     | HandleButtonClick
     | HandleButtonBlur
     | HandleEscape
