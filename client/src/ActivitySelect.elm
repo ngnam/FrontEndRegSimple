@@ -117,7 +117,7 @@ activityMenu model menuClass =
 
                         labelClass =
                             classNames
-                                [ ( "relative pl4 ma1 w-40 tl f6"
+                                [ ( "relative pl4 pt1 pb2 w-50 tl f6"
                                   , True
                                   )
                                 , ( "o-30"
@@ -147,7 +147,7 @@ activityMenu model menuClass =
                             ]
                             [ div
                                 [ class
-                                    "absolute left-0 w1 h1 br-100 bg-white b--blue ba fl flex flex-column justify-center items-center mr1"
+                                    "absolute left-1 w1 h1 br-100 bg-white b--blue ba fl flex flex-column justify-center items-center mr1"
                                 ]
                                 [ div
                                     [ class
@@ -167,8 +167,7 @@ activityMenu model menuClass =
                                 , class "clip"
                                 ]
                                 []
-                            , text
-                                activity.name
+                            , div [ class "ml2" ] [ text activity.name ]
                             ]
                 )
                 options
@@ -186,8 +185,8 @@ view model inputClass =
 
         menuClass =
             classNames
-                [ ( "list bg-white ttc w30rem translate-center top-150 ba b--gray shadow-1 pv1 ph2", True )
-                , ( "absolute flex flex-wrap justify-between ma1", menuOpen )
+                [ ( "list bg-white ttc w30rem translate-center top-150 ba b--gray shadow-1 pv2 ph0", True )
+                , ( "absolute flex flex-wrap justify-between", menuOpen )
                 , ( "dn", not menuOpen )
                 ]
 
