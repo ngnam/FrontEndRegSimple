@@ -1,6 +1,6 @@
 module Util exposing (boolStr, (!!), viewIf)
 
-import Html exposing (Attribute, Html)
+import Html exposing (Html)
 
 
 -- (!!) is a getter for lists --

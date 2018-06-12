@@ -1,9 +1,10 @@
 module Views.Home exposing (..)
 
 import Types exposing (..)
-import Html exposing (Html, text, div, form, input, button, span, a)
-import Html.Attributes exposing (type_, placeholder, value, class, href)
+import Html exposing (Html, text, div, form, input, button, span, a, p)
+import Html.Attributes exposing (type_, placeholder, value, class, href, tabindex)
 import Html.Events exposing (onSubmit, onInput)
+import Util exposing (viewIf)
 import CountrySelect
 import ActivitySelect
 import CategorySelect
@@ -40,9 +41,17 @@ inputClass =
     "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue"
 
 
+checkFormValid : Model -> Bool
+checkFormValid { activitySelect, countrySelect, categorySelect } =
+    (activitySelect.selected /= -1) && (countrySelect.selected /= -1) && not (List.isEmpty categorySelect.selected)
+
+
 submitButton : Model -> Html msg
 submitButton model =
     let
+        isFormValid =
+            checkFormValid model
+
         countries =
             "countries[]=" ++ toString model.countrySelect.selected
 
@@ -52,11 +61,20 @@ submitButton model =
         queryString =
             countries ++ categories
     in
-        div [ class "di pa2 absolute right--2 top-0 h3 w3" ]
-            [ a
-                [ href ("/#/query?" ++ queryString)
-                , class "flex justify-center items-center no-underline br-100 bg-blue white f5 metro bn h-100 w-100"
-                , value "submit"
-                ]
-                [ text "Go" ]
+        button [ class "di pa2 absolute right--2 top-0 h3 w3 bg-transparent bn", tabindex -1 ]
+            [ viewIf isFormValid
+                (a
+                    [ href ("/#/query?" ++ queryString)
+                    , class "flex justify-center items-center no-underline br-100 bg-blue white f5 metro bn h-100 w-100"
+                    , value "submit"
+                    ]
+                    [ text "Go" ]
+                )
+            , viewIf (not isFormValid)
+                (p
+                    [ class "flex justify-center items-center no-underline br-100 bg-dark-gray white f5 metro bn h-100 w-100 ma0"
+                    , tabindex -1
+                    ]
+                    [ text "Go" ]
+                )
             ]
