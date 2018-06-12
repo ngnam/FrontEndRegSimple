@@ -1,6 +1,11 @@
 import { Router } from 'express';
 
-import loginEmail from './login-email';
+import validate from '../middleware/validation.middleware';
+
+import querySchema from '../validations/query.validation';
+
+import loginEmail from './login-email.route';
+import query from './query.route';
 
 const createRouter = dependencies => {
   const router = Router();
@@ -14,6 +19,8 @@ const createRouter = dependencies => {
     // ),
     loginEmail()
   );
+
+  router.get('/query', validate(querySchema), query());
 
   return router;
 };
