@@ -58,7 +58,7 @@ submitButton model =
                 [ ( "flex justify-center items-center no-underline br-100 bg-blue white f5 metro bn h-100 w-100"
                   , True
                   )
-                , ( "ma0 disabled  o-50"
+                , ( "ma0 disabled bg-washed-blue"
                   , not isFormValid
                   )
                 ]
