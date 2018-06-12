@@ -21,7 +21,7 @@ type alias Id =
 
 
 type alias Activity =
-    { name : String, id : Int }
+    { name : String, id : Int, enabled : Bool }
 
 
 type alias Model =
@@ -45,34 +45,34 @@ initialModel =
 
 emptyActivity : Activity
 emptyActivity =
-    { name = "Choose your activity", id = -1 }
+    { name = "Choose your activity", id = -1, enabled = True }
 
 
 activities : List Activity
 activities =
-    [ { name = "Anti-Money Laundering", id = 1 }
-    , { name = "Counter-Terrorism Financing", id = 2 }
-    , { name = "Transfer Pricing", id = 3 }
-    , { name = "Mobile Money", id = 4 }
-    , { name = "Electronic Money", id = 5 }
-    , { name = "Payments", id = 6 }
-    , { name = "Remitances", id = 7 }
-    , { name = "Foreign Exchange", id = 8 }
-    , { name = "Microfinance", id = 9 }
-    , { name = "Consumer Credit", id = 10 }
-    , { name = "Business Lending", id = 11 }
-    , { name = "Supply Chain Finance", id = 12 }
-    , { name = "Islamic Finance", id = 13 }
-    , { name = "Credit Reference Services", id = 14 }
-    , { name = "Equity Crowdfunding", id = 15 }
-    , { name = "Public Offers", id = 16 }
-    , { name = "Dealing in Investments", id = 17 }
-    , { name = "Data Protection", id = 18 }
-    , { name = "Robo Advice", id = 19 }
-    , { name = "Crypto-Assets", id = 20 }
-    , { name = "Retail Banking", id = 21 }
-    , { name = "Managing Investments", id = 22 }
-    , { name = "Insurance Mediation", id = 23 }
+    [ { name = "Anti-Money Laundering", id = 1, enabled = True }
+    , { name = "Counter-Terrorism Financing", id = 2, enabled = False }
+    , { name = "Transfer Pricing", id = 3, enabled = False }
+    , { name = "Mobile Money", id = 4, enabled = False }
+    , { name = "Electronic Money", id = 5, enabled = False }
+    , { name = "Payments", id = 6, enabled = False }
+    , { name = "Remitances", id = 7, enabled = False }
+    , { name = "Foreign Exchange", id = 8, enabled = False }
+    , { name = "Microfinance", id = 9, enabled = False }
+    , { name = "Consumer Credit", id = 10, enabled = False }
+    , { name = "Business Lending", id = 11, enabled = False }
+    , { name = "Supply Chain Finance", id = 12, enabled = False }
+    , { name = "Islamic Finance", id = 13, enabled = False }
+    , { name = "Credit Reference Services", id = 14, enabled = False }
+    , { name = "Equity Crowdfunding", id = 15, enabled = False }
+    , { name = "Public Offers", id = 16, enabled = False }
+    , { name = "Dealing in Investments", id = 17, enabled = False }
+    , { name = "Data Protection", id = 18, enabled = False }
+    , { name = "Robo Advice", id = 19, enabled = False }
+    , { name = "Crypto-Assets", id = 20, enabled = False }
+    , { name = "Retail Banking", id = 21, enabled = False }
+    , { name = "Managing Investments", id = 22, enabled = False }
+    , { name = "Insurance Mediation", id = 23, enabled = False }
     ]
 
 
@@ -111,41 +111,64 @@ activityMenu model menuClass =
             ]
             (List.indexedMap
                 (\index activity ->
-                    label
-                        [ class "relative pl4 ma1 w-40 tl f6 pointer"
-                        , for ("activity-" ++ (toString index))
-                        , tabindex 0
-                        , onFocus (HandleOptionFocused index)
-                        , onBlur HandleOptionBlur
-                        , onMouseOver (HandleOptionHovered index)
-                        , onMouseOut (HandleOptionHovered -1)
-                        , onKeyDown
-                            model
-                        ]
-                        [ div
-                            [ class
-                                "absolute left-0 w1 h1 br-100 bg-white b--blue ba fl flex flex-column justify-center items-center mr1"
+                    let
+                        isDisabled =
+                            not activity.enabled
+
+                        labelClass =
+                            classNames
+                                [ ( "relative pl4 pt1 pb2 w-50 tl f6"
+                                  , True
+                                  )
+                                , ( "o-30"
+                                  , isDisabled
+                                  )
+                                , ( "pointer"
+                                  , not isDisabled
+                                  )
+                                ]
+
+                        tabable =
+                            if isDisabled then
+                                -1
+                            else
+                                0
+                    in
+                        label
+                            [ class labelClass
+                            , for ("activity-" ++ (toString index))
+                            , tabindex tabable
+                            , onFocus (HandleOptionFocused activity.id)
+                            , onBlur HandleOptionBlur
+                            , onMouseOver (HandleOptionHovered activity.id)
+                            , onMouseOut (HandleOptionHovered -1)
+                            , onKeyDown
+                                model
                             ]
                             [ div
                                 [ class
-                                    (classNames
-                                        [ ( "absolute w-75 h-75 bg-blue br-100", activity.id == selected ) ]
-                                    )
+                                    "absolute left-1 w1 h1 br-100 bg-white b--blue ba fl flex flex-column justify-center items-center mr1"
+                                ]
+                                [ div
+                                    [ class
+                                        (classNames
+                                            [ ( "absolute w-75 h-75 bg-blue br-100", activity.id == selected ) ]
+                                        )
+                                    ]
+                                    []
+                                ]
+                            , input
+                                [ type_ "radio"
+                                , onClick (SetSelected activity.id)
+                                , name "activity"
+                                , disabled isDisabled
+                                , tabindex -1
+                                , id ("activity-" ++ (toString index))
+                                , class "clip"
                                 ]
                                 []
+                            , div [ class "ml2" ] [ text activity.name ]
                             ]
-                        , input
-                            [ type_ "radio"
-                            , onClick (SetSelected activity.id)
-                            , name "activity"
-                            , tabindex -1
-                            , id ("activity-" ++ (toString index))
-                            , class "clip"
-                            ]
-                            []
-                        , text
-                            activity.name
-                        ]
                 )
                 options
             )
@@ -162,8 +185,8 @@ view model inputClass =
 
         menuClass =
             classNames
-                [ ( "list bg-white ttc w30rem translate-center top-150 ba b--gray shadow-1 pv1 ph2", True )
-                , ( "absolute flex flex-wrap justify-between ma1", menuOpen )
+                [ ( "list bg-white ttc w30rem translate-center top-150 ba b--gray shadow-1 pv2 ph0", True )
+                , ( "absolute flex flex-wrap justify-between", menuOpen )
                 , ( "dn", not menuOpen )
                 ]
 
@@ -176,8 +199,9 @@ view model inputClass =
         div
             [ class "relative w-30 fl", onKeyDown model ]
             [ button
-                [ onClick HandleButtonClick
-                , onBlur HandleButtonBlur
+                [ onBlur HandleButtonBlur
+                , onFocus HandleButtonFocus
+                , onKeyDown model
                 , type_ "button"
                 , type_ "button"
                 , placeholder "Choose your activity"
@@ -198,8 +222,8 @@ view model inputClass =
 
 type Msg
     = SetSelected Id
-    | HandleButtonClick
     | HandleButtonBlur
+    | HandleButtonFocus
     | HandleEscape
     | HandleOptionBlur
     | HandleOptionFocused Index
@@ -237,8 +261,8 @@ update msg model =
         HandleButtonBlur ->
             ( { model | menuOpen = False }, Cmd.none )
 
-        HandleButtonClick ->
-            ( { model | menuOpen = not model.menuOpen }, Cmd.none )
+        HandleButtonFocus ->
+            ( { model | menuOpen = True }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
