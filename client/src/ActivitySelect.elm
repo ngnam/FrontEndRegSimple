@@ -127,14 +127,20 @@ activityMenu model menuClass =
                                   , not isDisabled
                                   )
                                 ]
+
+                        tabable =
+                            if isDisabled then
+                                -1
+                            else
+                                0
                     in
                         label
                             [ class labelClass
                             , for ("activity-" ++ (toString index))
-                            , tabindex 0
-                            , onFocus (HandleOptionFocused index)
+                            , tabindex tabable
+                            , onFocus (HandleOptionFocused activity.id)
                             , onBlur HandleOptionBlur
-                            , onMouseOver (HandleOptionHovered index)
+                            , onMouseOver (HandleOptionHovered activity.id)
                             , onMouseOut (HandleOptionHovered -1)
                             , onKeyDown
                                 model
@@ -194,8 +200,9 @@ view model inputClass =
         div
             [ class "relative w-30 fl", onKeyDown model ]
             [ button
-                [ onClick HandleButtonClick
-                , onBlur HandleButtonBlur
+                [ onBlur HandleButtonBlur
+                , onFocus HandleButtonFocus
+                , onKeyDown model
                 , type_ "button"
                 , type_ "button"
                 , placeholder "Choose your activity"
@@ -216,8 +223,8 @@ view model inputClass =
 
 type Msg
     = SetSelected Id
-    | HandleButtonClick
     | HandleButtonBlur
+    | HandleButtonFocus
     | HandleEscape
     | HandleOptionBlur
     | HandleOptionFocused Index
@@ -255,8 +262,8 @@ update msg model =
         HandleButtonBlur ->
             ( { model | menuOpen = False }, Cmd.none )
 
-        HandleButtonClick ->
-            ( { model | menuOpen = not model.menuOpen }, Cmd.none )
+        HandleButtonFocus ->
+            ( { model | menuOpen = True }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
