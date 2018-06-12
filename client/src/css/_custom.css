@@ -78,3 +78,7 @@ img {
 .checkbox:checked ~ .checkbox__checkmark::after {
   display: block;
 }
+
+.disabled {
+  cursor: not-allowed;
+}

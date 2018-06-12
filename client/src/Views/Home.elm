@@ -5,6 +5,7 @@ import Html exposing (Html, text, div, form, input, button, span, a, p)
 import Html.Attributes exposing (type_, placeholder, value, class, href, tabindex)
 import Html.Events exposing (onSubmit, onInput)
 import Util exposing (viewIf)
+import ClassNames exposing (classNames)
 import CountrySelect
 import ActivitySelect
 import CategorySelect
@@ -52,6 +53,16 @@ submitButton model =
         isFormValid =
             checkFormValid model
 
+        buttonChildclass =
+            classNames
+                [ ( "flex justify-center items-center no-underline br-100 bg-blue white f5 metro bn h-100 w-100"
+                  , True
+                  )
+                , ( "ma0 disabled  o-50"
+                  , not isFormValid
+                  )
+                ]
+
         countries =
             "countries[]=" ++ toString model.countrySelect.selected
 
@@ -65,15 +76,14 @@ submitButton model =
             [ viewIf isFormValid
                 (a
                     [ href ("/#/query?" ++ queryString)
-                    , class "flex justify-center items-center no-underline br-100 bg-blue white f5 metro bn h-100 w-100"
+                    , class buttonChildclass
                     , value "submit"
                     ]
                     [ text "Go" ]
                 )
             , viewIf (not isFormValid)
-                (p
-                    [ class "flex justify-center items-center no-underline br-100 bg-dark-gray white f5 metro bn h-100 w-100 ma0"
-                    , tabindex -1
+                (span
+                    [ class buttonChildclass
                     ]
                     [ text "Go" ]
                 )
