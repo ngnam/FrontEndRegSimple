@@ -4,10 +4,14 @@ import Navigation
 import CountrySelect
 import ActivitySelect
 import CategorySelect
+import Dict exposing (Dict)
+import Http
 
 
 type alias Model =
     { location : Navigation.Location
+    , search : Dict.Dict String (List String)
+    , queryResults : String
     , email : String
     , isLoggedIn : Bool
     , countrySelect : CountrySelect.Model
@@ -24,4 +28,5 @@ type Msg
     | CountrySelectMsg CountrySelect.Msg
     | ActivitySelectMsg ActivitySelect.Msg
     | CategorySelectMsg CategorySelect.Msg
+    | QueryResults (Result Http.Error String)
     | NoOp

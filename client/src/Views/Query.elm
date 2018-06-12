@@ -6,4 +6,4 @@ import Html exposing (Html, text, div, form, input, button, span)
 
 view : Model -> Html Msg
 view model =
-    div [] [ text "Query results" ]
+    div [] [ text model.queryResults ]

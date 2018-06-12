@@ -6,6 +6,31 @@ import Views.Query
 import Views.Login
 import Views.About
 import Types exposing (..)
+import Navigation exposing (Location)
+import Util exposing (parseParams)
+
+
+parseLocation : Location -> Location
+parseLocation location =
+    { location
+        | hash =
+            String.split "?" location.hash
+                |> List.head
+                |> Maybe.withDefault ""
+        , search =
+            String.split "?" location.hash
+                |> List.drop 1
+                |> String.join "?"
+                |> String.append "?"
+    }
+
+
+onUrlChange : Location -> Model -> Model
+onUrlChange location model =
+    { model
+        | location = parseLocation location
+        , search = parseParams (.search (parseLocation location))
+    }
 
 
 matchView : Model -> Html Msg

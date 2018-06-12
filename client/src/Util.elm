@@ -1,6 +1,8 @@
-module Util exposing (boolStr, (!!), viewIf)
+module Util exposing (boolStr, (!!), viewIf, parseParams)
 
-import Html exposing (Html)
+import Html exposing (Attribute, Html)
+import Dict exposing (Dict)
+import Http
 
 
 -- (!!) is a getter for lists --
@@ -36,3 +38,40 @@ viewIf condition content =
         content
     else
         Html.text ""
+
+
+parseParams : String -> Dict String (List String)
+parseParams queryString =
+    queryString
+        |> String.dropLeft 1
+        |> String.split "&"
+        |> List.filterMap toKeyValuePair
+        |> toDict
+
+
+toDict values =
+    let
+        append v mv =
+            Just (v :: Maybe.withDefault [] mv)
+
+        foldF ( k, v ) acc =
+            Dict.update k (append v) acc
+    in
+        List.foldr foldF Dict.empty values
+
+
+removeBrackets : String -> String
+removeBrackets string =
+    String.split "[]" string
+        |> List.head
+        |> Maybe.withDefault ""
+
+
+toKeyValuePair : String -> Maybe ( String, String )
+toKeyValuePair segment =
+    case String.split "=" segment of
+        [ key, value ] ->
+            Maybe.map2 (,) (Http.decodeUri (removeBrackets key)) (Http.decodeUri value)
+
+        _ ->
+            Nothing

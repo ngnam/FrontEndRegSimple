@@ -1,5 +1,5 @@
 export default () => (req, res) => {
   const { countries, categories } = req.query;
 
-  res.json('RECEIVED');
+  res.json({ data: 'RESULTS' });
 };
