@@ -1,13 +1,23 @@
 import joi from 'joi';
 import boom from 'boom';
 
-const validate = (dataKey, schema) => async (req, res, next) => {
-  const data = req[dataKey];
+const validate = schema => async (req, res, next) => {
+  if (!schema) {
+    return next();
+  }
+
+  const dataToValidate = Object.keys(schema).reduce((accum, key) => {
+    accum[key] = req[key];
+    return accum;
+  }, {});
 
   try {
-    const sanitisedData = await joi.validate(data, schema);
+    const validatedData = await joi.validate(dataToValidate, schema);
 
-    req[dataKey] = sanitisedData;
+    req = {
+      ...req,
+      ...validatedData
+    };
 
     return next();
   } catch (err) {
