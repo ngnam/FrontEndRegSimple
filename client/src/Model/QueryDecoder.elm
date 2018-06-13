@@ -5,6 +5,7 @@ import Types exposing (..)
 import Json.Decode as Json
 
 
+fetchQueryResults : Model -> String -> Http.Request String
 fetchQueryResults model apiUrl =
     Http.request
         { method = "GET"

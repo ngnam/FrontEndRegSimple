@@ -3,11 +3,12 @@ module Update exposing (..)
 import Types exposing (..)
 import LoginDecoder exposing (requestLoginCodeCmd)
 import QueryDecoder exposing (fetchQueryResultsCmd)
+import ComponentDataDecoder exposing (fetchComponentDataCmd)
 import CountrySelect
-import ActivitySelect
+import ActivitySelect exposing (emptyActivity)
 import CategorySelect
-import Http
 import Router exposing (onUrlChange)
+import Helpers.ComponentData exposing (getActivities, getCategories)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -22,6 +23,9 @@ update msg model =
                     case newModel.location.hash of
                         "#/query" ->
                             fetchQueryResultsCmd newModel
+
+                        "#/" ->
+                            fetchComponentDataCmd newModel
 
                         _ ->
                             Cmd.none
@@ -45,8 +49,22 @@ update msg model =
             let
                 ( updatedActivitySelectModel, activitySelectCmd ) =
                     ActivitySelect.update subMsg model.activitySelect
+
+                selectedActivity =
+                    Maybe.withDefault emptyActivity updatedActivitySelectModel.selectedActivity
+
+                { categorySelect, componentData } =
+                    model
+
+                newCategoryModel =
+                    { categorySelect | options = getCategories componentData selectedActivity.id }
             in
-                ( { model | activitySelect = updatedActivitySelectModel }, Cmd.map ActivitySelectMsg activitySelectCmd )
+                ( { model
+                    | activitySelect = updatedActivitySelectModel
+                    , categorySelect = newCategoryModel
+                  }
+                , Cmd.map ActivitySelectMsg activitySelectCmd
+                )
 
         CategorySelectMsg subMsg ->
             let
@@ -59,6 +77,31 @@ update msg model =
             ( { model | queryResults = results }, Cmd.none )
 
         QueryResults (Err _) ->
+            ( model, Cmd.none )
+
+        ComponentData (Ok results) ->
+            let
+                { activitySelect, categorySelect } =
+                    model
+
+                newActivityModel =
+                    { activitySelect | options = getActivities results }
+
+                selectedActivity =
+                    Maybe.withDefault ActivitySelect.emptyActivity activitySelect.selectedActivity
+
+                newCategoryModel =
+                    { categorySelect | options = getCategories results selectedActivity.id }
+            in
+                ( { model
+                    | componentData = results
+                    , activitySelect = newActivityModel
+                    , categorySelect = newCategoryModel
+                  }
+                , Cmd.none
+                )
+
+        ComponentData (Err _) ->
             ( model, Cmd.none )
 
         _ ->

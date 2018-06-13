@@ -43,7 +43,7 @@ queryForm model =
         form [ onSubmit SubmitLoginEmailForm ]
             [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
             , divider
-            , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect inputClass options)
+            , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect options)
             , divider
             , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options)
             , submitButton model
@@ -53,11 +53,6 @@ queryForm model =
 divider : Html msg
 divider =
     div [ class "w-05 fl h2 flex justify-center" ] [ div [ class "br b--light-gray w0 h2 mh0" ] [] ]
-
-
-inputClass : String
-inputClass =
-    "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue"
 
 
 checkFormValid : Model -> Bool

@@ -1,4 +1,4 @@
-module CategorySelect exposing (Model, Msg, initialModel, update, view)
+module CategorySelect exposing (Model, Msg, Category, emptyCategory, initialModel, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -29,7 +29,7 @@ initialModel =
     , menuOpen = False
     , buttonFocused = False
     , selected = []
-    , options = categories
+    , options = []
     }
 
 
@@ -44,22 +44,6 @@ type alias Category =
 emptyCategory : Category
 emptyCategory =
     { name = "", id = "", enabled = False }
-
-
-categories : List Category
-categories =
-    [ { id = "aml-authority", name = "Authority’s Enforcement, Remedial Measures & Penalties", enabled = True }
-    , { id = "aml-cdd", name = "CDD, ID & Verification", enabled = True }
-    , { id = "aml-disclosure", name = "Disclosure, Reporting (including STR)", enabled = True }
-    , { id = "aml-edd", name = "EDD High Risk Customers", enabled = True }
-    , { id = "aml-intermediary", name = "Intermediary-led Enforcement Measures", enabled = True }
-    , { id = "aml-laundering", name = "Money Laundering & Associated Offences", enabled = True }
-    , { id = "aml-powers", name = "Authorities: Scope, Powers & Obligations", enabled = True }
-    , { id = "aml-recording", name = "Record Keeping", enabled = False }
-    , { id = "aml-regulated", name = "Regulated Entities & Activities", enabled = False }
-    , { id = "aml-terrorism", name = "Terrorism Financing", enabled = True }
-    , { id = "aml-training", name = "Training, Responsible Persons / Departments", enabled = True }
-    ]
 
 
 onKeyDown : Model -> Attribute Msg
@@ -86,7 +70,7 @@ onKeyDown model =
 view : Model -> Options -> Html Msg
 view model options =
     let
-        { selected, menuOpen, focused } =
+        { selected, menuOpen, focused, options } =
             model
 
         menuClass =
@@ -101,7 +85,10 @@ view model options =
             List.length selected
 
         atLeastOneSelected =
-            List.length selected > 0
+            numberSelected > 0
+
+        atLeastOneOption =
+            List.length options > 0
 
         buttonClass =
             classNames
@@ -138,73 +125,86 @@ view model options =
                 ]
                 [ text buttonText ]
             , div [ class inputUnderlineClass ] []
-            , div
-                [ id "category-list"
-                , class menuClass
-                , ariaExpanded (String.toLower (toString menuOpen))
-                , ariaHidden (not menuOpen)
-                , onFocus HandleMenuFocus
-                , onBlur HandleMenuBlur
-                , tabindex -1
-                ]
-                (List.indexedMap
-                    (\index category ->
-                        let
-                            isDisabled =
-                                not category.enabled
+            , viewIf (not atLeastOneOption)
+                (div
+                    [ class menuClass
+                    , ariaExpanded (String.toLower (toString menuOpen))
+                    , ariaHidden (not menuOpen)
+                    , onFocus HandleMenuFocus
+                    , onBlur HandleMenuBlur
+                    , tabindex -1
+                    ]
+                    [ div [ class "ph4 pv2 f6" ] [ text "Please select an Activity" ] ]
+                )
+            , viewIf (atLeastOneOption)
+                (div
+                    [ id "category-list"
+                    , class menuClass
+                    , ariaExpanded (String.toLower (toString menuOpen))
+                    , ariaHidden (not menuOpen)
+                    , onFocus HandleMenuFocus
+                    , onBlur HandleMenuBlur
+                    , tabindex -1
+                    ]
+                    (List.indexedMap
+                        (\index category ->
+                            let
+                                isDisabled =
+                                    not category.enabled
 
-                            isFocused =
-                                focused == index
+                                isFocused =
+                                    focused == index
 
-                            isSelected =
-                                List.member category selected
+                                isSelected =
+                                    List.member category selected
 
-                            checkboxClass =
-                                "absolute checkbox o-0"
+                                checkboxClass =
+                                    "absolute checkbox o-0"
 
-                            checkmarkClass =
-                                classNames
-                                    [ ( "checkbox__checkmark absolute w1 h1 bg-white ba bw1 b--blue br1 left-1", True )
-                                    , ( "bg-blue", isSelected )
+                                checkmarkClass =
+                                    classNames
+                                        [ ( "checkbox__checkmark absolute w1 h1 bg-white ba bw1 b--blue br1 left-1", True )
+                                        , ( "bg-blue", isSelected )
+                                        ]
+
+                                labelClass =
+                                    classNames
+                                        [ ( "relative db fl w-50 pt1 pb2 pl4 pr2 pointer outline-0 f6", True )
+                                        , ( "o-30", isDisabled )
+                                        ]
+
+                                optionBgClass =
+                                    classNames
+                                        [ ( "absolute absolute--fill", True )
+                                        , ( "bg-blue o-20", isFocused )
+                                        ]
+                            in
+                                label
+                                    [ class labelClass
+                                    , for ("category-" ++ (toString index))
+                                    , onFocus HandleLabelFocus
+                                    , onBlur HandleLabelBlur
+                                    , tabindex -1
                                     ]
-
-                            labelClass =
-                                classNames
-                                    [ ( "relative db fl w-50 pt1 pb2 pl4 pr2 pointer outline-0 f6", True )
-                                    , ( "o-30", isDisabled )
+                                    [ input
+                                        [ type_ "checkbox"
+                                        , onClick (HandleCheckboxClick category)
+                                        , checked isSelected
+                                        , disabled isDisabled
+                                        , onFocus (HandleCheckboxFocus index)
+                                        , onBlur HandleCheckboxBlur
+                                        , name "category"
+                                        , id ("category-" ++ (toString index))
+                                        , class checkboxClass
+                                        ]
+                                        []
+                                    , span [ class checkmarkClass ] []
+                                    , div [ class "ml2" ] [ text category.name ]
+                                    , div [ class optionBgClass ] []
                                     ]
-
-                            optionBgClass =
-                                classNames
-                                    [ ( "absolute absolute--fill", True )
-                                    , ( "bg-blue o-20", isFocused )
-                                    ]
-                        in
-                            label
-                                [ class labelClass
-                                , for ("category-" ++ (toString index))
-                                , onFocus HandleLabelFocus
-                                , onBlur HandleLabelBlur
-                                , tabindex -1
-                                ]
-                                [ input
-                                    [ type_ "checkbox"
-                                    , onClick (HandleCheckboxClick category)
-                                    , checked isSelected
-                                    , disabled isDisabled
-                                    , onFocus (HandleCheckboxFocus index)
-                                    , onBlur HandleCheckboxBlur
-                                    , name "category"
-                                    , id ("category-" ++ (toString index))
-                                    , class checkboxClass
-                                    ]
-                                    []
-                                , span [ class checkmarkClass ] []
-                                , div [ class "ml2" ] [ text category.name ]
-                                , div [ class optionBgClass ] []
-                                ]
+                        )
+                        model.options
                     )
-                    model.options
                 )
             ]
 
@@ -331,14 +331,14 @@ update msg model =
 
         HandleEnter ->
             let
-                { focused } =
+                { focused, options } =
                     model
 
                 shouldToggle =
                     focused > -1
 
                 category =
-                    Maybe.withDefault emptyCategory (focused !! categories)
+                    Maybe.withDefault emptyCategory (focused !! options)
             in
                 if shouldToggle then
                     ( toggleCategorySelected category model, Cmd.none )

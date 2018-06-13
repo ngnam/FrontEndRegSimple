@@ -12,13 +12,18 @@ import Util exposing (..)
 -- MODEL --
 
 
+type alias Index =
+    Int
+
+
 type alias Model =
-    { focused : Int
-    , hovered : Int
+    { focused : Index
+    , hovered : Index
     , menuOpen : Bool
-    , selected : Int
+    , selected : Index
     , query : String
     , options : List Country
+    , selectedCountry : Maybe Country
     }
 
 
@@ -27,9 +32,10 @@ initialModel =
     { focused = -1
     , hovered = -1
     , menuOpen = False
-    , selected = -1
     , query = ""
     , options = []
+    , selected = -1
+    , selectedCountry = Nothing
     }
 
 
@@ -203,9 +209,9 @@ type Msg
     = SetQuery String
     | HandleUpArrow
     | HandleDownArrow
-    | HandleOptionClick Int
-    | HandleOptionMouseEnter Int
-    | HandleOptionMouseOut Int
+    | HandleOptionClick Index
+    | HandleOptionMouseEnter Index
+    | HandleOptionMouseOut Index
     | HandleInputBlur
     | HandleEnter
     | HandleEscape
@@ -218,7 +224,7 @@ templateInputValue option =
     option.name
 
 
-newQuery : Int -> Model -> String
+newQuery : Index -> Model -> String
 newQuery index model =
     let
         { options } =
@@ -238,19 +244,24 @@ newQuery index model =
         newQuery
 
 
-handleOptionMouseEnter : Int -> Model -> Model
+handleOptionMouseEnter : Index -> Model -> Model
 handleOptionMouseEnter index model =
     { model | hovered = index }
 
 
-handleOptionMouseOut : Int -> Model -> Model
+handleOptionMouseOut : Index -> Model -> Model
 handleOptionMouseOut index model =
     { model | hovered = -1 }
 
 
-handleOptionFocus : Int -> Model -> Model
+handleOptionFocus : Index -> Model -> Model
 handleOptionFocus index model =
-    { model | focused = index, hovered = -1, selected = index }
+    { model
+        | focused = index
+        , hovered = -1
+        , selected = index
+        , selectedCountry = index !! countries
+    }
 
 
 handleInputBlur : Model -> Model
@@ -275,16 +286,18 @@ handleInputBlur model =
                 , menuOpen = False
                 , query = newQuery hovered model
                 , selected = hovered
+                , selectedCountry = hovered !! countries
             }
 
 
-handleOptionClick : Int -> Model -> Model
+handleOptionClick : Index -> Model -> Model
 handleOptionClick index model =
     { model
         | focused = -1
         , menuOpen = False
         , query = newQuery index model
         , selected = index
+        , selectedCountry = index !! countries
     }
 
 
@@ -328,6 +341,7 @@ update msg model =
                     , menuOpen = menuOpen
                     , options = options
                     , selected = -1
+                    , selectedCountry = Nothing
                   }
                 , Cmd.none
                 )

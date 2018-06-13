@@ -14,6 +14,7 @@ init location =
     ( { location = parseLocation location
       , search = Dict.empty
       , queryResults = "NONE"
+      , componentData = { id = "", enabled = False, name = "", children = ComponentDataChildren [] }
       , email = ""
       , isLoggedIn = False
       , countrySelect = CountrySelect.initialModel
@@ -24,6 +25,7 @@ init location =
     )
 
 
+redirectIfRoot : Navigation.Location -> Cmd msg
 redirectIfRoot { pathname } =
     if pathname == "/" then
         Navigation.modifyUrl "/#/"
