@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="62px" height="61px" viewBox="0 0 62 61" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>logo_icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon" fill-rule="nonzero">
+            <polygon id="Shape" fill="#7AAF27" points="38.3923077 19.3948718 32.5102564 25.1179487 32.5102564 31.3974359 56.5948718 42.6051282 62 38.3128205 62 29.8076923"></polygon>
+            <polygon id="Shape" fill="#96D107" points="62 0.158974359 32.5102564 15.6589744 32.5102564 31.3179487 32.5102564 31.3974359 62 15.8974359"></polygon>
+            <polygon id="Shape" fill="#96D107" points="62 29.8076923 32.5102564 45.3871795 32.5102564 61.0461538 32.5102564 61.0461538 62 45.5461538"></polygon>
+            <polygon id="Shape" fill="#0071BC" points="23.6871795 19.3948718 29.6487179 25.1179487 29.6487179 31.3974359 5.48461538 42.6051282 0.158974359 38.3128205 0.158974359 29.8076923"></polygon>
+            <polygon id="Shape" fill="#29ABE2" points="0.158974359 0.158974359 29.6487179 15.6589744 29.6487179 31.3179487 29.6487179 31.3974359 0.158974359 15.8974359"></polygon>
+            <polygon id="Shape" fill="#29ABE2" points="0.158974359 29.8076923 29.6487179 45.3871795 29.6487179 61.0461538 29.6487179 61.0461538 0.158974359 45.5461538"></polygon>
+        </g>
+    </g>
+</svg>
