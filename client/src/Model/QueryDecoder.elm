@@ -22,5 +22,6 @@ fetchTaskCmd msgConstructor model apiUrl =
     Http.send msgConstructor (fetchQueryResults model apiUrl)
 
 
+fetchQueryResultsCmd : Model -> Cmd Msg
 fetchQueryResultsCmd model =
     fetchTaskCmd QueryResults model "http://localhost:4000/query"
