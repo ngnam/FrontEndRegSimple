@@ -52,6 +52,7 @@
 @import 'tachyons-custom/src/_hovers';
 @import 'tachyons-custom/src/_z-index';
 
+@import './_reset';
 /* customisable tachyons variables (and any others that you declare) */
 @import './_variables';
 
