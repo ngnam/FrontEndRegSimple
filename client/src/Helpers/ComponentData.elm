@@ -1,8 +1,9 @@
-module Helpers.ComponentData exposing (getActivities, getCategories)
+module Helpers.ComponentData exposing (getActivities, getCategories, getCountries)
 
 import Types exposing (..)
 import ActivitySelect exposing (Activity, ActivityId)
 import CategorySelect exposing (Category, emptyCategory)
+import CountrySelect exposing (Country)
 
 
 removeChildren : List ComponentDataItem -> List Taxonomy
@@ -42,3 +43,14 @@ getCategories taxonomy activityId =
             }
         |> getFirstLevelChildren
         |> removeChildren
+
+
+getCountries : List ( String, List String ) -> List Country
+getCountries countryList =
+    countryList
+        |> List.map
+            (\( id, names ) ->
+                { id = id
+                , name = Maybe.withDefault "" (List.head names)
+                }
+            )

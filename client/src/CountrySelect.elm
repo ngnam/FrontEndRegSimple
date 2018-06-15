@@ -1,4 +1,4 @@
-module CountrySelect exposing (Model, Msg, initialModel, update, view)
+module CountrySelect exposing (Model, Msg, initialModel, update, view, Country, emptyCountry)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -24,6 +24,7 @@ type alias Model =
     , query : String
     , options : List Country
     , selectedCountry : Maybe Country
+    , countries : List Country
     }
 
 
@@ -36,6 +37,7 @@ initialModel =
     , options = []
     , selected = -1
     , selectedCountry = Nothing
+    , countries = []
     }
 
 
@@ -43,20 +45,13 @@ type alias Country =
     { name : String, id : String }
 
 
-countries : List Country
-countries =
-    [ { name = "United Kingdom", id = "gb" }
-    , { name = "France", id = "fr" }
-    ]
-
-
 emptyCountry : Country
 emptyCountry =
     { name = "", id = "" }
 
 
-source : String -> List Country
-source query =
+source : List Country -> String -> List Country
+source countries query =
     List.filter (\c -> String.contains (String.toLower query) (String.toLower c.name)) countries
 
 
@@ -102,7 +97,7 @@ onKeyDown model =
 view : Model -> Html Msg
 view model =
     let
-        { menuOpen, focused, hovered, selected } =
+        { menuOpen, focused, hovered, selected, countries, selectedCountry } =
             model
 
         optionFocused =
@@ -121,7 +116,7 @@ view model =
                 ]
 
         flagClass code =
-            "br-100 mr2 w1 h1 flag-icon flag-icon-squared flag-icon-" ++ code
+            "br-100 mr2 w1 h1 flag-icon flag-icon-squared flag-icon-" ++ String.toLower code
 
         inputUnderlineClass menuOpen =
             classNames
@@ -141,11 +136,8 @@ view model =
         showInputFlag =
             selected /= -1 && not menuOpen
 
-        selectedCountry =
-            Maybe.withDefault emptyCountry (selected !! countries)
-
         selectedCountryCode =
-            selectedCountry.id
+            .id (Maybe.withDefault emptyCountry selectedCountry)
 
         inputClass =
             classNames
@@ -260,7 +252,7 @@ handleOptionFocus index model =
         | focused = index
         , hovered = -1
         , selected = index
-        , selectedCountry = index !! countries
+        , selectedCountry = index !! model.options
     }
 
 
@@ -286,7 +278,7 @@ handleInputBlur model =
                 , menuOpen = False
                 , query = newQuery hovered model
                 , selected = hovered
-                , selectedCountry = hovered !! countries
+                , selectedCountry = hovered !! options
             }
 
 
@@ -297,7 +289,7 @@ handleOptionClick index model =
         , menuOpen = False
         , query = newQuery index model
         , selected = index
-        , selectedCountry = index !! countries
+        , selectedCountry = index !! model.options
     }
 
 
@@ -331,7 +323,7 @@ update msg model =
                     queryChanged && not queryEmpty
 
                 options =
-                    source query
+                    source model.countries query
 
                 menuOpen =
                     searchForOptions && optionsAvailable options

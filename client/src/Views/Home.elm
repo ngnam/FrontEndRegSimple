@@ -6,7 +6,7 @@ import Html.Attributes exposing (type_, placeholder, value, class, href, tabinde
 import Html.Events exposing (onSubmit, onInput)
 import Util exposing (viewIf)
 import ClassNames exposing (classNames)
-import CountrySelect
+import CountrySelect exposing (emptyCountry)
 import ActivitySelect
 import CategorySelect
 
@@ -77,7 +77,8 @@ submitButton model =
                 ]
 
         countries =
-            "countries[]=" ++ toString model.countrySelect.selected
+            "countries[]="
+                ++ .id (Maybe.withDefault emptyCountry model.countrySelect.selectedCountry)
 
         categories =
             List.foldr (\category accum -> accum ++ "&categories[]=" ++ category.id) "" model.categorySelect.selected

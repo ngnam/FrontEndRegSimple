@@ -8,7 +8,7 @@ import CountrySelect
 import ActivitySelect exposing (emptyActivity)
 import CategorySelect
 import Router exposing (onUrlChange)
-import Helpers.ComponentData exposing (getActivities, getCategories)
+import Helpers.ComponentData exposing (getActivities, getCategories, getCountries)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -81,22 +81,27 @@ update msg model =
 
         ComponentData (Ok results) ->
             let
-                { activitySelect, categorySelect } =
+                { activitySelect, categorySelect, countrySelect } =
                     model
 
                 newActivityModel =
-                    { activitySelect | options = getActivities results }
+                    { activitySelect | options = getActivities results.taxonomy }
 
                 selectedActivity =
                     Maybe.withDefault ActivitySelect.emptyActivity activitySelect.selectedActivity
 
                 newCategoryModel =
-                    { categorySelect | options = getCategories results selectedActivity.id }
+                    { categorySelect | options = getCategories results.taxonomy selectedActivity.id }
+
+                newCountryModel =
+                    { countrySelect | countries = getCountries results.countries }
             in
                 ( { model
-                    | componentData = results
+                    | componentData = results.taxonomy
+                    , countries = results.countries
                     , activitySelect = newActivityModel
                     , categorySelect = newCategoryModel
+                    , countrySelect = newCountryModel
                   }
                 , Cmd.none
                 )

@@ -27,11 +27,18 @@ type ComponentDataChildren
     = ComponentDataChildren (List ComponentDataItem)
 
 
+type alias Data =
+    { taxonomy : ComponentDataItem
+    , countries : List ( String, List String )
+    }
+
+
 type alias Model =
     { location : Navigation.Location
     , search : Dict.Dict String (List String)
     , queryResults : String
     , componentData : ComponentDataItem
+    , countries : List ( String, List String )
     , email : String
     , isLoggedIn : Bool
     , countrySelect : CountrySelect.Model
@@ -49,5 +56,5 @@ type Msg
     | ActivitySelectMsg ActivitySelect.Msg
     | CategorySelectMsg CategorySelect.Msg
     | QueryResults (Result Http.Error String)
-    | ComponentData (Result Http.Error ComponentDataItem)
+    | ComponentData (Result Http.Error Data)
     | NoOp
