@@ -5,11 +5,6 @@ import Html.Attributes exposing (class, src, href)
 import Types exposing (..)
 
 
-inputClass : String
-inputClass =
-    "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue"
-
-
 categoriesMenu : Model -> Html msg
 categoriesMenu model =
     ul [ class "list flex flex-column" ]

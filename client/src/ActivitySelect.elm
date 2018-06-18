@@ -24,7 +24,7 @@ type alias Activity =
     { name : String, id : ActivityId, enabled : Bool }
 
 
-type alias Options =
+type alias Config =
     { inputAlignment : String }
 
 
@@ -84,7 +84,7 @@ activityMenu model menuClass =
         div
             [ id "activity-list"
             , class menuClass
-            , ariaExpanded (String.toLower (toString menuOpen))
+            , ariaExpanded (boolStr menuOpen)
             , ariaHidden (not menuOpen)
             , onFocus HandleMenuFocus
             , onBlur HandleMenuBlur
@@ -154,7 +154,7 @@ activityMenu model menuClass =
             )
 
 
-view : Model -> Options -> Html Msg
+view : Model -> Config -> Html Msg
 view model { inputAlignment } =
     let
         { selected, selectedActivity, menuOpen } =
@@ -175,8 +175,7 @@ view model { inputAlignment } =
                 ]
 
         buttonClass =
-            "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue"
-                ++ " tl truncate bg-white "
+            "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue tl truncate bg-white "
                 ++ classNames
                     [ ( "bg-blue white", menuOpen )
                     , ( "black-60", selected == -1 )

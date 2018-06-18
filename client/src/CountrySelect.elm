@@ -171,24 +171,25 @@ view model =
                 )
             , div [ class (inputUnderlineClass menuOpen) ] []
             , ul [ class menuClass, role "listbox" ]
-                (List.indexedMap
-                    (\index country ->
-                        li
-                            [ onClick (HandleOptionClick index)
-                            , onMouseEnter (HandleOptionMouseEnter index)
-                            , onMouseOut (HandleOptionMouseOut index)
-                            , value model.query
-                            , class optionClass
-                            , tabindex -1
-                            , role "option"
-                            , ariaSelected (boolStr (focused == index))
-                            ]
-                            [ div [ class (optionBgClass (focused == index || hovered == index)) ] []
-                            , div [ class (flagClass country.id) ] []
-                            , text country.name
-                            ]
-                    )
-                    model.options
+                (model.options
+                    |> List.take 8
+                    |> List.indexedMap
+                        (\index country ->
+                            li
+                                [ onClick (HandleOptionClick index)
+                                , onMouseEnter (HandleOptionMouseEnter index)
+                                , onMouseOut (HandleOptionMouseOut index)
+                                , value model.query
+                                , class optionClass
+                                , tabindex -1
+                                , role "option"
+                                , ariaSelected (boolStr (focused == index))
+                                ]
+                                [ div [ class (optionBgClass (focused == index || hovered == index)) ] []
+                                , div [ class (flagClass country.id) ] []
+                                , text country.name
+                                ]
+                        )
                 )
             ]
 

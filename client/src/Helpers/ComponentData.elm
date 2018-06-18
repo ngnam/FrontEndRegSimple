@@ -54,3 +54,4 @@ getCountries countryList =
                 , name = Maybe.withDefault "" (List.head names)
                 }
             )
+        |> List.sortBy .name
