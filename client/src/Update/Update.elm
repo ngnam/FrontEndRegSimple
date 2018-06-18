@@ -1,14 +1,14 @@
 module Update exposing (..)
 
-import Types exposing (..)
+import Model exposing (Model, Msg(..))
 import LoginDecoder exposing (requestLoginCodeCmd)
-import QueryDecoder exposing (fetchQueryResultsCmd)
-import ComponentDataDecoder exposing (fetchComponentDataCmd)
+import QueryDecoder
+import HomeDataDecoder
 import CountrySelect
 import ActivitySelect exposing (emptyActivity)
 import CategorySelect
-import Router exposing (onUrlChange)
-import Helpers.ComponentData exposing (getActivities, getCategories, getCountries)
+import Helpers.Routing exposing (onUrlChange)
+import Helpers.HomeData exposing (getActivities, getCategories, getCountries)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -22,10 +22,10 @@ update msg model =
                 cmd =
                     case newModel.location.hash of
                         "#/query" ->
-                            fetchQueryResultsCmd newModel
+                            QueryDecoder.requestCmd newModel
 
                         "#/" ->
-                            fetchComponentDataCmd newModel
+                            HomeDataDecoder.requestCmd newModel
 
                         _ ->
                             Cmd.none
@@ -53,11 +53,11 @@ update msg model =
                 selectedActivity =
                     Maybe.withDefault emptyActivity updatedActivitySelectModel.selectedActivity
 
-                { categorySelect, componentData } =
+                { categorySelect, homeData } =
                     model
 
                 newCategoryModel =
-                    { categorySelect | options = getCategories componentData selectedActivity.id }
+                    { categorySelect | options = getCategories homeData selectedActivity.id }
             in
                 ( { model
                     | activitySelect = updatedActivitySelectModel
@@ -73,13 +73,13 @@ update msg model =
             in
                 ( { model | categorySelect = updatedCategorySelectModel }, Cmd.map CategorySelectMsg categorySelectCmd )
 
-        QueryResults (Ok results) ->
+        FetchQueryResults (Ok results) ->
             ( { model | queryResults = results }, Cmd.none )
 
-        QueryResults (Err _) ->
+        FetchQueryResults (Err _) ->
             ( model, Cmd.none )
 
-        ComponentData (Ok results) ->
+        HomeData (Ok results) ->
             let
                 { activitySelect, categorySelect, countrySelect } =
                     model
@@ -97,7 +97,7 @@ update msg model =
                     { countrySelect | countries = getCountries results.countries }
             in
                 ( { model
-                    | componentData = results.taxonomy
+                    | homeData = results.taxonomy
                     , countries = results.countries
                     , activitySelect = newActivityModel
                     , categorySelect = newCategoryModel
@@ -106,7 +106,7 @@ update msg model =
                 , Cmd.none
                 )
 
-        ComponentData (Err _) ->
+        HomeData (Err _) ->
             ( model, Cmd.none )
 
         _ ->

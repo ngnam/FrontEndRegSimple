@@ -1,6 +1,6 @@
 module Views.Login exposing (..)
 
-import Types exposing (..)
+import Model exposing (Model, Msg(..))
 import Html exposing (Html, button, input, form, text, div, h1, img)
 import Html.Attributes exposing (type_, placeholder, value)
 import Html.Events exposing (onSubmit, onInput)

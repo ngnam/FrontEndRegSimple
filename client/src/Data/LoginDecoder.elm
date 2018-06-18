@@ -1,7 +1,7 @@
 module LoginDecoder exposing (requestLoginCodeCmd)
 
 import Http
-import Types exposing (..)
+import Model exposing (Model, Msg(..))
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode exposing (..)
 

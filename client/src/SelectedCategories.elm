@@ -2,7 +2,7 @@ module SelectedCategories exposing (..)
 
 import Html exposing (Html, section, div, a, button, img, text, ul, li, p)
 import Html.Attributes exposing (class, src, href)
-import Types exposing (..)
+import Model exposing (Model, Msg)
 
 
 categoriesMenu : Model -> Html msg

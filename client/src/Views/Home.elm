@@ -1,6 +1,6 @@
 module Views.Home exposing (..)
 
-import Types exposing (..)
+import Model exposing (Model, Msg(..))
 import Html exposing (Html, text, div, section, form, img, input, h1, button, span, a, p)
 import Html.Attributes exposing (type_, placeholder, value, src, class, href, tabindex)
 import Html.Events exposing (onSubmit, onInput)
@@ -13,11 +13,11 @@ import CategorySelect
 
 view : Model -> Html Msg
 view model =
-    div [ class "vh-75" ]
-        [ section [ class "mb3 flex justify-center" ]
-            [ div [ class "flex justify-center flex-column w-30" ]
+    div [ class "mb5" ]
+        [ section [ class "mb4 flex justify-center" ]
+            [ div [ class "flex justify-center flex-column w-25" ]
                 [ img [ class "w-100 mb2", src "/assets/logos/logo_icon+text_new.png" ] []
-                , h1 [ class "metro-i" ] [ text "Regulation. Simplified." ]
+                , h1 [ class "mb2 metro-i" ] [ text "Regulation. Simplified." ]
                 ]
             ]
         , section

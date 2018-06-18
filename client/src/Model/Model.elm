@@ -1,24 +1,58 @@
-module Model exposing (..)
+module Model exposing (Msg(..), Model, Flags, init)
 
 import Navigation
-import Types exposing (..)
 import CountrySelect
 import ActivitySelect
 import CategorySelect
-import Router exposing (parseLocation)
+import Helpers.Routing exposing (parseLocation)
 import Dict
+import DataTypes exposing (QueryResults, Taxonomy, HomeDataResults, HomeDataChildren(..))
+import Http
+
+
+type Msg
+    = UrlChange Navigation.Location
+    | SubmitLoginEmailForm
+    | LoginEmailFormOnInput String
+    | RequestLoginCodeCompleted
+    | CountrySelectMsg CountrySelect.Msg
+    | ActivitySelectMsg ActivitySelect.Msg
+    | CategorySelectMsg CategorySelect.Msg
+    | FetchQueryResults (Result Http.Error QueryResults)
+    | HomeData (Result Http.Error HomeDataResults)
+    | NoOp
 
 
 type alias Flags =
     { apiBaseUrl : String }
 
 
+type alias Model =
+    { location : Navigation.Location
+    , search : Dict.Dict String (List String)
+    , queryResults : QueryResults
+    , homeData : Taxonomy
+    , countries : List ( String, List String )
+    , email : String
+    , isLoggedIn : Bool
+    , countrySelect : CountrySelect.Model
+    , activitySelect : ActivitySelect.Model
+    , categorySelect : CategorySelect.Model
+    , config : { apiBaseUrl : String }
+    }
+
+
 init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
 init flags location =
     ( { location = parseLocation location
       , search = Dict.empty
-      , queryResults = "NONE"
-      , componentData = { id = "", enabled = False, name = "", children = ComponentDataChildren [] }
+      , queryResults = { data = "NONE" }
+      , homeData =
+            { id = ""
+            , enabled = False
+            , name = ""
+            , children = HomeDataChildren []
+            }
       , countries = []
       , email = ""
       , isLoggedIn = False
