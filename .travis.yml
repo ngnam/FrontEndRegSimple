@@ -12,8 +12,6 @@ cache:
   - "$TRAVIS_BUILD_DIR/tests/elm-stuff/build-artifacts"
 notifications:
   email: false
-env:
-- ELM_APP_API_BASE_URL=http://localhost:4000
 install:
 - npm i create-elm-app -g
 - npm i
