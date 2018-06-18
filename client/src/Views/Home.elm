@@ -1,8 +1,8 @@
 module Views.Home exposing (..)
 
 import Types exposing (..)
-import Html exposing (Html, text, div, section, form, input, h1, button, span, a, p)
-import Html.Attributes exposing (type_, placeholder, value, class, href, tabindex)
+import Html exposing (Html, text, div, section, form, img, input, h1, button, span, a, p)
+import Html.Attributes exposing (type_, placeholder, value, src, class, href, tabindex)
 import Html.Events exposing (onSubmit, onInput)
 import Util exposing (viewIf)
 import ClassNames exposing (classNames)
@@ -13,11 +13,19 @@ import CategorySelect
 
 view : Model -> Html Msg
 view model =
-    section []
-        [ h1 [] [ text "RegSimple" ]
-        , div [ class "flex justify-center" ]
-            [ div [ class "relative w-60 bg-white pa3 br-pill ba b--light-gray" ]
-                [ div [ class "pr3" ] [ queryForm model ]
+    div [ class "vh-75" ]
+        [ section [ class "mb3 flex justify-center" ]
+            [ div [ class "flex justify-center flex-column w-30" ]
+                [ img [ class "w-100 mb2", src "/assets/logos/logo_icon+text_new.png" ] []
+                , h1 [ class "metro-i" ] [ text "Regulation. Simplified." ]
+                ]
+            ]
+        , section
+            []
+            [ div [ class "flex justify-center" ]
+                [ div [ class "relative w-60 bg-white pa3 br-pill ba b--light-gray" ]
+                    [ div [ class "pr3" ] [ queryForm model ]
+                    ]
                 ]
             ]
         ]
