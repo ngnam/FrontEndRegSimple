@@ -24,6 +24,10 @@ type alias Activity =
     { name : String, id : Int, enabled : Bool }
 
 
+type alias Options =
+    { inputAlignment : String }
+
+
 type alias Model =
     { menuOpen : Bool
     , hovered : Index
@@ -174,8 +178,8 @@ activityMenu model menuClass =
             )
 
 
-view : Model -> String -> Html Msg
-view model inputClass =
+view : Model -> String -> Options -> Html Msg
+view model inputClass { inputAlignment } =
     let
         selectedActivity =
             Maybe.withDefault emptyActivity ((model.selected - 1) !! model.options)
@@ -185,9 +189,16 @@ view model inputClass =
 
         menuClass =
             classNames
-                [ ( "list bg-white ttc w30rem translate-center top-150 ba b--gray shadow-1 pv2 ph0", True )
+                [ ( "list bg-white ttc w30rem top-150 ba b--gray shadow-1 pv2 ph0", True )
                 , ( "absolute flex flex-wrap justify-between", menuOpen )
                 , ( "dn", not menuOpen )
+                , ( "translate-center", inputAlignment /= "left" )
+                ]
+
+        wrapperClass =
+            classNames
+                [ ( "relative w-30 fl", True )
+                , ( "mr2", inputAlignment == "left" )
                 ]
 
         buttonClass =
@@ -197,7 +208,7 @@ view model inputClass =
             "absolute top-125 w-100 ba b--blue"
     in
         div
-            [ class "relative w-30 fl", onKeyDown model ]
+            [ class wrapperClass, onKeyDown model ]
             [ button
                 [ onBlur HandleButtonBlur
                 , onFocus HandleButtonFocus

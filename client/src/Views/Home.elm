@@ -1,7 +1,7 @@
 module Views.Home exposing (..)
 
 import Types exposing (..)
-import Html exposing (Html, text, div, form, input, button, span, a, p)
+import Html exposing (Html, text, div, section, form, input, h1, button, span, a, p)
 import Html.Attributes exposing (type_, placeholder, value, class, href, tabindex)
 import Html.Events exposing (onSubmit, onInput)
 import Util exposing (viewIf)
@@ -13,23 +13,41 @@ import CategorySelect
 
 view : Model -> Html Msg
 view model =
-    div [ class "flex justify-center" ]
-        [ div [ class "relative w-60 bg-white pa3 br-pill ba b--light-gray" ]
-            [ div [ class "pr3" ] [ queryForm model ]
+    section []
+        [ h1 [] [ text "RegSimple" ]
+        , div [ class "flex justify-center" ]
+            [ div [ class "relative w-60 bg-white pa3 br-pill ba b--light-gray" ]
+                [ div [ class "pr3" ] [ queryForm model ]
+                ]
             ]
         ]
 
 
 queryForm : Model -> Html Msg
 queryForm model =
-    form [ onSubmit SubmitLoginEmailForm ]
-        [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
-        , divider
-        , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect inputClass)
-        , divider
-        , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect)
-        , submitButton model
-        ]
+    let
+        inputAlignment =
+            case model.location.hash of
+                "#/query" ->
+                    "left"
+
+                "#/" ->
+                    "right"
+
+                _ ->
+                    "right"
+
+        options =
+            { inputAlignment = inputAlignment }
+    in
+        form [ onSubmit SubmitLoginEmailForm ]
+            [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
+            , divider
+            , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect inputClass options)
+            , divider
+            , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options)
+            , submitButton model
+            ]
 
 
 divider : Html msg

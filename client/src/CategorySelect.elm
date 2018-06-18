@@ -33,6 +33,10 @@ initialModel =
     }
 
 
+type alias Options =
+    { inputAlignment : String }
+
+
 type alias Category =
     { name : String, id : String, enabled : Bool }
 
@@ -79,15 +83,17 @@ onKeyDown model =
         onWithOptions "keydown" options decoder
 
 
-view : Model -> Html Msg
-view model =
+view : Model -> Options -> Html Msg
+view model options =
     let
         { selected, menuOpen, focused } =
             model
 
         menuClass =
             classNames
-                [ ( "list bg-white absolute ma0 ph0 pv2 list tl bg-white shadow-1 top-150 right-0 b--solid b--light-gray ba w30rem", menuOpen )
+                [ ( "list bg-white absolute ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem", menuOpen )
+                , ( "right-0", options.inputAlignment /= "left" )
+                , ( "left-0", options.inputAlignment == "left" )
                 , ( "dn", not menuOpen )
                 ]
 
