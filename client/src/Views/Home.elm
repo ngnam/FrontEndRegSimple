@@ -25,14 +25,29 @@ view model =
 
 queryForm : Model -> Html Msg
 queryForm model =
-    form [ onSubmit SubmitLoginEmailForm ]
-        [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
-        , divider
-        , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect model.location.hash inputClass)
-        , divider
-        , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect model.location.hash)
-        , submitButton model
-        ]
+    let
+        inputAlignment =
+            case model.location.hash of
+                "#/query" ->
+                    "left"
+
+                "#/" ->
+                    "right"
+
+                _ ->
+                    "right"
+
+        options =
+            { inputAlignment = inputAlignment }
+    in
+        form [ onSubmit SubmitLoginEmailForm ]
+            [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
+            , divider
+            , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect inputClass options)
+            , divider
+            , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options)
+            , submitButton model
+            ]
 
 
 divider : Html msg

@@ -24,6 +24,10 @@ type alias Activity =
     { name : String, id : Int, enabled : Bool }
 
 
+type alias Options =
+    { inputAlignment : String }
+
+
 type alias Model =
     { menuOpen : Bool
     , hovered : Index
@@ -174,8 +178,8 @@ activityMenu model menuClass =
             )
 
 
-view : Model -> String -> String -> Html Msg
-view model inputAlignment inputClass =
+view : Model -> String -> Options -> Html Msg
+view model inputClass { inputAlignment } =
     let
         selectedActivity =
             Maybe.withDefault emptyActivity ((model.selected - 1) !! model.options)
