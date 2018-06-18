@@ -44,6 +44,7 @@ type alias Model =
     , countrySelect : CountrySelect.Model
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
+    , config : { apiBaseUrl : String }
     }
 
 

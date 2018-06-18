@@ -9,14 +9,9 @@ import Json.Encode as Encode exposing (..)
 ---- LOGIN FUNCTION ----
 
 
-api : String
-api =
-    "http://localhost:4000/"
-
-
 requestLoginCodeUrl : String
 requestLoginCodeUrl =
-    api ++ "login/email"
+    "login/email"
 
 
 emailEncoder : Model -> Encode.Value
@@ -38,7 +33,7 @@ requestLoginCode model apiUrl =
                 |> emailEncoder
                 |> Http.jsonBody
     in
-        Http.post apiUrl body responseDecoder
+        Http.post (model.config.apiBaseUrl ++ apiUrl) body responseDecoder
 
 
 requestLoginCodeCmd : Model -> Cmd Msg

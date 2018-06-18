@@ -9,8 +9,12 @@ import Router exposing (parseLocation)
 import Dict
 
 
-init : Navigation.Location -> ( Model, Cmd Msg )
-init location =
+type alias Flags =
+    { apiBaseUrl : String }
+
+
+init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
+init flags location =
     ( { location = parseLocation location
       , search = Dict.empty
       , queryResults = "NONE"
@@ -21,6 +25,7 @@ init location =
       , countrySelect = CountrySelect.initialModel
       , activitySelect = ActivitySelect.initialModel
       , categorySelect = CategorySelect.initialModel
+      , config = { apiBaseUrl = flags.apiBaseUrl }
       }
     , redirectIfRoot location
     )
