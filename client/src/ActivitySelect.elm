@@ -1,4 +1,4 @@
-module ActivitySelect exposing (Model, Msg, initialModel, update, view)
+module ActivitySelect exposing (Model, Msg, initialModel, update, view, Activity, ActivityId, emptyActivity)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -16,15 +16,15 @@ type alias Index =
     Int
 
 
-type alias Id =
-    Int
+type alias ActivityId =
+    String
 
 
 type alias Activity =
-    { name : String, id : Int, enabled : Bool }
+    { name : String, id : ActivityId, enabled : Bool }
 
 
-type alias Options =
+type alias Config =
     { inputAlignment : String }
 
 
@@ -34,6 +34,7 @@ type alias Model =
     , focused : Index
     , selected : Index
     , options : List Activity
+    , selectedActivity : Maybe Activity
     }
 
 
@@ -43,41 +44,14 @@ initialModel =
     , hovered = -1
     , focused = -1
     , selected = -1
-    , options = activities
+    , options = []
+    , selectedActivity = Nothing
     }
 
 
 emptyActivity : Activity
 emptyActivity =
-    { name = "Choose your activity", id = -1, enabled = True }
-
-
-activities : List Activity
-activities =
-    [ { name = "Anti-Money Laundering", id = 1, enabled = True }
-    , { name = "Counter-Terrorism Financing", id = 2, enabled = False }
-    , { name = "Transfer Pricing", id = 3, enabled = False }
-    , { name = "Mobile Money", id = 4, enabled = False }
-    , { name = "Electronic Money", id = 5, enabled = False }
-    , { name = "Payments", id = 6, enabled = False }
-    , { name = "Remitances", id = 7, enabled = False }
-    , { name = "Foreign Exchange", id = 8, enabled = False }
-    , { name = "Microfinance", id = 9, enabled = False }
-    , { name = "Consumer Credit", id = 10, enabled = False }
-    , { name = "Business Lending", id = 11, enabled = False }
-    , { name = "Supply Chain Finance", id = 12, enabled = False }
-    , { name = "Islamic Finance", id = 13, enabled = False }
-    , { name = "Credit Reference Services", id = 14, enabled = False }
-    , { name = "Equity Crowdfunding", id = 15, enabled = False }
-    , { name = "Public Offers", id = 16, enabled = False }
-    , { name = "Dealing in Investments", id = 17, enabled = False }
-    , { name = "Data Protection", id = 18, enabled = False }
-    , { name = "Robo Advice", id = 19, enabled = False }
-    , { name = "Crypto-Assets", id = 20, enabled = False }
-    , { name = "Retail Banking", id = 21, enabled = False }
-    , { name = "Managing Investments", id = 22, enabled = False }
-    , { name = "Insurance Mediation", id = 23, enabled = False }
-    ]
+    { name = "Choose your activity", id = "-1", enabled = True }
 
 
 onKeyDown : Model -> Attribute Msg
@@ -110,8 +84,11 @@ activityMenu model menuClass =
         div
             [ id "activity-list"
             , class menuClass
-            , ariaExpanded (String.toLower (toString menuOpen))
+            , ariaExpanded (boolStr menuOpen)
             , ariaHidden (not menuOpen)
+            , onFocus HandleMenuFocus
+            , onBlur HandleMenuBlur
+            , tabindex -1
             ]
             (List.indexedMap
                 (\index activity ->
@@ -142,10 +119,9 @@ activityMenu model menuClass =
                             [ class labelClass
                             , for ("activity-" ++ (toString index))
                             , tabindex tabable
-                            , onFocus (HandleOptionFocused activity.id)
+                            , onFocus (HandleOptionFocused index)
                             , onBlur HandleOptionBlur
-                            , onMouseOver (HandleOptionHovered activity.id)
-                            , onMouseOut (HandleOptionHovered -1)
+                            , onMouseEnter (HandleOptionHovered index)
                             , onKeyDown
                                 model
                             ]
@@ -156,14 +132,14 @@ activityMenu model menuClass =
                                 [ div
                                     [ class
                                         (classNames
-                                            [ ( "absolute w-75 h-75 bg-blue br-100", activity.id == selected ) ]
+                                            [ ( "absolute w-75 h-75 bg-blue br-100", index == selected ) ]
                                         )
                                     ]
                                     []
                                 ]
                             , input
                                 [ type_ "radio"
-                                , onClick (SetSelected activity.id)
+                                , onClick (SetSelected index)
                                 , name "activity"
                                 , disabled isDisabled
                                 , tabindex -1
@@ -178,14 +154,11 @@ activityMenu model menuClass =
             )
 
 
-view : Model -> String -> Options -> Html Msg
-view model inputClass { inputAlignment } =
+view : Model -> Config -> Html Msg
+view model { inputAlignment } =
     let
-        selectedActivity =
-            Maybe.withDefault emptyActivity ((model.selected - 1) !! model.options)
-
-        menuOpen =
-            model.menuOpen
+        { selected, selectedActivity, menuOpen } =
+            model
 
         menuClass =
             classNames
@@ -202,7 +175,11 @@ view model inputClass { inputAlignment } =
                 ]
 
         buttonClass =
-            inputClass ++ " tl truncate bg-white " ++ classNames [ ( "bg-blue white", menuOpen ), ( "black-60", selectedActivity.name == emptyActivity.name ) ]
+            "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue tl truncate bg-white "
+                ++ classNames
+                    [ ( "bg-blue white", menuOpen )
+                    , ( "black-60", selected == -1 )
+                    ]
 
         buttonUnderlineClass =
             "absolute top-125 w-100 ba b--blue"
@@ -219,7 +196,7 @@ view model inputClass { inputAlignment } =
                 , class buttonClass
                 , ariaControls "activity-list"
                 ]
-                [ text selectedActivity.name ]
+                [ text (.name (Maybe.withDefault emptyActivity selectedActivity)) ]
             , viewIf menuOpen (div [ class buttonUnderlineClass ] [])
             , activityMenu
                 model
@@ -232,27 +209,43 @@ view model inputClass { inputAlignment } =
 
 
 type Msg
-    = SetSelected Id
+    = SetSelected Index
     | HandleButtonBlur
     | HandleButtonFocus
     | HandleEscape
     | HandleOptionBlur
     | HandleOptionFocused Index
     | HandleOptionHovered Index
+    | HandleMenuFocus
+    | HandleMenuBlur
     | HandleEnter
     | NoOp
+
+
+setSelected : Index -> Model -> Model
+setSelected index model =
+    let
+        { options } =
+            model
+
+        selectedActivity =
+            index !! options
+    in
+        { model
+            | selected = index
+            , selectedActivity = selectedActivity
+        }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetSelected selected ->
-            ( { model
-                | selected = selected
-                , menuOpen = False
-              }
-            , Cmd.none
-            )
+            let
+                withSelected =
+                    setSelected selected model
+            in
+                ( { withSelected | menuOpen = False }, Cmd.none )
 
         HandleOptionBlur ->
             ( { model | focused = -1, menuOpen = False }, Cmd.none )
@@ -267,12 +260,18 @@ update msg model =
             ( { model | menuOpen = False }, Cmd.none )
 
         HandleEnter ->
-            ( { model | selected = model.focused }, Cmd.none )
+            ( setSelected model.focused model, Cmd.none )
 
         HandleButtonBlur ->
             ( { model | menuOpen = False }, Cmd.none )
 
         HandleButtonFocus ->
+            ( { model | menuOpen = True }, Cmd.none )
+
+        HandleMenuBlur ->
+            ( { model | menuOpen = False }, Cmd.none )
+
+        HandleMenuFocus ->
             ( { model | menuOpen = True }, Cmd.none )
 
         NoOp ->
