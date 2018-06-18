@@ -20,11 +20,20 @@ inputClass =
 
 view : Model -> Html Msg
 view model =
-    nav [ class "flex justify-between f6 bb b--gray pv2" ]
-        [ div [ class "bg-mid-gray br-pill pa2 w-70 ml2" ]
-            [ Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect model.location.hash inputClass)
-            , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect model.location.hash)
-            , divider
-            , Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
+    let
+        inputAlignment =
+            case model.location.hash of
+                "#/query" ->
+                    "left"
+
+                _ ->
+                    "right"
+    in
+        nav [ class "flex justify-between f6 bb b--gray pv2" ]
+            [ div [ class "bg-mid-gray br-pill pa2 w-70 ml2" ]
+                [ Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect inputAlignment inputClass)
+                , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect inputAlignment)
+                , divider
+                , Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
+                ]
             ]
-        ]

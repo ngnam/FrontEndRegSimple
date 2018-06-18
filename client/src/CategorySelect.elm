@@ -80,7 +80,7 @@ onKeyDown model =
 
 
 view : Model -> String -> Html Msg
-view model pathHash =
+view model inputAlignment =
     let
         { selected, menuOpen, focused } =
             model
@@ -88,8 +88,8 @@ view model pathHash =
         menuClass =
             classNames
                 [ ( "list bg-white absolute ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem", menuOpen )
-                , ( "right-0", pathHash /= "#/query" )
-                , ( "left-0", pathHash == "#/query" )
+                , ( "right-0", inputAlignment /= "right" )
+                , ( "left-0", inputAlignment == "left" )
                 , ( "dn", not menuOpen )
                 ]
 

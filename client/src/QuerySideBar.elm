@@ -18,4 +18,4 @@ inputClass =
 view : Model -> Html Msg
 view model =
     nav [ class "w3 h-100 bg-dark-blue fixed" ]
-        [ a [ href "/#/" ] [ img [ class "w2", src "assets/logos/logo_icon.svg" ] [] ] ]
+        [ a [ href "/#/" ] [ img [ class "w2", src "assets/logos/logo-icon.svg" ] [] ] ]

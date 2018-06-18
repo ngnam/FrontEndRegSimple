@@ -175,7 +175,7 @@ activityMenu model menuClass =
 
 
 view : Model -> String -> String -> Html Msg
-view model pathHash inputClass =
+view model inputAlignment inputClass =
     let
         selectedActivity =
             Maybe.withDefault emptyActivity ((model.selected - 1) !! model.options)
@@ -188,13 +188,13 @@ view model pathHash inputClass =
                 [ ( "list bg-white ttc w30rem top-150 ba b--gray shadow-1 pv2 ph0", True )
                 , ( "absolute flex flex-wrap justify-between", menuOpen )
                 , ( "dn", not menuOpen )
-                , ( "translate-center", pathHash /= "#/query" )
+                , ( "translate-center", inputAlignment /= "left" )
                 ]
 
         wrapperClass =
             classNames
                 [ ( "relative w-30 fl", True )
-                , ( "mr2", pathHash == "#/query" )
+                , ( "mr2", inputAlignment == "left" )
                 ]
 
         buttonClass =
