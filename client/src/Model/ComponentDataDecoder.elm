@@ -41,7 +41,7 @@ fetchComponentData model apiUrl =
     Http.request
         { method = "GET"
         , headers = [ Http.header "Content-Type" "application/json" ]
-        , url = apiUrl
+        , url = model.config.apiBaseUrl ++ apiUrl
         , body = Http.emptyBody
         , expect = Http.expectJson (at [ "data" ] data)
         , timeout = Nothing
@@ -56,4 +56,4 @@ fetchTaskCmd msgConstructor model apiUrl =
 
 fetchComponentDataCmd : Model -> Cmd Msg
 fetchComponentDataCmd model =
-    fetchTaskCmd ComponentData model "http://localhost:4000/component-data"
+    fetchTaskCmd ComponentData model "/component-data"

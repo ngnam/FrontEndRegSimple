@@ -10,7 +10,7 @@ fetchQueryResults model apiUrl =
     Http.request
         { method = "GET"
         , headers = [ Http.header "Content-Type" "application/json" ]
-        , url = apiUrl ++ model.location.search
+        , url = model.config.apiBaseUrl ++ apiUrl ++ model.location.search
         , body = Http.emptyBody
         , expect = Http.expectJson (Json.at [ "data" ] Json.string)
         , timeout = Nothing
@@ -25,4 +25,4 @@ fetchTaskCmd msgConstructor model apiUrl =
 
 fetchQueryResultsCmd : Model -> Cmd Msg
 fetchQueryResultsCmd model =
-    fetchTaskCmd QueryResults model "http://localhost:4000/query"
+    fetchTaskCmd QueryResults model "/query"
