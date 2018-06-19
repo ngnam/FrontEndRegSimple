@@ -12,9 +12,12 @@ view : Model -> Html Msg
 view model =
     div [ class "flex vh-100" ]
         [ QuerySideBar.view model
-        , div [ class "ml5 w-100" ]
+        , div [ class "flex-auto flex flex-column" ]
             [ QueryNavBar.view model
-            , SelectedCategories.view model
-            , text ((toString model.queryResults.nMatches) ++ " results found")
+            , div [ class "flex-auto flex" ]
+                [ SelectedCategories.view model
+                , div [ class "flex-auto" ]
+                    [ text ((toString model.queryResults.nMatches) ++ " results found") ]
+                ]
             ]
         ]

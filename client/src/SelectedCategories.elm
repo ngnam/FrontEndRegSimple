@@ -20,7 +20,7 @@ categoriesMenu model =
 
 view : Model -> Html Msg
 view model =
-    section [ class "bg-mid-gray w5 h-100 pa1" ]
+    section [ class "bg-mid-gray w5 min-h-100 pa1" ]
         [ p [ class "tl ttc f7 mb1 metro-b black-30" ] [ text "Selected categories" ]
         , categoriesMenu model
         ]
