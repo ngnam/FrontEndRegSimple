@@ -77,3 +77,18 @@ h1 {
 .disabled {
   cursor: not-allowed;
 }
+
+.arrow-bullet:before {
+  content:'';
+  display:inline-block;
+  height:1em;
+  width:1em;
+  background-image:url('../assets/icons/right_arrow.svg');
+  background-size:contain;
+  background-repeat:no-repeat;
+  padding-left: 2em;
+}
+
+.flex-1 {
+  flex: 1;
+}
