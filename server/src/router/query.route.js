@@ -1,5 +1,5 @@
-export default () => (req, res) => {
-  const { countries, categories } = req.query;
+import results from '../fixtures/query-results';
 
-  res.json({ data: 'RESULTS' });
+export default () => (req, res) => {
+  res.json({ data: results });
 };

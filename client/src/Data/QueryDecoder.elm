@@ -2,8 +2,8 @@ module QueryDecoder exposing (requestCmd)
 
 import Http
 import Model exposing (Model, Msg(..))
-import DataTypes exposing (QueryResults)
-import Json.Decode exposing (Decoder, string, at)
+import DataTypes exposing (QueryResults, QueryResultsMatch, QueryResultsMatchBody)
+import Json.Decode exposing (Decoder, list, int, float, string, at)
 import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
 
 
@@ -14,7 +14,7 @@ request model =
         , headers = [ Http.header "Content-Type" "application/json" ]
         , url = model.config.apiBaseUrl ++ "/query" ++ model.location.search
         , body = Http.emptyBody
-        , expect = Http.expectJson (decoder)
+        , expect = Http.expectJson (at [ "data" ] decoder)
         , timeout = Nothing
         , withCredentials = False
         }
@@ -25,7 +25,31 @@ requestCmd model =
     Http.send FetchQueryResults (request model)
 
 
+matchBodyDecoder : Decoder QueryResultsMatchBody
+matchBodyDecoder =
+    decode QueryResultsMatchBody
+        |> required "tags" (list string)
+        |> required "text" string
+        |> required "offset" int
+
+
+matchDecoder : Decoder QueryResultsMatch
+matchDecoder =
+    decode QueryResultsMatch
+        |> required "score" float
+        |> required "title" string
+        |> required "type" string
+        |> required "country" string
+        |> required "year" int
+        |> required "url" string
+        |> required "id" string
+        |> required "body" (list matchBodyDecoder)
+
+
 decoder : Decoder QueryResults
 decoder =
     decode QueryResults
-        |> required "data" string
+        |> required "n_matches" int
+        |> required "total_matches" int
+        |> required "max_score" float
+        |> required "matches" (list matchDecoder)
