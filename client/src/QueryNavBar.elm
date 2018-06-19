@@ -2,7 +2,7 @@ module QueryNavBar exposing (..)
 
 import Html exposing (Html, nav, div, button, a, text)
 import Html.Attributes exposing (class)
-import Types exposing (..)
+import Model exposing (Model, Msg(..))
 import CountrySelect
 import ActivitySelect
 import CategorySelect

@@ -39,7 +39,7 @@ const createApp = async function({ config, emailService }) {
   app.use(cors());
   // app.use(passwordlessService.sessionSupport());
   // app.use(passwordlessService.acceptToken());
-  app.use(createRouter({ passwordlessService }));
+  app.use('/api', createRouter({ passwordlessService }));
   app.use(errorHandler());
 
   return app;

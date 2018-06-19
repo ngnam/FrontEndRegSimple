@@ -1,8 +1,7 @@
 module Main exposing (..)
 
-import Types exposing (..)
+import Model exposing (init, Model, Msg(..), Flags)
 import View
-import Model
 import Update
 import Navigation
 
@@ -10,7 +9,7 @@ import Navigation
 ---- PROGRAM ----
 
 
-main : Program Model.Flags Model Msg
+main : Program Flags Model Msg
 main =
     Navigation.programWithFlags UrlChange
         { view = View.view

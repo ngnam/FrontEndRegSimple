@@ -1,36 +1,11 @@
-module Router exposing (..)
+module Router exposing (matchView)
 
 import Html exposing (Html, div, text)
 import Views.Home
 import Views.Query
 import Views.Login
 import Views.About
-import Types exposing (..)
-import Navigation exposing (Location)
-import Util exposing (parseParams)
-
-
-parseLocation : Location -> Location
-parseLocation location =
-    { location
-        | hash =
-            String.split "?" location.hash
-                |> List.head
-                |> Maybe.withDefault ""
-        , search =
-            String.split "?" location.hash
-                |> List.drop 1
-                |> String.join "?"
-                |> String.append "?"
-    }
-
-
-onUrlChange : Location -> Model -> Model
-onUrlChange location model =
-    { model
-        | location = parseLocation location
-        , search = parseParams (.search (parseLocation location))
-    }
+import Model exposing (Model, Msg)
 
 
 matchView : Model -> Html Msg

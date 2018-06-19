@@ -1,6 +1,6 @@
 module Views.Query exposing (..)
 
-import Types exposing (..)
+import Model exposing (Model, Msg(..))
 import Html exposing (Html, text, div)
 import Html.Attributes exposing (class)
 import QueryNavBar
@@ -15,6 +15,6 @@ view model =
         , div [ class "ml5 w-100" ]
             [ QueryNavBar.view model
             , SelectedCategories.view model
-            , text model.queryResults
+            , text model.queryResults.data
             ]
         ]

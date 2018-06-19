@@ -2,7 +2,7 @@ module QuerySideBar exposing (..)
 
 import Html exposing (Html, nav, div, a, button, img, text)
 import Html.Attributes exposing (class, src, href)
-import Types exposing (..)
+import Model exposing (Model, Msg)
 
 
 divider : Html msg

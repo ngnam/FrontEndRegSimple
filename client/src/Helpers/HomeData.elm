@@ -1,17 +1,16 @@
-module Helpers.ComponentData exposing (getActivities, getCategories, getCountries)
+module Helpers.HomeData exposing (getActivities, getCategories, getCountries)
 
-import Types exposing (..)
+import DataTypes exposing (HomeDataItem, Taxonomy, HomeDataChildren(..))
 import ActivitySelect exposing (Activity, ActivityId)
-import CategorySelect exposing (Category, emptyCategory)
 import CountrySelect exposing (Country)
 
 
-removeChildren : List ComponentDataItem -> List Taxonomy
+removeChildren : List Taxonomy -> List HomeDataItem
 removeChildren taxonomies =
     taxonomies
         |> List.map
             (\taxonomy ->
-                Taxonomy
+                HomeDataItem
                     taxonomy.id
                     taxonomy.enabled
                     taxonomy.name
@@ -19,17 +18,17 @@ removeChildren taxonomies =
 
 
 getFirstLevelChildren taxonomy =
-    (\(ComponentDataChildren children) -> children) taxonomy.children
+    (\(HomeDataChildren children) -> children) taxonomy.children
 
 
-getActivities : ComponentDataItem -> List Taxonomy
+getActivities : Taxonomy -> List HomeDataItem
 getActivities taxonomy =
     taxonomy
         |> getFirstLevelChildren
         |> removeChildren
 
 
-getCategories : ComponentDataItem -> ActivityId -> List Taxonomy
+getCategories : Taxonomy -> ActivityId -> List HomeDataItem
 getCategories taxonomy activityId =
     taxonomy
         |> getFirstLevelChildren
@@ -39,7 +38,7 @@ getCategories taxonomy activityId =
             { id = ""
             , name = ""
             , enabled = False
-            , children = ComponentDataChildren []
+            , children = HomeDataChildren []
             }
         |> getFirstLevelChildren
         |> removeChildren

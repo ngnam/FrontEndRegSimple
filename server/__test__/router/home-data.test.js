@@ -2,10 +2,10 @@ import request from 'supertest';
 
 const app = process.app;
 
-describe('GET /component-data', () => {
+describe('GET /home-data', () => {
   test('200 and correct data in response', done => {
     return request(app)
-      .get('/component-data')
+      .get('/api/home-data')
       .send()
       .end((err, res) => {
         if (err) return done(err);

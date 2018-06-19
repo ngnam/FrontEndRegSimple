@@ -1,4 +1,4 @@
-module Util exposing (boolStr, (!!), viewIf, parseParams)
+module Util exposing (boolStr, (!!), viewIf, toKeyValuePair, toDict)
 
 import Html exposing (Attribute, Html)
 import Dict exposing (Dict)
@@ -40,15 +40,7 @@ viewIf condition content =
         Html.text ""
 
 
-parseParams : String -> Dict String (List String)
-parseParams queryString =
-    queryString
-        |> String.dropLeft 1
-        |> String.split "&"
-        |> List.filterMap toKeyValuePair
-        |> toDict
-
-
+toDict : List ( comparable, a ) -> Dict comparable (List a)
 toDict values =
     let
         append v mv =

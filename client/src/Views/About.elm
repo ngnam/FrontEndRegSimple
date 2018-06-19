@@ -1,6 +1,6 @@
 module Views.About exposing (..)
 
-import Types exposing (..)
+import Model exposing (Model, Msg)
 import Html exposing (Html, text, div, form, input, button, span)
 
 
