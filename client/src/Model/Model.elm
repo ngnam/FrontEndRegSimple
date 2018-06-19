@@ -46,7 +46,7 @@ init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
 init flags location =
     ( { location = parseLocation location
       , search = Dict.empty
-      , queryResults = { data = "NONE" }
+      , queryResults = { nMatches = 0, totalMatches = 0, maxScore = 0, matches = [] }
       , homeData =
             { id = ""
             , enabled = False

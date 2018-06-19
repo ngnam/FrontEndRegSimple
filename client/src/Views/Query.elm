@@ -15,6 +15,6 @@ view model =
         , div [ class "ml5 w-100" ]
             [ QueryNavBar.view model
             , SelectedCategories.view model
-            , text model.queryResults.data
+            , text ((toString model.queryResults.nMatches) ++ " results found")
             ]
         ]

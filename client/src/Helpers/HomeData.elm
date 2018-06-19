@@ -17,6 +17,9 @@ removeChildren taxonomies =
             )
 
 
+getFirstLevelChildren :
+    Taxonomy
+    -> List { enabled : Bool, id : String, name : String, children : HomeDataChildren }
 getFirstLevelChildren taxonomy =
     (\(HomeDataChildren children) -> children) taxonomy.children
 

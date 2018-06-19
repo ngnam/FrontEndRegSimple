@@ -2,7 +2,30 @@ module DataTypes exposing (..)
 
 
 type alias QueryResults =
-    { data : String }
+    { nMatches : Int
+    , totalMatches : Int
+    , maxScore : Float
+    , matches : List QueryResultsMatch
+    }
+
+
+type alias QueryResultsMatch =
+    { score : Float
+    , title : String
+    , type_ : String
+    , country : String
+    , year : Int
+    , url : String
+    , id : String
+    , body : List QueryResultsMatchBody
+    }
+
+
+type alias QueryResultsMatchBody =
+    { tags : List String
+    , text : String
+    , offset : Int
+    }
 
 
 type alias HomeDataResults =
