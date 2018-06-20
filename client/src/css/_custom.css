@@ -64,6 +64,11 @@ h1 {
   top: 150%;
 }
 
+.hidden {
+  position: absolute;
+  left: -99999px;
+}
+
 .translate-center {
   transform: translateX(-50%);
   left: 50%;
@@ -109,6 +114,31 @@ h1 {
   top: 11px;
 }
 
+ .menu-dots {
+   background-image:url('../assets/icons/menu_dots.svg');
+   background-size:contain;
+   background-position: center;
+   background-repeat:no-repeat;
+ }
+ .menu-dots-white {
+   background-image:url('../assets/icons/menu_dots_white.svg');
+   background-size:contain;
+   background-position: center;
+   background-repeat:no-repeat;
+ }
+
+ .close-icon {
+   background-image:url('../assets/icons/remove.svg');
+   background-size:contain;
+   background-position: center;
+   background-repeat:no-repeat;
+   height: 1em;
+   width: 1em;
+ }
 .flex-1 {
   flex: 1;
+}
+
+.right--3 {
+  right: -7rem;
 }

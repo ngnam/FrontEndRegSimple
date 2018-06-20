@@ -1,33 +1,85 @@
 module SelectedCategories exposing (..)
 
-import Html exposing (Html, section, div, a, button, img, text, ul, li, p)
-import Html.Attributes exposing (class, src, href, tabindex)
+import Html exposing (Html, section, div, a, button, input, header, img, text, ul, li, p)
+import Html.Attributes exposing (id, class, tabindex, value, disabled)
 import Html.Events exposing (onClick)
-import Model exposing (Model, Msg)
+import Model exposing (Model, Msg(Copy, CategorySubMenuClick, CategoryRemoveClick))
 import ClassNames exposing (classNames)
-import CategorySelect exposing (emptyCategory)
+import DataTypes exposing (HomeDataItem)
+
+
+subMenu : ( Model, HomeDataItem ) -> Html Msg
+subMenu ( model, category ) =
+    let
+        divider =
+            div [ class "ba b--gray mh1" ] []
+
+        subMenuOpen =
+            model.categorySubMenuOpen == category
+
+        menuClass =
+            classNames
+                [ ( "shadow-2 absolute top-1 right--3 ba b--gray bg-white z-1 dark-grey", True )
+                , ( "dn", not subMenuOpen )
+                , ( "flex flex-column", subMenuOpen )
+                ]
+
+        isDisabled =
+            ((List.length (model.categorySelect.selected)) == 1)
+
+        countries =
+            case model.countrySelect.selectedCountry of
+                Just country ->
+                    country.id
+
+                Nothing ->
+                    ""
+
+        copyLink =
+            model.config.clientBaseUrl
+                ++ "/#/query?"
+                ++ "categories[]="
+                ++ category.id
+                ++ "&countries[]="
+                ++ countries
+    in
+        div [ class menuClass ]
+            [ header [ class "ttc f7 mv1 relative" ]
+                [ text "Category actions"
+                , button [ class "close-icon absolute top-0 right-0 mr1 bn pointer", onClick (CategorySubMenuClick category) ] []
+                ]
+            , divider
+            , button [ class "bn tl mv1 pointer", onClick (Copy copyLink) ] [ text "Copy url..." ]
+            , button [ class "bn tl mv1 pointer", disabled isDisabled, onClick (CategoryRemoveClick category) ] [ text "Remove from selected..." ]
+            ]
 
 
 categoriesMenu : Model -> Html Msg
 categoriesMenu model =
-    ul [ class "list flex flex-column" ]
-        (List.indexedMap
-            (\index category ->
+    div [ class "flex flex-column" ]
+        (List.map
+            (\category ->
                 let
-                    isEmptyCategory =
-                        ()
-
                     categoryClass =
                         classNames
-                            [ ( "tl f7 bg-white shadow-1 mb1 pv2 ph2 min-h-20 black-30 pointer"
-                              , True
-                              )
+                            [ ( "tl f7 bg-white shadow-1 mb1 pv3 ph2 min-h-20 black-30 pointer bn relative w-100", True )
                             , ( "bg-blue white", (category == model.activeCategory) )
                             ]
+
+                    categoryMenuDotsClass =
+                        classNames
+                            [ ( "absolute top-0 right-0 pa2 mr1 bn", True )
+                            , ( "menu-dots-white bg-blue", (category == model.activeCategory) )
+                            , ( "menu-dots", (category /= model.activeCategory) )
+                            ]
                 in
-                    li
-                        [ class categoryClass, onClick (Model.SetActiveCategory category), tabindex 0 ]
-                        [ text category.name ]
+                    div [ class "relative" ]
+                        [ button
+                            [ class categoryClass, onClick (Model.SetActiveCategory category), tabindex 0 ]
+                            [ text category.name ]
+                        , button [ class categoryMenuDotsClass, onClick (CategorySubMenuClick category) ] []
+                        , subMenu ( model, category )
+                        ]
             )
             model.categorySelect.selected
         )
