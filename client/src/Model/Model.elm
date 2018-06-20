@@ -20,6 +20,7 @@ type Msg
     | CategorySelectMsg CategorySelect.Msg
     | FetchQueryResults (Result Http.Error QueryResults)
     | HomeData (Result Http.Error HomeDataResults)
+    | SetActiveCategory CategorySelect.Category
     | NoOp
 
 
@@ -35,9 +36,11 @@ type alias Model =
     , countries : List ( String, List String )
     , email : String
     , isLoggedIn : Bool
+    , activeCategory : Bool
     , countrySelect : CountrySelect.Model
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
+    , activeCategory : CategorySelect.Category
     , config : { apiBaseUrl : String }
     }
 
@@ -59,6 +62,7 @@ init flags location =
       , countrySelect = CountrySelect.initialModel
       , activitySelect = ActivitySelect.initialModel
       , categorySelect = CategorySelect.initialModel
+      , activeCategory = CategorySelect.emptyCategory
       , config = { apiBaseUrl = flags.apiBaseUrl }
       }
     , redirectIfRoot location

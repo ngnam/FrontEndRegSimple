@@ -38,6 +38,9 @@ update msg model =
         LoginEmailFormOnInput email ->
             ( { model | email = email }, Cmd.none )
 
+        SetActiveCategory category ->
+            ( { model | activeCategory = category }, Cmd.none )
+
         CountrySelectMsg subMsg ->
             let
                 ( updatedCountrySelectModel, countrySelectCmd ) =
