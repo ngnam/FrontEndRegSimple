@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 
+import { PRODUCTION } from '../constants/environments';
+
 const createEmailservice = ({ config }) =>
   new Promise((resolve, reject) => {
     const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = config;
@@ -56,6 +58,10 @@ const createEmailservice = ({ config }) =>
 
     transporter.verify((err, success) => {
       if (err) {
+        if (process.env.NODE_ENV !== PRODUCTION) {
+          console.error('WARNING: Email service unable to connect');
+          return resolve({ send });
+        }
         reject(err);
       } else {
         console.log(

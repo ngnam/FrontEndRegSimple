@@ -19,8 +19,10 @@ categoriesMenu model =
 
                     categoryClass =
                         classNames
-                            [ ( "tl f7 bg-white shadow-1 mb1 pv2 ph2 min-h-20 black-30 pointer", True )
-                            , ( "bg-blue white", (model.activeCategory == emptyCategory && index == 0) || category == model.activeCategory )
+                            [ ( "tl f7 bg-white shadow-1 mb1 pv2 ph2 min-h-20 black-30 pointer"
+                              , True
+                              )
+                            , ( "bg-blue white", (category == model.activeCategory) )
                             ]
                 in
                     li
