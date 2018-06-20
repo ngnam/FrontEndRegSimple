@@ -14,7 +14,7 @@ type alias QueryResultsMatch =
     , title : String
     , type_ : String
     , country : String
-    , year : Int
+    , year : Maybe Int
     , url : String
     , id : String
     , body : List QueryResultsMatchBody

@@ -12,6 +12,16 @@ describe('GET /query', () => {
 
         expect(res.status).toBe(200);
 
+        const searchResultsFormat = {
+          n_matches: 10,
+          total_matches: 100,
+          max_score: 1.5,
+          matches: expect.any(Array)
+        };
+
+        expect(res.status).toBe(200);
+        expect(res.body.data).toMatchObject(searchResultsFormat);
+
         return done();
       });
   });

@@ -21,9 +21,9 @@ const createRouter = dependencies => {
     loginEmail()
   );
 
-  router.get('/query', validate(querySchema), query());
+  router.get('/query', validate(querySchema), query(dependencies));
 
-  router.get('/home-data', homeData());
+  router.get('/home-data', homeData(dependencies));
 
   return router;
 };
