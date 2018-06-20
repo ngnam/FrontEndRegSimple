@@ -1,6 +1,11 @@
-import taxonomy from '../fixtures/taxonomy';
-import countries from '../fixtures/countries';
+export default ({ searchApiService }) => async (req, res) => {
+  const { fetchTaxonomy, fetchCountries } = searchApiService;
 
-export default () => (req, res) => {
-  res.json({ data: { taxonomy, countries } });
+  const homeDataRes = await Promise.all([fetchTaxonomy(), fetchCountries()]);
+
+  const [{ data: taxonomy }, { data: countries }] = homeDataRes;
+
+  res.json({
+    data: { taxonomy, countries }
+  });
 };

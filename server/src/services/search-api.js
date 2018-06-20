@@ -12,8 +12,26 @@ const createSearchApiService = ({ config }) => {
     });
   };
 
+  const fetchCountries = async () => {
+    return axios({
+      method: 'GET',
+      url: `${REGSIMPLE_SEARCH_API}/countries`,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  };
+
+  const fetchTaxonomy = async () => {
+    return axios({
+      method: 'GET',
+      url: `${REGSIMPLE_SEARCH_API}/taxonomy`,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  };
+
   return {
-    fetchResults
+    fetchResults,
+    fetchCountries,
+    fetchTaxonomy
   };
 };
 

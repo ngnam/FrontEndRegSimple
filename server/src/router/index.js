@@ -23,7 +23,7 @@ const createRouter = dependencies => {
 
   router.get('/query', validate(querySchema), query(dependencies));
 
-  router.get('/home-data', homeData());
+  router.get('/home-data', homeData(dependencies));
 
   return router;
 };
