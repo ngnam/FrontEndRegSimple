@@ -5,6 +5,7 @@ import cookieSession from 'cookie-session';
 import bodyParser from 'body-parser';
 
 import createEmailService from './services/email';
+import createSearchApiService from './services/search-api';
 // import createPasswordlessService from './services/passwordless';
 import { PRODUCTION } from './constants/environments';
 
@@ -13,8 +14,11 @@ import errorHandler from './middleware/error-handling.middleware';
 
 import createRouter from './router';
 
-const createApp = async function({ config, emailService }) {
+const createApp = async function({ config, emailService, searchApiService }) {
   emailService = emailService || (await createEmailService({ config }));
+  searchApiService =
+    searchApiService || (await createSearchApiService({ config }));
+
   const passwordlessService = null; //createPasswordlessService({ config, emailService });
   const app = express();
 
@@ -39,7 +43,10 @@ const createApp = async function({ config, emailService }) {
   app.use(cors());
   // app.use(passwordlessService.sessionSupport());
   // app.use(passwordlessService.acceptToken());
-  app.use('/api', createRouter({ config, passwordlessService }));
+  app.use(
+    '/api',
+    createRouter({ config, passwordlessService, searchApiService })
+  );
   app.use(errorHandler());
 
   return app;

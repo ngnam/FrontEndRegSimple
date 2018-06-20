@@ -3,7 +3,7 @@ module QueryDecoder exposing (requestCmd)
 import Http
 import Model exposing (Model, Msg(..))
 import DataTypes exposing (QueryResults, QueryResultsMatch, QueryResultsMatchBody)
-import Json.Decode exposing (Decoder, list, int, float, string, at, oneOf, null)
+import Json.Decode exposing (Decoder, list, int, float, string, at, oneOf, null, nullable)
 import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
 
 
@@ -23,11 +23,6 @@ request model =
 nullableString : Decoder String
 nullableString =
     oneOf [ string, null "" ]
-
-
-nullableInt : Decoder Int
-nullableInt =
-    oneOf [ int, null 0 ]
 
 
 requestCmd : Model -> Cmd Msg
@@ -50,7 +45,7 @@ matchDecoder =
         |> required "title" string
         |> required "type" nullableString
         |> required "country" string
-        |> required "year" nullableInt
+        |> required "year" (nullable int)
         |> required "url" string
         |> required "id" string
         |> required "body" (list matchBodyDecoder)

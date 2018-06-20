@@ -8,7 +8,7 @@ import loginEmail from './login-email.route';
 import query from './query.route';
 import homeData from './home-data.route';
 
-const createRouter = ({ config }) => {
+const createRouter = dependencies => {
   const router = Router();
 
   router.post(
@@ -21,7 +21,7 @@ const createRouter = ({ config }) => {
     loginEmail()
   );
 
-  router.get('/query', validate(querySchema), query(config));
+  router.get('/query', validate(querySchema), query(dependencies));
 
   router.get('/home-data', homeData());
 
