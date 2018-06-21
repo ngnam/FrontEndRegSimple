@@ -6,6 +6,7 @@ import ActivitySelect
 import CategorySelect
 import Helpers.Routing exposing (parseLocation)
 import Dict
+import Set
 import DataTypes exposing (QueryResults, Taxonomy, HomeDataResults, HomeDataChildren(..))
 import Http
 
@@ -21,6 +22,7 @@ type Msg
     | FetchQueryResults (Result Http.Error QueryResults)
     | HomeData (Result Http.Error HomeDataResults)
     | SetActiveCategory CategorySelect.Category
+    | AccordionToggleClick ( String, Int )
     | NoOp
 
 
@@ -41,6 +43,7 @@ type alias Model =
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
     , activeCategory : CategorySelect.Category
+    , accordionsOpen : Set.Set ( String, Int )
     , config : { apiBaseUrl : String }
     }
 
@@ -63,6 +66,7 @@ init flags location =
       , activitySelect = ActivitySelect.initialModel
       , categorySelect = CategorySelect.initialModel
       , activeCategory = CategorySelect.emptyCategory
+      , accordionsOpen = Set.empty
       , config = { apiBaseUrl = flags.apiBaseUrl }
       }
     , redirectIfRoot location

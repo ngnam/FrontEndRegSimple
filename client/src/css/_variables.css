@@ -84,7 +84,8 @@
 
   --box-shadow-1: 0 8px 16px 0 rgba(82, 97, 115, 0.18);
   /* box-shadow-1 used for cards (eg dropdown) */
-  --box-shadow-2: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
+  --box-shadow-2: 0px 4px 8px 0px rgba(82, 97, 115, 0.18);
+  /* box-shadow-2 used for paper (eg search result list) */
   --box-shadow-3: 2px 2px 4px 2px rgba(0, 0, 0, 0.2);
   --box-shadow-4: 2px 2px 8px 0px rgba(0, 0, 0, 0.2);
   --box-shadow-5: 4px 4px 8px 0px rgba(0, 0, 0, 0.2);
@@ -94,7 +95,6 @@
   --dark-gray: #333;
   --silver: #999;
   --light-silver: #aaa;
-  --moon-gray: #dedede;
   --light-gray: #e8e8e8;
 
   --transparent: transparent;
@@ -158,4 +158,5 @@
   --mid-gray: #f4f4f6;
   --gray: #f2f3f4;
   --washed-blue: #98a5df;
+  --moon-gray: #dfe0e6;
 }

@@ -9,6 +9,7 @@ import ActivitySelect exposing (emptyActivity)
 import CategorySelect
 import Helpers.Routing exposing (onUrlChange)
 import Helpers.HomeData exposing (getActivities, getCategories, getCountries)
+import Set
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -68,6 +69,19 @@ update msg model =
                   }
                 , Cmd.map ActivitySelectMsg activitySelectCmd
                 )
+
+        AccordionToggleClick ( id, index ) ->
+            let
+                accordionIsOpen =
+                    Set.member ( id, index ) model.accordionsOpen
+
+                accordionsOpen =
+                    if not accordionIsOpen then
+                        Set.insert ( id, index ) model.accordionsOpen
+                    else
+                        Set.remove ( id, index ) model.accordionsOpen
+            in
+                ( { model | accordionsOpen = accordionsOpen }, Cmd.none )
 
         CategorySelectMsg subMsg ->
             let
