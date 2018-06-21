@@ -36,6 +36,9 @@ matchBodyDecoder =
         |> required "tags" (list string)
         |> required "text" string
         |> required "offset" int
+        |> required "summary" string
+        |> required "url" string
+        |> required "page" int
 
 
 matchDecoder : Decoder QueryResultsMatch

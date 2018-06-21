@@ -7,6 +7,7 @@ import Html.Events exposing (..)
 import Json.Decode as Json
 import ClassNames exposing (classNames)
 import Util exposing (..)
+import DataTypes exposing (HomeDataItem)
 
 
 -- MODEL --
@@ -38,12 +39,12 @@ type alias Config =
 
 
 type alias Category =
-    { name : String, id : String, enabled : Bool }
+    HomeDataItem
 
 
 emptyCategory : Category
 emptyCategory =
-    { name = "", id = "", enabled = False }
+    { name = "", id = "", enabled = False, description = "" }
 
 
 onKeyDown : Model -> Attribute Msg
@@ -75,7 +76,7 @@ view model { inputAlignment } =
 
         menuClass =
             classNames
-                [ ( "list bg-white absolute ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem", menuOpen )
+                [ ( "list bg-white absolute z-4 ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem", menuOpen )
                 , ( "right-0", inputAlignment /= "left" )
                 , ( "left-0", inputAlignment == "left" )
                 , ( "dn", not menuOpen )

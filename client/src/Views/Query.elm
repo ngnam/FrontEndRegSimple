@@ -1,7 +1,7 @@
 module Views.Query exposing (..)
 
 import Model exposing (Model, Msg(..))
-import Html exposing (Html, text, div, p, h1, span, ul, li)
+import Html exposing (Html, text, div, p, h1, span, ul, li, header)
 import Html.Attributes exposing (class, tabindex)
 import QueryNavBar
 import QuerySideBar
@@ -17,8 +17,11 @@ view model =
             [ QueryNavBar.view model
             , div [ class "flex-1 flex" ]
                 [ SelectedCategories.view model
-                , div [ class "tl flex-1 ph4 pv3 mb3 near-black w-75" ]
-                    [ h1 [ class "f5 mb3" ] [ text model.activeCategory.name ]
+                , div [ class "tl flex-1 ph5 pt3 pb4 near-black mw7" ]
+                    [ header [ class "mb2 mw6" ]
+                        [ h1 [ class "f5 mb2" ] [ text model.activeCategory.name ]
+                        , p [ class "f6 lh-copy" ] [ text model.activeCategory.description ]
+                        ]
                     , QueryResultList.view model
                     ]
                 ]

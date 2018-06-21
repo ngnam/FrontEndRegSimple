@@ -7,6 +7,7 @@ import Html.Events exposing (..)
 import Util exposing (..)
 import ClassNames exposing (classNames)
 import Json.Decode as Json
+import DataTypes exposing (HomeDataItem)
 
 
 -- MODEL --
@@ -21,7 +22,7 @@ type alias ActivityId =
 
 
 type alias Activity =
-    { name : String, id : ActivityId, enabled : Bool }
+    HomeDataItem
 
 
 type alias Config =
@@ -51,7 +52,7 @@ initialModel =
 
 emptyActivity : Activity
 emptyActivity =
-    { name = "Choose your activity", id = "-1", enabled = True }
+    { name = "Choose your activity", id = "-1", enabled = True, description = "" }
 
 
 onKeyDown : Model -> Attribute Msg
@@ -163,7 +164,7 @@ view model { inputAlignment } =
         menuClass =
             classNames
                 [ ( "list bg-white ttc w30rem top-150 ba b--gray shadow-1 pv2 ph0", True )
-                , ( "absolute flex flex-wrap justify-between", menuOpen )
+                , ( "absolute z-4 flex flex-wrap justify-between", menuOpen )
                 , ( "dn", not menuOpen )
                 , ( "translate-center", inputAlignment /= "left" )
                 ]

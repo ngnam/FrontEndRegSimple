@@ -111,7 +111,7 @@ view model =
 
         menuClass =
             classNames
-                [ ( "w15rem absolute ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba", True )
+                [ ( "w15rem absolute z-4 ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba", True )
                 , ( "dn", not menuOpen )
                 ]
 

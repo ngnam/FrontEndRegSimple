@@ -57,6 +57,7 @@ init flags location =
             { id = ""
             , enabled = False
             , name = ""
+            , description = ""
             , children = HomeDataChildren []
             }
       , countries = []
