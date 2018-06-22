@@ -1,13 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="8px" height="13px" viewBox="0 0 8 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
-    <title>right_arrow</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-dasharray="16.97" stroke-linecap="round" stroke-linejoin="round">
-        <g id="i-sorting" transform="translate(4.380000, 6.500000) rotate(-90.000000) translate(-4.380000, -6.500000) translate(-2.120000, 3.120000)" stroke="#0071BC">
-            <path d="M0.26,0.26 L6.5,6.5" id="Shape"></path>
-            <path d="M12.74,0.26 L6.5,6.5" id="Shape"></path>
-        </g>
-    </g>
-</svg>
+<svg width="8" height="13" xmlns="http://www.w3.org/2000/svg"><g stroke="#0071BC" fill="none" fill-rule="evenodd" stroke-dasharray="16.97" stroke-linecap="round" stroke-linejoin="round"><path d="M1.26 12.74L7.5 6.5M1.26.26L7.5 6.5"/></g></svg>
