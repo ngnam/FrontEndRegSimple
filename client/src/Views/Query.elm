@@ -1,23 +1,29 @@
 module Views.Query exposing (..)
 
 import Model exposing (Model, Msg(..))
-import Html exposing (Html, text, div)
-import Html.Attributes exposing (class)
+import Html exposing (Html, text, div, p, h1, span, ul, li, header)
+import Html.Attributes exposing (class, tabindex)
 import QueryNavBar
 import QuerySideBar
 import SelectedCategories
+import QueryResultList
 
 
 view : Model -> Html Msg
 view model =
-    div [ class "flex vh-100" ]
+    div [ class "flex min-vh-100" ]
         [ QuerySideBar.view model
-        , div [ class "flex-auto flex flex-column" ]
+        , div [ class "flex-1 flex flex-column" ]
             [ QueryNavBar.view model
-            , div [ class "flex-auto flex" ]
+            , div [ class "flex-1 flex" ]
                 [ SelectedCategories.view model
-                , div [ class "flex-auto" ]
-                    [ text ((toString model.queryResults.nMatches) ++ " results found") ]
+                , div [ class "tl flex-1 ph5 pt3 pb4 near-black mw7" ]
+                    [ header [ class "mb2 mw6" ]
+                        [ h1 [ class "f5 mb2" ] [ text model.activeCategory.name ]
+                        , p [ class "f6 lh-copy" ] [ text model.activeCategory.description ]
+                        ]
+                    , QueryResultList.view model
+                    ]
                 ]
             ]
         ]

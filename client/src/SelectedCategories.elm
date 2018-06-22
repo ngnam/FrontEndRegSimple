@@ -1,7 +1,7 @@
 module SelectedCategories exposing (..)
 
 import Html exposing (Html, section, div, a, button, img, text, ul, li, p)
-import Html.Attributes exposing (class, src, href)
+import Html.Attributes exposing (class, src, href, tabindex)
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg)
 import ClassNames exposing (classNames)
@@ -26,7 +26,7 @@ categoriesMenu model =
                             ]
                 in
                     li
-                        [ class categoryClass, onClick (Model.SetActiveCategory category) ]
+                        [ class categoryClass, onClick (Model.SetActiveCategory category), tabindex 0 ]
                         [ text category.name ]
             )
             model.categorySelect.selected

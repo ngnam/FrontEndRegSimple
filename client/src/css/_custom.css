@@ -17,6 +17,18 @@ h1 {
   font-size: 30px;
 }
 
+::-moz-selection {
+  /*--dark-blue*/
+  color: #fff;
+  background: #253655;
+}
+
+::selection {
+  /*--dark-blue*/
+  color: #fff;
+  background: #253655;
+}
+
 .metro {
   font-family: Metropolis;
 }
@@ -76,4 +88,27 @@ h1 {
 
 .disabled {
   cursor: not-allowed;
+}
+
+.arrow-bullet:before {
+  content: '';
+  position: absolute;
+  display: block;
+  height: 1em;
+  width: 1em;
+  background-image: url('../assets/icons/right_arrow.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  left: 0;
+  top: 7px;
+}
+
+.arrow-bullet--expanded:before {
+  transform: rotate(90deg);
+  transform-origin: 25% 35%;
+  top: 11px;
+}
+
+.flex-1 {
+  flex: 1;
 }

@@ -12,5 +12,5 @@ divider =
 
 view : Model -> Html Msg
 view model =
-    nav [ class "w3 min-h-100 bg-dark-blue" ]
+    nav [ class "w3 min-h-100 bg-dark-blue pt3" ]
         [ a [ href "/#/" ] [ img [ class "w2", src "assets/logos/logo-icon.svg" ] [] ] ]

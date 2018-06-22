@@ -20,15 +20,17 @@ import Json.Decode
         , keyValuePairs
         , map2
         )
+import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
 
 
 taxonomyDecoder : Decoder Taxonomy
 taxonomyDecoder =
-    map4 Taxonomy
-        (field "id" nullableString)
-        (field "enabled" bool)
-        (field "name" nullableString)
-        (field "children" (map HomeDataChildren (list (lazy (\_ -> taxonomyDecoder)))))
+    decode Taxonomy
+        |> optional "id" string ""
+        |> required "enabled" bool
+        |> optional "name" string ""
+        |> optional "description" string ""
+        |> required "children" (map HomeDataChildren (list (lazy (\_ -> taxonomyDecoder))))
 
 
 countriesDecoder : Decoder (List ( String, List String ))
@@ -43,9 +45,9 @@ nullableString =
 
 decoder : Decoder HomeDataResults
 decoder =
-    map2 HomeDataResults
-        (field "taxonomy" taxonomyDecoder)
-        (field "countries" countriesDecoder)
+    decode HomeDataResults
+        |> required "taxonomy" taxonomyDecoder
+        |> required "countries" countriesDecoder
 
 
 request : Model -> Http.Request HomeDataResults

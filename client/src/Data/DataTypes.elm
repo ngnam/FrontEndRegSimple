@@ -25,6 +25,9 @@ type alias QueryResultsMatchBody =
     { tags : List String
     , text : String
     , offset : Int
+    , summary : String
+    , url : String
+    , page : Int
     }
 
 
@@ -38,6 +41,7 @@ type alias Taxonomy =
     { id : String
     , enabled : Bool
     , name : String
+    , description : String
     , children : HomeDataChildren
     }
 
@@ -46,6 +50,7 @@ type alias HomeDataItem =
     { id : String
     , enabled : Bool
     , name : String
+    , description : String
     }
 
 

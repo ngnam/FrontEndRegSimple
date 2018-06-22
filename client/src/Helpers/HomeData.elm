@@ -14,12 +14,20 @@ removeChildren taxonomies =
                     taxonomy.id
                     taxonomy.enabled
                     taxonomy.name
+                    taxonomy.description
             )
 
 
 getFirstLevelChildren :
     Taxonomy
-    -> List { enabled : Bool, id : String, name : String, children : HomeDataChildren }
+    ->
+        List
+            { enabled : Bool
+            , id : String
+            , name : String
+            , description : String
+            , children : HomeDataChildren
+            }
 getFirstLevelChildren taxonomy =
     (\(HomeDataChildren children) -> children) taxonomy.children
 
@@ -41,6 +49,7 @@ getCategories taxonomy activityId =
             { id = ""
             , name = ""
             , enabled = False
+            , description = ""
             , children = HomeDataChildren []
             }
         |> getFirstLevelChildren
