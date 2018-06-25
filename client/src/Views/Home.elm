@@ -65,7 +65,7 @@ divider =
 
 checkFormValid : Model -> Bool
 checkFormValid { activitySelect, countrySelect, categorySelect } =
-    (activitySelect.selected /= -1) && (countrySelect.selected /= -1) && not (List.isEmpty categorySelect.selected)
+    (activitySelect.selected /= Nothing) && (countrySelect.selectedCountry /= Nothing) && not (List.isEmpty categorySelect.selected)
 
 
 submitButton : Model -> Html msg
@@ -86,13 +86,17 @@ submitButton model =
 
         countries =
             "countries[]="
-                ++ .id (Maybe.withDefault emptyCountry model.countrySelect.selectedCountry)
+                ++ Maybe.withDefault "" model.countrySelect.selectedCountry
+
+        activity =
+            "&activity[]="
+                ++ Maybe.withDefault "" model.activitySelect.selected
 
         categories =
-            List.foldr (\category accum -> accum ++ "&categories[]=" ++ category.id) "" model.categorySelect.selected
+            List.foldr (\categoryId accum -> accum ++ "&categories[]=" ++ categoryId) "" model.categorySelect.selected
 
         queryString =
-            countries ++ categories
+            countries ++ activity ++ categories
     in
         button [ class "di pa2 absolute right--2 top-0 h3 w3 bg-transparent bn", tabindex -1 ]
             [ viewIf isFormValid

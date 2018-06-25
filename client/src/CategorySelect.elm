@@ -1,4 +1,16 @@
-module CategorySelect exposing (Model, Msg, Category, emptyCategory, initialModel, update, view)
+module CategorySelect
+    exposing
+        ( Model
+        , Msg
+        , Category
+        , CategoryId
+        , emptyCategory
+        , initialModel
+        , update
+        , view
+        , getCategoriesFromIds
+        , getCategoryById
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -7,10 +19,15 @@ import Html.Events exposing (..)
 import Json.Decode as Json
 import ClassNames exposing (classNames)
 import Util exposing (..)
-import DataTypes exposing (HomeDataItem)
+import DataTypes exposing (HomeDataItem, TaxonomyId)
+import Dict
 
 
 -- MODEL --
+
+
+type alias CategoryId =
+    TaxonomyId
 
 
 type alias Model =
@@ -18,7 +35,7 @@ type alias Model =
     , hovered : Int
     , menuOpen : Bool
     , buttonFocused : Bool
-    , selected : List Category
+    , selected : List CategoryId
     , options : List Category
     }
 
@@ -45,6 +62,23 @@ type alias Category =
 emptyCategory : Category
 emptyCategory =
     { name = "", id = "", enabled = False, description = "" }
+
+
+toDict : List Category -> Dict.Dict String Category
+toDict categories =
+    categories
+        |> List.map (\category -> ( category.id, category ))
+        |> Dict.fromList
+
+
+getCategoryById : List Category -> CategoryId -> Category
+getCategoryById categories id =
+    Maybe.withDefault emptyCategory (Dict.get id (toDict categories))
+
+
+getCategoriesFromIds : List CategoryId -> List Category -> List Category
+getCategoriesFromIds ids categories =
+    List.map (getCategoryById categories) ids
 
 
 onKeyDown : Model -> Attribute Msg
@@ -101,7 +135,7 @@ view model { inputAlignment } =
             if numberSelected == 0 then
                 "Choose categories"
             else if numberSelected == 1 then
-                Maybe.withDefault emptyCategory (List.head selected)
+                getCategoryById options (Maybe.withDefault "" (List.head selected))
                     |> .name
             else
                 toString (List.length selected) ++ " categories selected"
@@ -157,7 +191,7 @@ view model { inputAlignment } =
                                     focused == index
 
                                 isSelected =
-                                    List.member category selected
+                                    List.member category.id selected
 
                                 checkboxClass =
                                     "absolute checkbox o-0"
@@ -189,7 +223,7 @@ view model { inputAlignment } =
                                     ]
                                     [ input
                                         [ type_ "checkbox"
-                                        , onClick (HandleCheckboxClick category)
+                                        , onClick (HandleCheckboxClick category.id)
                                         , checked isSelected
                                         , disabled isDisabled
                                         , onFocus (HandleCheckboxFocus index)
@@ -215,7 +249,7 @@ view model { inputAlignment } =
 
 
 type Msg
-    = HandleCheckboxClick Category
+    = HandleCheckboxClick CategoryId
     | HandleButtonFocus
     | HandleButtonClick
     | HandleButtonBlur
@@ -255,26 +289,26 @@ handleButtonBlur model =
     { model | buttonFocused = False }
 
 
-toggleCategorySelected : Category -> Model -> Model
-toggleCategorySelected category model =
+toggleCategorySelected : CategoryId -> Model -> Model
+toggleCategorySelected categoryId model =
     let
         alreadySelected =
-            List.member category model.selected
+            List.member categoryId model.selected
 
         exclude option el =
             option /= el
     in
         if alreadySelected then
-            { model | selected = List.filter (exclude category) model.selected }
+            { model | selected = List.filter (exclude categoryId) model.selected }
         else
-            { model | selected = model.selected ++ [ category ] }
+            { model | selected = model.selected ++ [ categoryId ] }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        HandleCheckboxClick clickedCategory ->
-            ( toggleCategorySelected clickedCategory model, Cmd.none )
+        HandleCheckboxClick clickedCategoryId ->
+            ( toggleCategorySelected clickedCategoryId model, Cmd.none )
 
         HandleButtonClick ->
             let
@@ -342,7 +376,7 @@ update msg model =
                     Maybe.withDefault emptyCategory (focused !! options)
             in
                 if shouldToggle then
-                    ( toggleCategorySelected category model, Cmd.none )
+                    ( toggleCategorySelected category.id model, Cmd.none )
                 else
                     ( model, Cmd.none )
 

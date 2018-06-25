@@ -16,14 +16,17 @@ type alias Index =
     Int
 
 
+type alias CountryId =
+    String
+
+
 type alias Model =
     { focused : Index
     , hovered : Index
     , menuOpen : Bool
-    , selected : Index
     , query : String
     , options : List Country
-    , selectedCountry : Maybe Country
+    , selectedCountry : Maybe CountryId
     , countries : List Country
     }
 
@@ -35,14 +38,13 @@ initialModel =
     , menuOpen = False
     , query = ""
     , options = []
-    , selected = -1
     , selectedCountry = Nothing
     , countries = []
     }
 
 
 type alias Country =
-    { name : String, id : String }
+    { name : String, id : CountryId }
 
 
 emptyCountry : Country
@@ -97,7 +99,7 @@ onKeyDown model =
 view : Model -> Html Msg
 view model =
     let
-        { menuOpen, focused, hovered, selected, countries, selectedCountry } =
+        { menuOpen, focused, hovered, countries, selectedCountry } =
             model
 
         optionFocused =
@@ -116,7 +118,7 @@ view model =
                 ]
 
         flagClass code =
-            "br-100 mr2 w1 h1 flag-icon flag-icon-squared flag-icon-" ++ String.toLower code
+            "f5 br-100 mr2 w1 h1 flag-icon flag-icon-squared flag-icon-" ++ String.toLower code
 
         inputUnderlineClass menuOpen =
             classNames
@@ -134,10 +136,10 @@ view model =
                 ]
 
         showInputFlag =
-            selected /= -1 && not menuOpen
+            selectedCountry /= Nothing && not menuOpen
 
         selectedCountryCode =
-            .id (Maybe.withDefault emptyCountry selectedCountry)
+            Maybe.withDefault "" selectedCountry
 
         inputClass =
             classNames
@@ -145,9 +147,23 @@ view model =
                 , ( "pl3", not showInputFlag )
                 , ( "pl4", showInputFlag )
                 ]
+
+        inputValue =
+            case ( model.query, model.selectedCountry ) of
+                ( "", Nothing ) ->
+                    ""
+
+                ( query, Nothing ) ->
+                    query
+
+                ( "", countryId ) ->
+                    getCountryName countryId countries
+
+                _ ->
+                    model.query
     in
         div
-            [ class "w-30 fl relative"
+            [ class "w-30 fl relative f6"
             , onKeyDown model
             , role "combobox"
             , ariaExpanded (boolStr menuOpen)
@@ -158,7 +174,7 @@ view model =
                 , placeholder "Type your country"
                 , onInput SetQuery
                 , onBlur HandleInputBlur
-                , value model.query
+                , value inputValue
                 , role "textbox"
                 , ariaActiveDescendant activeDescendant
                 ]
@@ -176,7 +192,7 @@ view model =
                     |> List.indexedMap
                         (\index country ->
                             li
-                                [ onClick (HandleOptionClick index)
+                                [ onClick (HandleOptionClick country.id)
                                 , onMouseEnter (HandleOptionMouseEnter index)
                                 , onMouseOut (HandleOptionMouseOut index)
                                 , value model.query
@@ -202,7 +218,7 @@ type Msg
     = SetQuery String
     | HandleUpArrow
     | HandleDownArrow
-    | HandleOptionClick Index
+    | HandleOptionClick CountryId
     | HandleOptionMouseEnter Index
     | HandleOptionMouseOut Index
     | HandleInputBlur
@@ -212,29 +228,23 @@ type Msg
     | NoOp
 
 
-templateInputValue : Country -> String
-templateInputValue option =
-    option.name
+idFromIndex : Index -> List Country -> Maybe CountryId
+idFromIndex index countries =
+    Maybe.map .id (index !! countries)
 
 
-newQuery : Index -> Model -> String
-newQuery index model =
-    let
-        { options } =
-            model
+getCountryName : Maybe CountryId -> List Country -> String
+getCountryName id countries =
+    case id of
+        Just a ->
+            countries
+                |> List.filter (\country -> Just country.id == id)
+                |> List.head
+                |> Maybe.map .name
+                |> Maybe.withDefault ""
 
-        selectedOption =
-            case index !! options of
-                Just a ->
-                    a
-
-                Nothing ->
-                    emptyCountry
-
-        newQuery =
-            templateInputValue selectedOption
-    in
-        newQuery
+        Nothing ->
+            ""
 
 
 handleOptionMouseEnter : Index -> Model -> Model
@@ -252,15 +262,14 @@ handleOptionFocus index model =
     { model
         | focused = index
         , hovered = -1
-        , selected = index
-        , selectedCountry = index !! model.options
+        , selectedCountry = idFromIndex index model.options
     }
 
 
 handleInputBlur : Model -> Model
 handleInputBlur model =
     let
-        { focused, hovered, menuOpen, options, query, selected } =
+        { focused, hovered, menuOpen, options, query, selectedCountry } =
             model
 
         hoveringAnOption =
@@ -270,41 +279,43 @@ handleInputBlur model =
             focused /= -1
     in
         if focusingAnOption then
-            { model | focused = -1, menuOpen = False, query = newQuery selected model }
+            { model
+                | focused = -1
+                , menuOpen = False
+                , query = getCountryName selectedCountry model.countries
+            }
         else if not hoveringAnOption then
             { model | focused = -1, menuOpen = False }
         else
             { model
                 | focused = -1
                 , menuOpen = False
-                , query = newQuery hovered model
-                , selected = hovered
-                , selectedCountry = hovered !! options
+                , query = getCountryName (idFromIndex hovered model.countries) model.countries
+                , selectedCountry = idFromIndex hovered options
             }
 
 
-handleOptionClick : Index -> Model -> Model
-handleOptionClick index model =
+handleOptionClick : Maybe CountryId -> Model -> Model
+handleOptionClick countryId model =
     { model
         | focused = -1
         , menuOpen = False
-        , query = newQuery index model
-        , selected = index
-        , selectedCountry = index !! model.options
+        , query = getCountryName countryId model.countries
+        , selectedCountry = countryId
     }
 
 
 handleEnter : Model -> Model
 handleEnter model =
     let
-        { menuOpen, selected } =
+        { menuOpen, selectedCountry } =
             model
 
         hasSelectedOption =
-            selected > -1
+            selectedCountry /= Nothing
     in
         if menuOpen && hasSelectedOption then
-            handleOptionClick selected model
+            handleOptionClick selectedCountry model
         else
             model
 
@@ -333,7 +344,6 @@ update msg model =
                     | query = query
                     , menuOpen = menuOpen
                     , options = options
-                    , selected = -1
                     , selectedCountry = Nothing
                   }
                 , Cmd.none
@@ -341,40 +351,42 @@ update msg model =
 
         HandleUpArrow ->
             let
-                { selected, menuOpen } =
+                { selectedCountry, menuOpen, focused } =
                     model
 
                 isNotAtTop =
-                    selected /= -1
+                    selectedCountry /= Nothing
 
                 allowMoveUp =
                     isNotAtTop && menuOpen
             in
                 if allowMoveUp then
-                    ( handleOptionFocus (selected - 1) model, Cmd.none )
+                    -- this *was* `selected` ... changed to `focused`
+                    ( handleOptionFocus (focused - 1) model, Cmd.none )
                 else
                     ( model, Cmd.none )
 
         HandleDownArrow ->
             let
-                { menuOpen, options, selected } =
+                { menuOpen, options, focused } =
                     model
 
                 isNotAtBottom =
-                    selected /= List.length options - 1
+                    -- this *was* `selected` ... changed to `focused`
+                    focused /= List.length options - 1
 
                 allowMoveDown =
                     isNotAtBottom && menuOpen
             in
                 if allowMoveDown then
-                    ( handleOptionFocus (selected + 1) model, Cmd.none )
+                    ( handleOptionFocus (focused + 1) model, Cmd.none )
                 else
                     ( model, Cmd.none )
 
-        HandleOptionClick index ->
+        HandleOptionClick countryId ->
             let
                 newModel =
-                    handleOptionClick index model
+                    handleOptionClick (Just countryId) model
             in
                 ( newModel, Cmd.none )
 
@@ -411,14 +423,17 @@ update msg model =
 
         HandleSpace ->
             let
-                { focused } =
+                { focused, countries } =
                     model
 
                 focusIsOnOption =
                     focused /= -1
+
+                selectedId =
+                    idFromIndex focused countries
             in
                 if focusIsOnOption then
-                    ( handleOptionClick focused model, Cmd.none )
+                    ( handleOptionClick selectedId model, Cmd.none )
                 else
                     ( model, Cmd.none )
 

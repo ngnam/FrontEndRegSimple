@@ -11,7 +11,8 @@ const querySchema = {
     categories: joi
       .array()
       .items(joi.string())
-      .required()
+      .required(),
+    activity: joi.array().items(joi.string())
   })
 };
 

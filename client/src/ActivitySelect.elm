@@ -1,4 +1,4 @@
-module ActivitySelect exposing (Model, Msg, initialModel, update, view, Activity, ActivityId, emptyActivity)
+module ActivitySelect exposing (Model, Msg, initialModel, update, view, Activity, ActivityId)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -33,9 +33,8 @@ type alias Model =
     { menuOpen : Bool
     , hovered : Index
     , focused : Index
-    , selected : Index
     , options : List Activity
-    , selectedActivity : Maybe Activity
+    , selected : Maybe ActivityId
     }
 
 
@@ -44,15 +43,9 @@ initialModel =
     { menuOpen = False
     , hovered = -1
     , focused = -1
-    , selected = -1
     , options = []
-    , selectedActivity = Nothing
+    , selected = Nothing
     }
-
-
-emptyActivity : Activity
-emptyActivity =
-    { name = "Choose your activity", id = "-1", enabled = True, description = "" }
 
 
 onKeyDown : Model -> Attribute Msg
@@ -133,14 +126,17 @@ activityMenu model menuClass =
                                 [ div
                                     [ class
                                         (classNames
-                                            [ ( "absolute w-75 h-75 bg-blue br-100", index == selected ) ]
+                                            [ ( "absolute w-75 h-75 bg-blue br-100"
+                                              , Just activity.id == selected
+                                              )
+                                            ]
                                         )
                                     ]
                                     []
                                 ]
                             , input
                                 [ type_ "radio"
-                                , onClick (SetSelected index)
+                                , onClick (SetSelected activity.id)
                                 , name "activity"
                                 , disabled isDisabled
                                 , tabindex -1
@@ -158,7 +154,7 @@ activityMenu model menuClass =
 view : Model -> Config -> Html Msg
 view model { inputAlignment } =
     let
-        { selected, selectedActivity, menuOpen } =
+        { selected, menuOpen, options } =
             model
 
         menuClass =
@@ -179,7 +175,7 @@ view model { inputAlignment } =
             "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue tl truncate bg-white "
                 ++ classNames
                     [ ( "bg-blue white", menuOpen )
-                    , ( "black-60", selected == -1 )
+                    , ( "black-60", selected == Nothing )
                     ]
 
         buttonUnderlineClass =
@@ -197,7 +193,7 @@ view model { inputAlignment } =
                 , class buttonClass
                 , ariaControls "activity-list"
                 ]
-                [ text (.name (Maybe.withDefault emptyActivity selectedActivity)) ]
+                [ text (getActivityName selected options) ]
             , viewIf menuOpen (div [ class buttonUnderlineClass ] [])
             , activityMenu
                 model
@@ -205,12 +201,36 @@ view model { inputAlignment } =
             ]
 
 
+getActivityName : Maybe ActivityId -> List Activity -> String
+getActivityName id activities =
+    case id of
+        Just a ->
+            activities
+                |> List.filter (\activity -> Just activity.id == id)
+                |> List.head
+                |> Maybe.map .name
+                |> Maybe.withDefault "Choose an Activity"
+
+        Nothing ->
+            "Choose an Activity"
+
+
+getActivityId : Index -> List Activity -> ActivityId
+getActivityId index activities =
+    case index !! activities of
+        Just activity ->
+            activity.id
+
+        Nothing ->
+            ""
+
+
 
 -- UPDATE --
 
 
 type Msg
-    = SetSelected Index
+    = SetSelected ActivityId
     | HandleButtonBlur
     | HandleButtonFocus
     | HandleEscape
@@ -223,28 +243,24 @@ type Msg
     | NoOp
 
 
-setSelected : Index -> Model -> Model
-setSelected index model =
+setSelected : ActivityId -> Model -> Model
+setSelected activityId model =
     let
         { options } =
             model
-
-        selectedActivity =
-            index !! options
     in
         { model
-            | selected = index
-            , selectedActivity = selectedActivity
+            | selected = Just activityId
         }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SetSelected selected ->
+        SetSelected activityId ->
             let
                 withSelected =
-                    setSelected selected model
+                    setSelected activityId model
             in
                 ( { withSelected | menuOpen = False }, Cmd.none )
 
@@ -261,7 +277,7 @@ update msg model =
             ( { model | menuOpen = False }, Cmd.none )
 
         HandleEnter ->
-            ( setSelected model.focused model, Cmd.none )
+            ( setSelected (getActivityId model.focused model.options) model, Cmd.none )
 
         HandleButtonBlur ->
             ( { model | menuOpen = False }, Cmd.none )

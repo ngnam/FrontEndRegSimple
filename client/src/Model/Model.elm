@@ -3,7 +3,7 @@ module Model exposing (Msg(..), Model, Flags, init)
 import Navigation
 import CountrySelect
 import ActivitySelect
-import CategorySelect
+import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (parseLocation)
 import Dict
 import Set
@@ -21,9 +21,9 @@ type Msg
     | CategorySelectMsg CategorySelect.Msg
     | FetchQueryResults (Result Http.Error QueryResults)
     | HomeData (Result Http.Error HomeDataResults)
-    | SetActiveCategory CategorySelect.Category
-    | CategoryRemoveClick CategorySelect.Category
-    | CategorySubMenuClick CategorySelect.Category
+    | SetActiveCategory CategoryId
+    | CategoryRemoveClick CategoryId
+    | CategorySubMenuClick CategoryId
     | AccordionToggleClick ( String, Int )
     | Copy String
     | NoOp
@@ -41,12 +41,14 @@ type alias Model =
     , countries : List ( String, List String )
     , email : String
     , isLoggedIn : Bool
-    , activeCategory : Bool
     , countrySelect : CountrySelect.Model
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
-    , categorySubMenuOpen : CategorySelect.Category
-    , activeCategory : CategorySelect.Category
+    , selectedCategories : List CategoryId
+    , selected : Maybe String
+    , selectedCountry : Maybe String
+    , activeCategory : Maybe CategoryId
+    , categorySubMenuOpen : Maybe CategoryId
     , accordionsOpen : Set.Set ( String, Int )
     , config : { apiBaseUrl : String }
     , navCount : Int
@@ -72,8 +74,11 @@ init flags location =
       , countrySelect = CountrySelect.initialModel
       , activitySelect = ActivitySelect.initialModel
       , categorySelect = CategorySelect.initialModel
-      , activeCategory = CategorySelect.emptyCategory
-      , categorySubMenuOpen = CategorySelect.emptyCategory
+      , selectedCountry = Nothing
+      , selected = Nothing
+      , selectedCategories = []
+      , activeCategory = Nothing
+      , categorySubMenuOpen = Nothing
       , accordionsOpen = Set.empty
       , navCount = 0
       , config = { apiBaseUrl = flags.apiBaseUrl, clientBaseUrl = flags.clientBaseUrl }
