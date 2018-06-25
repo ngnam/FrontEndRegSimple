@@ -12,6 +12,15 @@ import Helpers.HomeData exposing (getActivities, getCategories, getCountries)
 import Set
 
 
+andThen : Msg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+andThen msg ( model, cmd ) =
+    let
+        ( newmodel, newcmd ) =
+            update msg model
+    in
+        newmodel ! [ cmd, newcmd ]
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -20,18 +29,21 @@ update msg model =
                 newModel =
                     onUrlChange location model
 
-                cmd =
+                homeDataCmd =
+                    if model.navCount == 0 then
+                        HomeDataDecoder.requestCmd newModel
+                    else
+                        Cmd.none
+
+                queryCmd =
                     case newModel.location.hash of
                         "#/query" ->
                             QueryDecoder.requestCmd newModel
 
-                        "#/" ->
-                            HomeDataDecoder.requestCmd newModel
-
                         _ ->
                             Cmd.none
             in
-                ( newModel, cmd )
+                ( { newModel | navCount = model.navCount + 1 }, Cmd.batch [ homeDataCmd, queryCmd ] )
 
         SubmitLoginEmailForm ->
             ( model, requestLoginCodeCmd model )

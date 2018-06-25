@@ -45,6 +45,7 @@ type alias Model =
     , activeCategory : CategorySelect.Category
     , accordionsOpen : Set.Set ( String, Int )
     , config : { apiBaseUrl : String }
+    , navCount : Int
     }
 
 
@@ -69,14 +70,15 @@ init flags location =
       , activeCategory = CategorySelect.emptyCategory
       , accordionsOpen = Set.empty
       , config = { apiBaseUrl = flags.apiBaseUrl }
+      , navCount = 0
       }
     , redirectIfRoot location
     )
 
 
 redirectIfRoot : Navigation.Location -> Cmd msg
-redirectIfRoot { pathname } =
-    if pathname == "/" then
+redirectIfRoot { hash, href } =
+    if hash == "" then
         Navigation.modifyUrl "/#/"
     else
-        Cmd.none
+        Navigation.modifyUrl href
