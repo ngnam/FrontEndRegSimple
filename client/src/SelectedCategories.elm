@@ -49,8 +49,8 @@ subMenu ( model, category ) =
                 , button [ class "close-icon absolute top-0 right-0 mr1 bn pointer", onClick (CategorySubMenuClick category) ] []
                 ]
             , divider
-            , button [ class "bn tl mv1 pointer", onClick (Copy copyLink) ] [ text "Copy url..." ]
-            , button [ class "bn tl mv1 pointer", disabled isDisabled, onClick (CategoryRemoveClick category) ] [ text "Remove from selected..." ]
+            , button [ class "bn tl mv1 pointer bg-white", onClick (Copy copyLink) ] [ text "Copy url..." ]
+            , button [ class "bn tl mv1 pointer bg-white", disabled isDisabled, onClick (CategoryRemoveClick category) ] [ text "Remove from selected..." ]
             ]
 
 
@@ -69,8 +69,8 @@ categoriesMenu model =
                     categoryMenuDotsClass =
                         classNames
                             [ ( "absolute top-0 right-0 pa2 mr1 bn", True )
-                            , ( "menu-dots-white bg-blue", (category == model.activeCategory) )
-                            , ( "menu-dots", (category /= model.activeCategory) )
+                            , ( "menu-dots--white bg-blue", (category == model.activeCategory) )
+                            , ( "menu-dots bg-white", (category /= model.activeCategory) )
                             ]
                 in
                     div [ class "relative" ]

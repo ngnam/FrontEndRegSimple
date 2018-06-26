@@ -11,7 +11,7 @@ app.ports.copy.subscribe(copyLink => {
   const input = document.createElement('input')
 
   input.setAttribute("id", "copyInput");
-  input.setAttribute("class", "hidden");
+  input.setAttribute("class", "clip");
   input.setAttribute("value", copyLink);
   body.appendChild(input)
 
