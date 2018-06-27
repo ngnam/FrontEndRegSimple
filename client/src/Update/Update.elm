@@ -1,4 +1,4 @@
-module Update exposing (..)
+port module Update exposing (..)
 
 import Model exposing (Model, Msg(..))
 import LoginDecoder exposing (requestLoginCodeCmd)
@@ -19,6 +19,9 @@ andThen msg ( model, cmd ) =
             update msg model
     in
         newmodel ! [ cmd, newcmd ]
+
+
+port copy : String -> Cmd msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -102,6 +105,28 @@ update msg model =
             in
                 ( { model | categorySelect = updatedCategorySelectModel }, Cmd.map CategorySelectMsg categorySelectCmd )
 
+        CategorySubMenuClick category ->
+            case category == model.categorySubMenuOpen of
+                True ->
+                    ( { model | categorySubMenuOpen = CategorySelect.emptyCategory }, Cmd.none )
+
+                _ ->
+                    ( { model | categorySubMenuOpen = category }, Cmd.none )
+
+        CategoryRemoveClick category ->
+            let
+                { categorySelect } =
+                    model
+
+                newCategories =
+                    List.filter (\selectedCategory -> selectedCategory /= category)
+                        categorySelect.selected
+
+                updatedCategorySelectModel =
+                    { categorySelect | selected = newCategories }
+            in
+                ( { model | categorySelect = updatedCategorySelectModel }, Cmd.none )
+
         FetchQueryResults (Ok results) ->
             ( { model | queryResults = results }, Cmd.none )
 
@@ -137,6 +162,9 @@ update msg model =
 
         HomeData (Err _) ->
             ( model, Cmd.none )
+
+        Copy copyLink ->
+            ( { model | categorySubMenuOpen = CategorySelect.emptyCategory }, copy copyLink )
 
         _ ->
             ( model, Cmd.none )

@@ -22,12 +22,15 @@ type Msg
     | FetchQueryResults (Result Http.Error QueryResults)
     | HomeData (Result Http.Error HomeDataResults)
     | SetActiveCategory CategorySelect.Category
+    | CategoryRemoveClick CategorySelect.Category
+    | CategorySubMenuClick CategorySelect.Category
     | AccordionToggleClick ( String, Int )
+    | Copy String
     | NoOp
 
 
 type alias Flags =
-    { apiBaseUrl : String }
+    { apiBaseUrl : String, clientBaseUrl : String }
 
 
 type alias Model =
@@ -42,10 +45,12 @@ type alias Model =
     , countrySelect : CountrySelect.Model
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
+    , categorySubMenuOpen : CategorySelect.Category
     , activeCategory : CategorySelect.Category
     , accordionsOpen : Set.Set ( String, Int )
     , config : { apiBaseUrl : String }
     , navCount : Int
+    , config : Flags
     }
 
 
@@ -68,9 +73,10 @@ init flags location =
       , activitySelect = ActivitySelect.initialModel
       , categorySelect = CategorySelect.initialModel
       , activeCategory = CategorySelect.emptyCategory
+      , categorySubMenuOpen = CategorySelect.emptyCategory
       , accordionsOpen = Set.empty
-      , config = { apiBaseUrl = flags.apiBaseUrl }
       , navCount = 0
+      , config = { apiBaseUrl = flags.apiBaseUrl, clientBaseUrl = flags.clientBaseUrl }
       }
     , redirectIfRoot location
     )
