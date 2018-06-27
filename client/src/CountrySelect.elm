@@ -26,7 +26,7 @@ type alias Model =
     , menuOpen : Bool
     , query : String
     , options : List Country
-    , selectedCountry : Maybe CountryId
+    , selected : Maybe CountryId
     , countries : List Country
     }
 
@@ -38,7 +38,7 @@ initialModel =
     , menuOpen = False
     , query = ""
     , options = []
-    , selectedCountry = Nothing
+    , selected = Nothing
     , countries = []
     }
 
@@ -99,7 +99,7 @@ onKeyDown model =
 view : Model -> Html Msg
 view model =
     let
-        { menuOpen, focused, hovered, countries, selectedCountry } =
+        { menuOpen, focused, hovered, countries, selected } =
             model
 
         optionFocused =
@@ -136,10 +136,10 @@ view model =
                 ]
 
         showInputFlag =
-            selectedCountry /= Nothing && not menuOpen
+            selected /= Nothing && not menuOpen
 
         selectedCountryCode =
-            Maybe.withDefault "" selectedCountry
+            Maybe.withDefault "" selected
 
         inputClass =
             classNames
@@ -149,7 +149,7 @@ view model =
                 ]
 
         inputValue =
-            case ( model.query, model.selectedCountry ) of
+            case ( model.query, model.selected ) of
                 ( "", Nothing ) ->
                     ""
 
@@ -262,14 +262,14 @@ handleOptionFocus index model =
     { model
         | focused = index
         , hovered = -1
-        , selectedCountry = idFromIndex index model.options
+        , selected = idFromIndex index model.options
     }
 
 
 handleInputBlur : Model -> Model
 handleInputBlur model =
     let
-        { focused, hovered, menuOpen, options, query, selectedCountry } =
+        { focused, hovered, menuOpen, options, query, selected } =
             model
 
         hoveringAnOption =
@@ -282,7 +282,7 @@ handleInputBlur model =
             { model
                 | focused = -1
                 , menuOpen = False
-                , query = getCountryName selectedCountry model.countries
+                , query = getCountryName selected model.countries
             }
         else if not hoveringAnOption then
             { model | focused = -1, menuOpen = False }
@@ -291,7 +291,7 @@ handleInputBlur model =
                 | focused = -1
                 , menuOpen = False
                 , query = getCountryName (idFromIndex hovered model.countries) model.countries
-                , selectedCountry = idFromIndex hovered options
+                , selected = idFromIndex hovered options
             }
 
 
@@ -301,21 +301,21 @@ handleOptionClick countryId model =
         | focused = -1
         , menuOpen = False
         , query = getCountryName countryId model.countries
-        , selectedCountry = countryId
+        , selected = countryId
     }
 
 
 handleEnter : Model -> Model
 handleEnter model =
     let
-        { menuOpen, selectedCountry } =
+        { menuOpen, selected } =
             model
 
         hasSelectedOption =
-            selectedCountry /= Nothing
+            selected /= Nothing
     in
         if menuOpen && hasSelectedOption then
-            handleOptionClick selectedCountry model
+            handleOptionClick selected model
         else
             model
 
@@ -344,18 +344,18 @@ update msg model =
                     | query = query
                     , menuOpen = menuOpen
                     , options = options
-                    , selectedCountry = Nothing
+                    , selected = Nothing
                   }
                 , Cmd.none
                 )
 
         HandleUpArrow ->
             let
-                { selectedCountry, menuOpen, focused } =
+                { selected, menuOpen, focused } =
                     model
 
                 isNotAtTop =
-                    selectedCountry /= Nothing
+                    selected /= Nothing
 
                 allowMoveUp =
                     isNotAtTop && menuOpen

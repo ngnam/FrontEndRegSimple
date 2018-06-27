@@ -202,17 +202,21 @@ view model { inputAlignment } =
 
 
 getActivityName : Maybe ActivityId -> List Activity -> String
-getActivityName id activities =
-    case id of
-        Just a ->
-            activities
-                |> List.filter (\activity -> Just activity.id == id)
-                |> List.head
-                |> Maybe.map .name
-                |> Maybe.withDefault "Choose an Activity"
-
-        Nothing ->
+getActivityName maybeId activities =
+    let
+        defaultButtonText =
             "Choose an Activity"
+    in
+        case maybeId of
+            Just id ->
+                activities
+                    |> List.filter (\activity -> activity.id == id)
+                    |> List.head
+                    |> Maybe.map .name
+                    |> Maybe.withDefault defaultButtonText
+
+            Nothing ->
+                defaultButtonText
 
 
 getActivityId : Index -> List Activity -> ActivityId

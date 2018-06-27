@@ -53,7 +53,7 @@ setSelectedCountry id model =
             model
 
         updatedCountrySelect =
-            { countrySelect | selectedCountry = id }
+            { countrySelect | selected = id }
     in
         { model | countrySelect = updatedCountrySelect }
 

@@ -44,9 +44,6 @@ type alias Model =
     , countrySelect : CountrySelect.Model
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
-    , selectedCategories : List CategoryId
-    , selected : Maybe String
-    , selectedCountry : Maybe String
     , activeCategory : Maybe CategoryId
     , categorySubMenuOpen : Maybe CategoryId
     , accordionsOpen : Set.Set ( String, Int )
@@ -74,9 +71,6 @@ init flags location =
       , countrySelect = CountrySelect.initialModel
       , activitySelect = ActivitySelect.initialModel
       , categorySelect = CategorySelect.initialModel
-      , selectedCountry = Nothing
-      , selected = Nothing
-      , selectedCategories = []
       , activeCategory = Nothing
       , categorySubMenuOpen = Nothing
       , accordionsOpen = Set.empty

@@ -28,7 +28,7 @@ subMenu ( model, category ) =
             ((List.length (model.categorySelect.selected)) == 1)
 
         countries =
-            case model.countrySelect.selectedCountry of
+            case model.countrySelect.selected of
                 Just countryId ->
                     countryId
 
