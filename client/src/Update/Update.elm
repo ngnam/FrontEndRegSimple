@@ -82,6 +82,16 @@ setSelectedCountry maybeId model =
         { model | countrySelect = updatedCountrySelect }
 
 
+setFilterText : Maybe String -> Model -> Model
+setFilterText maybeFilterText model =
+    case maybeFilterText of
+        Just filterText ->
+            { model | filterText = filterText }
+
+        Nothing ->
+            { model | filterText = "" }
+
+
 port copy : String -> Cmd msg
 
 
@@ -100,6 +110,8 @@ update msg model =
                             (0 !! (Maybe.withDefault [] (Dict.get "activity" newModel.search)))
                         >> setSelectedCountry
                             (0 !! (Maybe.withDefault [] (Dict.get "countries" newModel.search)))
+                        >> setFilterText
+                            (0 !! (Maybe.withDefault [] (Dict.get "filterText" newModel.search)))
 
                 homeDataCmd =
                     if model.navCount == 0 then
@@ -137,6 +149,13 @@ update msg model =
 
         SetActiveCategory categoryId ->
             ( { model | activeCategory = Just categoryId }, Cmd.none )
+
+        SetFilterText filterText ->
+            let
+                newModel =
+                    { model | filterText = filterText }
+            in
+                ( newModel, Navigation.modifyUrl ("/#/query?" ++ (queryString newModel)) )
 
         CountrySelectMsg subMsg ->
             let

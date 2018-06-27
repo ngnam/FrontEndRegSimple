@@ -1,7 +1,6 @@
 module Helpers.QueryString exposing (queryString)
 
 import Model exposing (Model)
-import Dict
 
 
 queryString : Model -> String
@@ -17,5 +16,8 @@ queryString model =
 
         categories =
             List.foldr (\categoryId accum -> accum ++ "&categories[]=" ++ categoryId) "" model.categorySelect.selected
+
+        filterText =
+            "&filterText=" ++ model.filterText
     in
-        countries ++ activity ++ categories
+        countries ++ activity ++ categories ++ filterText

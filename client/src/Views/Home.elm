@@ -46,10 +46,10 @@ queryForm model =
                     "right"
 
         options =
-            { inputAlignment = inputAlignment }
+            { inputAlignment = inputAlignment, inputSize = "normal" }
     in
         form [ onSubmit SubmitLoginEmailForm ]
-            [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
+            [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect options)
             , divider
             , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect options)
             , divider

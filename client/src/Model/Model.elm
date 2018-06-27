@@ -22,6 +22,7 @@ type Msg
     | FetchQueryResults (Result Http.Error QueryResults)
     | HomeData (Result Http.Error HomeDataResults)
     | SetActiveCategory CategoryId
+    | SetFilterText String
     | CategoryRemoveClick CategoryId
     | CategorySubMenuClick CategoryId
     | AccordionToggleClick ( String, Int )
@@ -45,6 +46,7 @@ type alias Model =
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
     , activeCategory : Maybe CategoryId
+    , filterText : String
     , categorySubMenuOpen : Maybe CategoryId
     , accordionsOpen : Set.Set ( String, Int )
     , config : { apiBaseUrl : String }
@@ -72,6 +74,7 @@ init flags location =
       , activitySelect = ActivitySelect.initialModel
       , categorySelect = CategorySelect.initialModel
       , activeCategory = Nothing
+      , filterText = ""
       , categorySubMenuOpen = Nothing
       , accordionsOpen = Set.empty
       , navCount = 0

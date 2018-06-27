@@ -25,6 +25,7 @@ onUrlChange location model =
             { model
                 | location = parsedLocation
                 , search = parseParams parsedLocation.search
+                , filterText = ""
             }
     in
         onPageLoad modelWithParsedLocation

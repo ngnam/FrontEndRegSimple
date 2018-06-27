@@ -17,6 +17,10 @@ h1 {
   font-size: 30px;
 }
 
+em {
+  background: yellow;
+}
+
 ::-moz-selection {
   /*--dark-blue*/
   color: #fff;
@@ -37,6 +41,12 @@ h1 {
 
 .placeholder--country:focus::placeholder {
   font-style: italic;
+}
+
+.placeholder--filter-text::placeholder {
+  font-family: Metropolis;
+  /* dark gray */
+  color: #959bac;
 }
 
 .metro {
@@ -102,6 +112,20 @@ h1 {
 
 .disabled {
   cursor: not-allowed;
+}
+
+.search::after {
+  content: '';
+  position: absolute;
+  display: block;
+  height: 100%;
+  width: 1em;
+  background-image: url('../assets/icons/search.svg');
+  background-size: 1em;
+  background-repeat: no-repeat;
+  background-position: center;
+  left: 0;
+  top: 0;
 }
 
 .arrow-bullet:before {

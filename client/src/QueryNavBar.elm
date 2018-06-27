@@ -6,6 +6,7 @@ import Model exposing (Model, Msg(..))
 import CountrySelect
 import ActivitySelect
 import CategorySelect
+import SearchInput
 
 
 divider : Html msg
@@ -25,13 +26,15 @@ view model =
                     "right"
 
         options =
-            { inputAlignment = inputAlignment }
+            { inputAlignment = inputAlignment, inputSize = "small" }
     in
         nav [ class "flex justify-between bb b--gray pv2" ]
-            [ div [ class "bg-mid-gray br-pill pa2 w-70 ml2 ba b--moon-gray" ]
+            [ div [ class "bg-mid-gray br-pill pa2 w-80 ml2 ba b--moon-gray" ]
                 [ Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect options)
                 , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options)
                 , divider
-                , Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
+                , Html.map CountrySelectMsg (CountrySelect.view model.countrySelect options)
+                , divider
+                , SearchInput.view model
                 ]
             ]
