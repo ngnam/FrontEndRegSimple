@@ -3,15 +3,13 @@ module Helpers.Routing exposing (parseLocation, parseParams, onUrlChange)
 import Navigation exposing (Location)
 import Util exposing (toKeyValuePair, toDict, (!!))
 import Dict exposing (Dict)
-import CategorySelect exposing (emptyCategory)
 
 
 onPageLoad model =
     case model.location.hash of
         "#/query" ->
             { model
-                | activeCategory =
-                    Maybe.withDefault emptyCategory (0 !! model.categorySelect.selected)
+                | activeCategory = 0 !! model.categorySelect.selected
             }
 
         _ ->

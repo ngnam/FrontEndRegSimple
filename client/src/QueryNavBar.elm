@@ -27,7 +27,7 @@ view model =
         options =
             { inputAlignment = inputAlignment }
     in
-        nav [ class "flex justify-between f6 bb b--gray pv2" ]
+        nav [ class "flex justify-between bb b--gray pv2" ]
             [ div [ class "bg-mid-gray br-pill pa2 w-70 ml2 ba b--moon-gray" ]
                 [ Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect options)
                 , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options)

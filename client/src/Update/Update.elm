@@ -5,20 +5,57 @@ import LoginDecoder exposing (requestLoginCodeCmd)
 import QueryDecoder
 import HomeDataDecoder
 import CountrySelect
-import ActivitySelect exposing (emptyActivity)
-import CategorySelect
+import ActivitySelect exposing (ActivityId)
+import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (onUrlChange)
 import Helpers.HomeData exposing (getActivities, getCategories, getCountries)
 import Set
+import Dict
+import Util exposing ((!!))
+import DataTypes exposing (Taxonomy)
 
 
-andThen : Msg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-andThen msg ( model, cmd ) =
+getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
+getFromListById id items =
+    0 !! (List.filter (\item -> item.id == id) items)
+
+
+setSelectedCategories : Taxonomy -> List CategoryId -> Model -> Model
+setSelectedCategories homeData categoryIds model =
     let
-        ( newmodel, newcmd ) =
-            update msg model
+        { categorySelect } =
+            model
+
+        updatedCategorySelect =
+            { categorySelect
+                | selected = categoryIds
+            }
     in
-        newmodel ! [ cmd, newcmd ]
+        { model | categorySelect = updatedCategorySelect }
+
+
+setSelectedActivity : Maybe ActivityId -> Model -> Model
+setSelectedActivity id model =
+    let
+        { activitySelect } =
+            model
+
+        updatedActivitySelect =
+            { activitySelect | selected = id }
+    in
+        { model | activitySelect = updatedActivitySelect }
+
+
+setSelectedCountry : Maybe String -> Model -> Model
+setSelectedCountry id model =
+    let
+        { countrySelect } =
+            model
+
+        updatedCountrySelect =
+            { countrySelect | selected = id }
+    in
+        { model | countrySelect = updatedCountrySelect }
 
 
 port copy : String -> Cmd msg
@@ -31,6 +68,14 @@ update msg model =
             let
                 newModel =
                     onUrlChange location model
+
+                queryUpdate =
+                    setSelectedCategories model.homeData
+                        (Maybe.withDefault [] (Dict.get "categories" newModel.search))
+                        >> setSelectedActivity
+                            (0 !! (Maybe.withDefault [] (Dict.get "activity" newModel.search)))
+                        >> setSelectedCountry
+                            (0 !! (Maybe.withDefault [] (Dict.get "countries" newModel.search)))
 
                 homeDataCmd =
                     if model.navCount == 0 then
@@ -45,8 +90,20 @@ update msg model =
 
                         _ ->
                             Cmd.none
+
+                updatedModel =
+                    case newModel.location.hash of
+                        "#/query" ->
+                            queryUpdate newModel
+
+                        _ ->
+                            newModel
             in
-                ( { newModel | navCount = model.navCount + 1 }, Cmd.batch [ homeDataCmd, queryCmd ] )
+                ( { updatedModel
+                    | navCount = model.navCount + 1
+                  }
+                , Cmd.batch [ homeDataCmd, queryCmd ]
+                )
 
         SubmitLoginEmailForm ->
             ( model, requestLoginCodeCmd model )
@@ -54,29 +111,33 @@ update msg model =
         LoginEmailFormOnInput email ->
             ( { model | email = email }, Cmd.none )
 
-        SetActiveCategory category ->
-            ( { model | activeCategory = category }, Cmd.none )
+        SetActiveCategory categoryId ->
+            ( { model | activeCategory = Just categoryId }, Cmd.none )
 
         CountrySelectMsg subMsg ->
             let
                 ( updatedCountrySelectModel, countrySelectCmd ) =
                     CountrySelect.update subMsg model.countrySelect
             in
-                ( { model | countrySelect = updatedCountrySelectModel }, Cmd.map CountrySelectMsg countrySelectCmd )
+                ( { model
+                    | countrySelect = updatedCountrySelectModel
+                  }
+                , Cmd.map CountrySelectMsg countrySelectCmd
+                )
 
         ActivitySelectMsg subMsg ->
             let
                 ( updatedActivitySelectModel, activitySelectCmd ) =
                     ActivitySelect.update subMsg model.activitySelect
 
-                selectedActivity =
-                    Maybe.withDefault emptyActivity updatedActivitySelectModel.selectedActivity
+                selected =
+                    Maybe.withDefault "" updatedActivitySelectModel.selected
 
                 { categorySelect, homeData } =
                     model
 
                 newCategoryModel =
-                    { categorySelect | options = getCategories homeData selectedActivity.id }
+                    { categorySelect | options = getCategories homeData selected }
             in
                 ( { model
                     | activitySelect = updatedActivitySelectModel
@@ -105,21 +166,21 @@ update msg model =
             in
                 ( { model | categorySelect = updatedCategorySelectModel }, Cmd.map CategorySelectMsg categorySelectCmd )
 
-        CategorySubMenuClick category ->
-            case category == model.categorySubMenuOpen of
+        CategorySubMenuClick categoryId ->
+            case Just categoryId == model.categorySubMenuOpen of
                 True ->
-                    ( { model | categorySubMenuOpen = CategorySelect.emptyCategory }, Cmd.none )
+                    ( { model | categorySubMenuOpen = Nothing }, Cmd.none )
 
                 _ ->
-                    ( { model | categorySubMenuOpen = category }, Cmd.none )
+                    ( { model | categorySubMenuOpen = Just categoryId }, Cmd.none )
 
-        CategoryRemoveClick category ->
+        CategoryRemoveClick categoryId ->
             let
                 { categorySelect } =
                     model
 
                 newCategories =
-                    List.filter (\selectedCategory -> selectedCategory /= category)
+                    List.filter (\selectedCategory -> selectedCategory /= categoryId)
                         categorySelect.selected
 
                 updatedCategorySelectModel =
@@ -141,11 +202,11 @@ update msg model =
                 newActivityModel =
                     { activitySelect | options = getActivities results.taxonomy }
 
-                selectedActivity =
-                    Maybe.withDefault ActivitySelect.emptyActivity activitySelect.selectedActivity
+                selected =
+                    Maybe.withDefault "" activitySelect.selected
 
                 newCategoryModel =
-                    { categorySelect | options = getCategories results.taxonomy selectedActivity.id }
+                    { categorySelect | options = getCategories results.taxonomy selected }
 
                 newCountryModel =
                     { countrySelect | countries = getCountries results.countries }
@@ -164,7 +225,7 @@ update msg model =
             ( model, Cmd.none )
 
         Copy copyLink ->
-            ( { model | categorySubMenuOpen = CategorySelect.emptyCategory }, copy copyLink )
+            ( { model | categorySubMenuOpen = Nothing }, copy copyLink )
 
         _ ->
             ( model, Cmd.none )

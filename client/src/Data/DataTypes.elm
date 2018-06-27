@@ -37,8 +37,12 @@ type alias HomeDataResults =
     }
 
 
+type alias TaxonomyId =
+    String
+
+
 type alias Taxonomy =
-    { id : String
+    { id : TaxonomyId
     , enabled : Bool
     , name : String
     , description : String
@@ -47,7 +51,7 @@ type alias Taxonomy =
 
 
 type alias HomeDataItem =
-    { id : String
+    { id : TaxonomyId
     , enabled : Bool
     , name : String
     , description : String
