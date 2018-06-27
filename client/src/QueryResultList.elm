@@ -9,7 +9,6 @@ import Model exposing (Model, Msg(..))
 import ClassNames exposing (classNames)
 import Set
 import Util exposing (boolStr, (!!))
-import DataTypes exposing (QueryResultsMatchBody)
 
 
 view : Model -> Html Msg
