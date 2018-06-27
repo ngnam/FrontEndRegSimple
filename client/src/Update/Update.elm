@@ -8,11 +8,13 @@ import CountrySelect
 import ActivitySelect exposing (ActivityId)
 import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (onUrlChange)
+import Helpers.QueryString exposing (queryString)
 import Helpers.HomeData exposing (getActivities, getCategories, getCountries)
 import Set
 import Dict
 import Util exposing ((!!))
 import DataTypes exposing (Taxonomy)
+import Navigation
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
@@ -35,10 +37,21 @@ setSelectedCategories homeData categoryIds model =
 
 
 setSelectedActivity : Maybe ActivityId -> Model -> Model
-setSelectedActivity id model =
+setSelectedActivity maybeId model =
     let
         { activitySelect } =
             model
+
+        id =
+            case maybeId of
+                Just "" ->
+                    Nothing
+
+                Just id ->
+                    Just id
+
+                Nothing ->
+                    Nothing
 
         updatedActivitySelect =
             { activitySelect | selected = id }
@@ -47,10 +60,21 @@ setSelectedActivity id model =
 
 
 setSelectedCountry : Maybe String -> Model -> Model
-setSelectedCountry id model =
+setSelectedCountry maybeId model =
     let
         { countrySelect } =
             model
+
+        id =
+            case maybeId of
+                Just "" ->
+                    Nothing
+
+                Just id ->
+                    Just id
+
+                Nothing ->
+                    Nothing
 
         updatedCountrySelect =
             { countrySelect | selected = id }
@@ -118,12 +142,22 @@ update msg model =
             let
                 ( updatedCountrySelectModel, countrySelectCmd ) =
                     CountrySelect.update subMsg model.countrySelect
+
+                newModel =
+                    { model
+                        | countrySelect = updatedCountrySelectModel
+                    }
+
+                selectedHasChanged =
+                    model.countrySelect.selected /= newModel.countrySelect.selected
+
+                queryCmd =
+                    if newModel.location.hash == "#/query" && selectedHasChanged then
+                        Navigation.modifyUrl ("/#/query?" ++ (queryString newModel))
+                    else
+                        Cmd.none
             in
-                ( { model
-                    | countrySelect = updatedCountrySelectModel
-                  }
-                , Cmd.map CountrySelectMsg countrySelectCmd
-                )
+                ( newModel, Cmd.batch [ Cmd.map CountrySelectMsg countrySelectCmd, queryCmd ] )
 
         ActivitySelectMsg subMsg ->
             let
@@ -138,12 +172,24 @@ update msg model =
 
                 newCategoryModel =
                     { categorySelect | options = getCategories homeData selected }
+
+                newModel =
+                    { model
+                        | activitySelect = updatedActivitySelectModel
+                        , categorySelect = newCategoryModel
+                    }
+
+                selectedHasChanged =
+                    model.activitySelect.selected /= newModel.activitySelect.selected
+
+                queryCmd =
+                    if newModel.location.hash == "#/query" && selectedHasChanged then
+                        Navigation.modifyUrl ("/#/query?" ++ (queryString newModel))
+                    else
+                        Cmd.none
             in
-                ( { model
-                    | activitySelect = updatedActivitySelectModel
-                    , categorySelect = newCategoryModel
-                  }
-                , Cmd.map ActivitySelectMsg activitySelectCmd
+                ( newModel
+                , Cmd.batch [ Cmd.map ActivitySelectMsg activitySelectCmd, queryCmd ]
                 )
 
         AccordionToggleClick ( id, index ) ->
@@ -163,8 +209,24 @@ update msg model =
             let
                 ( updatedCategorySelectModel, categorySelectCmd ) =
                     CategorySelect.update subMsg model.categorySelect
+
+                newModel =
+                    { model
+                        | categorySelect = updatedCategorySelectModel
+                    }
+
+                selectedHasChanged =
+                    model.categorySelect.selected /= newModel.categorySelect.selected
+
+                queryCmd =
+                    if newModel.location.hash == "#/query" && selectedHasChanged then
+                        Navigation.modifyUrl ("/#/query?" ++ (queryString newModel))
+                    else
+                        Cmd.none
             in
-                ( { model | categorySelect = updatedCategorySelectModel }, Cmd.map CategorySelectMsg categorySelectCmd )
+                ( newModel
+                , Cmd.batch [ Cmd.map CategorySelectMsg categorySelectCmd, queryCmd ]
+                )
 
         CategorySubMenuClick categoryId ->
             case Just categoryId == model.categorySubMenuOpen of

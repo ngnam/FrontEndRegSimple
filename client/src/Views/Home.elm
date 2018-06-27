@@ -6,9 +6,10 @@ import Html.Attributes exposing (type_, placeholder, value, src, class, href, ta
 import Html.Events exposing (onSubmit, onInput)
 import Util exposing (viewIf)
 import ClassNames exposing (classNames)
-import CountrySelect exposing (emptyCountry)
+import CountrySelect
 import ActivitySelect
 import CategorySelect
+import Helpers.QueryString exposing (queryString)
 
 
 view : Model -> Html Msg
@@ -83,25 +84,11 @@ submitButton model =
                   , not isFormValid
                   )
                 ]
-
-        countries =
-            "countries[]="
-                ++ Maybe.withDefault "" model.countrySelect.selected
-
-        activity =
-            "&activity[]="
-                ++ Maybe.withDefault "" model.activitySelect.selected
-
-        categories =
-            List.foldr (\categoryId accum -> accum ++ "&categories[]=" ++ categoryId) "" model.categorySelect.selected
-
-        queryString =
-            countries ++ activity ++ categories
     in
         button [ class "di pa2 absolute right--2 top-0 h3 w3 bg-transparent bn", tabindex -1 ]
             [ viewIf isFormValid
                 (a
-                    [ href ("/#/query?" ++ queryString)
+                    [ href ("/#/query?" ++ (queryString model))
                     , class buttonChildclass
                     , value "submit"
                     ]

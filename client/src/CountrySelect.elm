@@ -1,4 +1,4 @@
-module CountrySelect exposing (Model, Msg, initialModel, update, view, Country, emptyCountry)
+module CountrySelect exposing (Model, Msg, initialModel, update, view, Country)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -45,11 +45,6 @@ initialModel =
 
 type alias Country =
     { name : String, id : CountryId }
-
-
-emptyCountry : Country
-emptyCountry =
-    { name = "", id = "" }
 
 
 source : List Country -> String -> List Country
@@ -136,7 +131,7 @@ view model =
                 ]
 
         showInputFlag =
-            selected /= Nothing && not menuOpen
+            selected /= Nothing && selected /= Just "" && not menuOpen
 
         selectedCountryCode =
             Maybe.withDefault "" selected
@@ -229,8 +224,8 @@ type Msg
 
 
 idFromIndex : Index -> List Country -> Maybe CountryId
-idFromIndex index countries =
-    Maybe.map .id (index !! countries)
+idFromIndex index options =
+    Maybe.map .id (index !! options)
 
 
 getCountryName : Maybe CountryId -> List Country -> String
@@ -284,15 +279,15 @@ handleInputBlur model =
                 , menuOpen = False
                 , query = getCountryName selected model.countries
             }
-        else if not hoveringAnOption then
-            { model | focused = -1, menuOpen = False }
-        else
+        else if hoveringAnOption then
             { model
                 | focused = -1
                 , menuOpen = False
-                , query = getCountryName (idFromIndex hovered model.countries) model.countries
+                , query = getCountryName (idFromIndex hovered options) model.countries
                 , selected = idFromIndex hovered options
             }
+        else
+            { model | focused = -1, menuOpen = False }
 
 
 handleOptionClick : Maybe CountryId -> Model -> Model
@@ -423,14 +418,14 @@ update msg model =
 
         HandleSpace ->
             let
-                { focused, countries } =
+                { focused, options } =
                     model
 
                 focusIsOnOption =
                     focused /= -1
 
                 selectedId =
-                    idFromIndex focused countries
+                    idFromIndex focused options
             in
                 if focusIsOnOption then
                     ( handleOptionClick selectedId model, Cmd.none )
