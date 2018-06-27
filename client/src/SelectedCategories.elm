@@ -10,15 +10,12 @@ import CategorySelect exposing (Category, emptyCategory, getCategoriesFromIds)
 subMenu : ( Model, Category ) -> Html Msg
 subMenu ( model, category ) =
     let
-        divider =
-            div [ class "ba b--gray mh1" ] []
-
         subMenuOpen =
             model.categorySubMenuOpen == Just category.id
 
         menuClass =
             classList
-                [ ( "shadow-2 absolute top-1 right--3 ba b--gray bg-white z-1 dark-grey", True )
+                [ ( "shadow-2 absolute top-1 right--3 ba br1 b--moon-gray bg-white z-1 dark-grey", True )
                 , ( "dn", not subMenuOpen )
                 , ( "flex flex-column", subMenuOpen )
                 ]
@@ -43,25 +40,43 @@ subMenu ( model, category ) =
                 ++ category.id
     in
         div [ menuClass ]
-            [ header [ class "ttc f7 mv1 relative" ]
+            [ header [ class "ttc f7 h1 mv1 flex justify-center items-center dark-gray" ]
                 [ text "Category actions"
-                , button [ class "close-icon absolute top-0 right-0 mr1 bn pointer", onClick (CategorySubMenuClick category.id) ] []
+                , button
+                    [ class "close-icon absolute top-0 right-0 w1 h1 ma1 bn pointer bg-white"
+                    , onClick (CategorySubMenuClick category.id)
+                    ]
+                    []
                 ]
-            , divider
-            , button [ class "bn tl mv1 pointer bg-white", onClick (Copy copyLink) ] [ text "Copy url..." ]
-            , button [ class "bn tl mv1 pointer bg-white", disabled isDisabled, onClick (CategoryRemoveClick category.id) ] [ text "Remove from selected..." ]
+            , ul [ class "pv1 mh1 bt bb b--black-20 mb1 list tl" ]
+                [ li []
+                    [ button
+                        [ class "bn tl f7 pv1 pointer bg-white w-100"
+                        , onClick (Copy copyLink)
+                        ]
+                        [ text "Copy url..." ]
+                    ]
+                , li []
+                    [ button
+                        [ class "bn tl f7 pv1 pointer bg-white w-100"
+                        , disabled isDisabled
+                        , onClick (CategoryRemoveClick category.id)
+                        ]
+                        [ text "Remove from selected..." ]
+                    ]
+                ]
             ]
 
 
 categoriesMenu : Model -> Html Msg
 categoriesMenu model =
-    div [ class "flex flex-column" ]
+    ul [ class "list flex flex-column" ]
         (List.map
             (\category ->
                 let
                     categoryClass =
                         classList
-                            [ ( "tl f7 bg-white shadow-1 mb1 pv3 ph2 min-h-20 black-30 pointer bn relative w-100", True )
+                            [ ( "tl f7 bg-white shadow-1 br1 mb1 pv1 ph2 min-h3rem black-30 pointer bn relative w-100", True )
                             , ( "bg-blue white", (Just category.id == model.activeCategory) )
                             ]
 
@@ -72,7 +87,7 @@ categoriesMenu model =
                             , ( "menu-dots bg-white", (Just category.id /= model.activeCategory) )
                             ]
                 in
-                    div [ class "relative" ]
+                    li [ class "relative" ]
                         [ button
                             [ categoryClass, onClick (Model.SetActiveCategory category.id), tabindex 0 ]
                             [ text category.name ]
