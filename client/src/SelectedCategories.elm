@@ -28,20 +28,20 @@ subMenu ( model, category ) =
             ((List.length (model.categorySelect.selected)) == 1)
 
         countries =
-            case model.countrySelect.selected of
-                Just countryId ->
-                    countryId
+            Maybe.withDefault "" model.countrySelect.selected
 
-                Nothing ->
-                    ""
+        activity =
+            Maybe.withDefault "" model.activitySelect.selected
 
         copyLink =
             model.config.clientBaseUrl
                 ++ "/#/query?"
-                ++ "categories[]="
-                ++ category.id
-                ++ "&countries[]="
+                ++ "countries[]="
                 ++ countries
+                ++ "&activity[]="
+                ++ activity
+                ++ "&categories[]="
+                ++ category.id
     in
         div [ class menuClass ]
             [ header [ class "ttc f7 mv1 relative" ]
