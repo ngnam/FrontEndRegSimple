@@ -5,7 +5,6 @@ import Html.Attributes exposing (..)
 import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Json
-import ClassNames exposing (classNames)
 import Util exposing (..)
 
 
@@ -107,7 +106,7 @@ view model =
                 "false"
 
         menuClass =
-            classNames
+            classList
                 [ ( "w15rem absolute z-4 ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba", True )
                 , ( "dn", not menuOpen )
                 ]
@@ -116,7 +115,7 @@ view model =
             "f5 br-100 mr2 w1 h1 flag-icon flag-icon-squared flag-icon-" ++ String.toLower code
 
         inputUnderlineClass menuOpen =
-            classNames
+            classList
                 [ ( "absolute top-125 w-100 ba b--blue", True )
                 , ( "dn", not menuOpen )
                 ]
@@ -125,7 +124,7 @@ view model =
             "relative pv1 ph3 lh-copy pointer"
 
         optionBgClass active =
-            classNames
+            classList
                 [ ( "absolute absolute--fill", True )
                 , ( "bg-blue o-20", active )
                 ]
@@ -137,7 +136,7 @@ view model =
             Maybe.withDefault "" selected
 
         inputClass =
-            classNames
+            classList
                 [ ( "w-100 h2 pv2 pr3 br-pill ba b--solid b--blue", True )
                 , ( "pl3", not showInputFlag )
                 , ( "pl4", showInputFlag )
@@ -164,7 +163,7 @@ view model =
             , ariaExpanded (boolStr menuOpen)
             ]
             [ input
-                [ class inputClass
+                [ inputClass
                 , type_ "text"
                 , placeholder "Type your country"
                 , onInput SetQuery
@@ -180,8 +179,8 @@ view model =
                     [ span [ class (flagClass selectedCountryCode) ] []
                     ]
                 )
-            , div [ class (inputUnderlineClass menuOpen) ] []
-            , ul [ class menuClass, role "listbox" ]
+            , div [ (inputUnderlineClass menuOpen) ] []
+            , ul [ menuClass, role "listbox" ]
                 (model.options
                     |> List.take 8
                     |> List.indexedMap
@@ -196,7 +195,7 @@ view model =
                                 , role "option"
                                 , ariaSelected (boolStr (focused == index))
                                 ]
-                                [ div [ class (optionBgClass (focused == index || hovered == index)) ] []
+                                [ div [ (optionBgClass (focused == index || hovered == index)) ] []
                                 , div [ class (flagClass country.id) ] []
                                 , text country.name
                                 ]

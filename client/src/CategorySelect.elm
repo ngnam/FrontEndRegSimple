@@ -17,7 +17,6 @@ import Html.Attributes exposing (..)
 import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Json
-import ClassNames exposing (classNames)
 import Util exposing (..)
 import DataTypes exposing (HomeDataItem, TaxonomyId)
 import Dict
@@ -109,7 +108,7 @@ view model { inputAlignment } =
             model
 
         menuClass =
-            classNames
+            classList
                 [ ( "list bg-white absolute z-4 ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem", menuOpen )
                 , ( "right-0", inputAlignment /= "left" )
                 , ( "left-0", inputAlignment == "left" )
@@ -126,7 +125,7 @@ view model { inputAlignment } =
             List.length options > 0
 
         buttonClass =
-            classNames
+            classList
                 [ ( "w-100 h2 pv2 ph3 tl br-pill ba b--solid b--blue bg-white truncate-ns", True )
                 , ( "bg-blue white b", menuOpen )
                 ]
@@ -141,7 +140,7 @@ view model { inputAlignment } =
                 toString (List.length selected) ++ " categories selected"
 
         inputUnderlineClass =
-            classNames
+            classList
                 [ ( "absolute top-125 w-100 ba b--blue", True )
                 , ( "dn", not menuOpen )
                 ]
@@ -151,7 +150,7 @@ view model { inputAlignment } =
             , onKeyDown model
             ]
             [ button
-                [ class buttonClass
+                [ buttonClass
                 , onClick HandleButtonClick
                 , onFocus HandleButtonFocus
                 , onBlur HandleButtonBlur
@@ -159,10 +158,10 @@ view model { inputAlignment } =
                 , ariaControls "category-list"
                 ]
                 [ text buttonText ]
-            , div [ class inputUnderlineClass ] []
+            , div [ inputUnderlineClass ] []
             , viewIf (not atLeastOneOption)
                 (div
-                    [ class menuClass
+                    [ menuClass
                     , ariaExpanded (boolStr menuOpen)
                     , ariaHidden (not menuOpen)
                     , onFocus HandleMenuFocus
@@ -174,7 +173,7 @@ view model { inputAlignment } =
             , viewIf (atLeastOneOption)
                 (div
                     [ id "category-list"
-                    , class menuClass
+                    , menuClass
                     , ariaExpanded (boolStr menuOpen)
                     , ariaHidden (not menuOpen)
                     , onFocus HandleMenuFocus
@@ -197,25 +196,25 @@ view model { inputAlignment } =
                                     "absolute checkbox o-0"
 
                                 checkmarkClass =
-                                    classNames
+                                    classList
                                         [ ( "checkbox__checkmark absolute w1 h1 bg-white ba bw1 b--blue br1 left-1", True )
                                         , ( "bg-blue", isSelected )
                                         ]
 
                                 labelClass =
-                                    classNames
+                                    classList
                                         [ ( "relative db fl w-50 pt1 pb2 pl4 pr2 pointer outline-0 f6", True )
                                         , ( "o-30", isDisabled )
                                         ]
 
                                 optionBgClass =
-                                    classNames
+                                    classList
                                         [ ( "absolute absolute--fill", True )
                                         , ( "bg-blue o-20", isFocused )
                                         ]
                             in
                                 label
-                                    [ class labelClass
+                                    [ labelClass
                                     , for ("category-" ++ (toString index))
                                     , onFocus HandleLabelFocus
                                     , onBlur HandleLabelBlur
@@ -233,9 +232,9 @@ view model { inputAlignment } =
                                         , class checkboxClass
                                         ]
                                         []
-                                    , span [ class checkmarkClass ] []
+                                    , span [ checkmarkClass ] []
                                     , div [ class "ml2" ] [ text category.name ]
-                                    , div [ class optionBgClass ] []
+                                    , div [ optionBgClass ] []
                                     ]
                         )
                         model.options

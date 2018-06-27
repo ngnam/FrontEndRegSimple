@@ -1,12 +1,11 @@
 module QueryResultList exposing (view)
 
 import Html exposing (Html, text, div, h2, span, ul, li, button, p, a)
-import Html.Attributes exposing (class, id, href, target)
+import Html.Attributes exposing (class, id, href, target, classList)
 import Html.Attributes.Extra exposing (innerHtml)
 import Html.Attributes.Aria exposing (ariaExpanded, ariaHidden, ariaControls, ariaLabelledby)
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
-import ClassNames exposing (classNames)
 import Set
 import Util exposing (boolStr, (!!))
 
@@ -34,13 +33,13 @@ view model =
                                 Set.member ( match.id, index ) model.accordionsOpen
 
                             accordionClass =
-                                classNames
+                                classList
                                     [ ( "f7 bg-mid-gray mt1 mb2 br2 b--moon-gray ba pa3 lh-copy", True )
                                     , ( "dn", not accordionIsOpen )
                                     ]
 
                             accordionToggleClass =
-                                classNames
+                                classList
                                     [ ( "button-reset bg-white b--none arrow-bullet pointer near-black f6 pv1 pl3 lh-title w-100 tl relative"
                                       , True
                                       )
@@ -67,7 +66,7 @@ view model =
                         in
                             li [ class "near-black mw6" ]
                                 [ button
-                                    [ class accordionToggleClass
+                                    [ accordionToggleClass
                                     , ariaControls accordionId
                                     , onClick (AccordionToggleClick ( match.id, index ))
                                     ]
@@ -78,7 +77,7 @@ view model =
                                         []
                                     ]
                                 , div
-                                    [ class accordionClass
+                                    [ accordionClass
                                     , id accordionId
                                     , ariaExpanded (boolStr accordionIsOpen)
                                     , ariaHidden (not accordionIsOpen)

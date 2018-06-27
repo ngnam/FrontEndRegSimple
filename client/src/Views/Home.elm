@@ -2,10 +2,9 @@ module Views.Home exposing (..)
 
 import Model exposing (Model, Msg(..))
 import Html exposing (Html, text, div, section, form, img, input, h1, button, span, a, p)
-import Html.Attributes exposing (type_, placeholder, value, src, class, href, tabindex)
+import Html.Attributes exposing (type_, placeholder, value, src, class, href, tabindex, classList)
 import Html.Events exposing (onSubmit, onInput)
 import Util exposing (viewIf)
-import ClassNames exposing (classNames)
 import CountrySelect
 import ActivitySelect
 import CategorySelect
@@ -76,7 +75,7 @@ submitButton model =
             checkFormValid model
 
         buttonChildclass =
-            classNames
+            classList
                 [ ( "flex justify-center items-center no-underline br-100 bg-blue white f5 metro bn h-100 w-100"
                   , True
                   )
@@ -89,14 +88,14 @@ submitButton model =
             [ viewIf isFormValid
                 (a
                     [ href ("/#/query?" ++ (queryString model))
-                    , class buttonChildclass
+                    , buttonChildclass
                     , value "submit"
                     ]
                     [ text "Go" ]
                 )
             , viewIf (not isFormValid)
                 (span
-                    [ class buttonChildclass
+                    [ buttonChildclass
                     ]
                     [ text "Go" ]
                 )
