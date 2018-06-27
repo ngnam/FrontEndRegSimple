@@ -301,7 +301,12 @@ toggleCategorySelected categoryId model =
         if alreadySelected then
             { model | selected = List.filter (exclude categoryId) model.selected }
         else
-            { model | selected = model.selected ++ [ categoryId ] }
+            { model | selected = [ categoryId ] }
+
+
+
+-- remove above line and uncomment below line to enable multiple categories
+-- { model | selected = model.selected ++ [ categoryId ] }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
