@@ -5,7 +5,6 @@ import Html.Attributes exposing (..)
 import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Util exposing (..)
-import ClassNames exposing (classNames)
 import Json.Decode as Json
 import DataTypes exposing (HomeDataItem)
 
@@ -69,7 +68,7 @@ onKeyDown model =
         onWithOptions "keydown" options decoder
 
 
-activityMenu : Model -> String -> Html Msg
+activityMenu : Model -> Attribute Msg -> Html Msg
 activityMenu model menuClass =
     let
         { options, selected, menuOpen } =
@@ -77,7 +76,7 @@ activityMenu model menuClass =
     in
         div
             [ id "activity-list"
-            , class menuClass
+            , menuClass
             , ariaExpanded (boolStr menuOpen)
             , ariaHidden (not menuOpen)
             , onFocus HandleMenuFocus
@@ -91,7 +90,7 @@ activityMenu model menuClass =
                             not activity.enabled
 
                         labelClass =
-                            classNames
+                            classList
                                 [ ( "relative pl4 pt1 pb2 w-50 tl f6"
                                   , True
                                   )
@@ -110,7 +109,7 @@ activityMenu model menuClass =
                                 0
                     in
                         label
-                            [ class labelClass
+                            [ labelClass
                             , for ("activity-" ++ (toString index))
                             , tabindex tabable
                             , onFocus (HandleOptionFocused index)
@@ -124,13 +123,11 @@ activityMenu model menuClass =
                                     "absolute left-1 w1 h1 br-100 bg-white b--blue ba fl flex flex-column justify-center items-center mr1"
                                 ]
                                 [ div
-                                    [ class
-                                        (classNames
-                                            [ ( "absolute w-75 h-75 bg-blue br-100"
-                                              , Just activity.id == selected
-                                              )
-                                            ]
-                                        )
+                                    [ classList
+                                        [ ( "absolute w-75 h-75 bg-blue br-100"
+                                          , Just activity.id == selected
+                                          )
+                                        ]
                                     ]
                                     []
                                 ]
@@ -158,7 +155,7 @@ view model { inputAlignment } =
             model
 
         menuClass =
-            classNames
+            classList
                 [ ( "list bg-white ttc w30rem top-150 ba b--gray shadow-1 pv2 ph0", True )
                 , ( "absolute z-4 flex flex-wrap justify-between", menuOpen )
                 , ( "dn", not menuOpen )
@@ -166,23 +163,23 @@ view model { inputAlignment } =
                 ]
 
         wrapperClass =
-            classNames
+            classList
                 [ ( "relative w-30 fl", True )
                 , ( "mr2", inputAlignment == "left" )
                 ]
 
         buttonClass =
-            "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue tl truncate bg-white "
-                ++ classNames
-                    [ ( "bg-blue white", menuOpen )
-                    , ( "black-60", selected == Nothing )
-                    ]
+            classList
+                [ ( "w-100 h2 fl pv2 ph3 br-pill ba b--solid b--blue tl truncate bg-white", True )
+                , ( "bg-blue white", menuOpen )
+                , ( "black-60", selected == Nothing )
+                ]
 
         buttonUnderlineClass =
             "absolute top-125 w-100 ba b--blue"
     in
         div
-            [ class wrapperClass, onKeyDown model ]
+            [ wrapperClass, onKeyDown model ]
             [ button
                 [ onBlur HandleButtonBlur
                 , onFocus HandleButtonFocus
@@ -190,7 +187,7 @@ view model { inputAlignment } =
                 , type_ "button"
                 , type_ "button"
                 , placeholder "Choose your activity"
-                , class buttonClass
+                , buttonClass
                 , ariaControls "activity-list"
                 ]
                 [ text (getActivityName selected options) ]
