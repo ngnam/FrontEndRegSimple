@@ -17,7 +17,7 @@ view model =
             model.queryResults
 
         headingText =
-            toString (List.length matches) ++ " of " ++ toString (totalMatches) ++ " matches shown"
+            "Showing " ++ toString (List.length matches) ++ " of " ++ toString (totalMatches) ++ " matches"
     in
         div [ class "white shadow-2 w-100 pa4" ]
             [ h2
