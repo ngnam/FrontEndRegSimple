@@ -126,8 +126,9 @@ view model { inputAlignment } =
 
         buttonClass =
             classList
-                [ ( "w-100 h2 pv2 ph3 tl br-pill ba b--solid b--blue bg-white truncate-ns", True )
-                , ( "bg-blue white b", menuOpen )
+                [ ( "w-100 h2 pv2 ph3 tl br-pill ba b--solid b--blue bg-white truncate-ns b", True )
+                , ( "bg-blue white", menuOpen )
+                , ( "dark-gray", not atLeastOneOption )
                 ]
 
         buttonText =

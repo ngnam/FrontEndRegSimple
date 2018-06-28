@@ -147,7 +147,6 @@
   --washed-green: #e1f8ea;
   --washed-yellow: #fffceb;
   --washed-red: #ffdfdf;
-  --dark-gray: #dedede;
 
   /* RegSimple custom colour palette */
   --dark-blue: #253655;
@@ -160,4 +159,5 @@
   --washed-blue: #98a5df;
   /* moon-gray used as a darker border color */
   --moon-gray: #dfe0e6;
+  --dark-gray: #959bac;
 }
