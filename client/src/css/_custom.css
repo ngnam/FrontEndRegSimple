@@ -128,7 +128,6 @@ h1 {
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  fill: white;
 }
 .menu-dots--white {
   background-image: url('../assets/icons/menu-dots--white.svg');
@@ -138,15 +137,54 @@ h1 {
 }
 
 .close-icon {
-  background-image: url('../assets/icons/remove.svg');
-  background-size: 10px;
+  background-image: url('../assets/icons/remove--small.svg');
   background-position: center;
   background-repeat: no-repeat;
 }
+
 .flex-1 {
   flex: 1;
 }
 
 .right--3 {
   right: -7rem;
+}
+
+.arrows--blue::after {
+  background-image: url('../assets/icons/arrows--blue.svg');
+}
+
+.arrows--white::after {
+  background-image: url('../assets/icons/arrows--white.svg');
+}
+
+.arrows::after {
+  content: '';
+  position: absolute;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 0.8em;
+  height: 100%;
+  top: 0;
+  right: 13px;
+}
+
+.category-card__submenu-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0.8rem;
+  /* 93% height seems to be right for icon size, and the relative text position */
+  height: 93%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.category-card__submenu-btn--share::after {
+  background-image: url('../assets/icons/share.svg');
+}
+.category-card__submenu-btn--remove::after {
+  background-image: url('../assets/icons/trash.svg');
 }

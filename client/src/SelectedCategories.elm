@@ -38,6 +38,9 @@ subMenu ( model, category ) =
                 ++ activity
                 ++ "&categories[]="
                 ++ category.id
+
+        submenuButtonClass =
+            "category-card__submenu-btn relative bn tl f7 pv1 pl3 mb1 pointer bg-white w-100"
     in
         div [ menuClass ]
             [ header [ class "ttc f7 h1 mv1 flex justify-center items-center dark-gray" ]
@@ -51,14 +54,20 @@ subMenu ( model, category ) =
             , ul [ class "pv1 mh1 bt bb b--black-20 mb1 list tl" ]
                 [ li []
                     [ button
-                        [ class "bn tl f7 pv1 pointer bg-white w-100"
+                        [ classList
+                            [ ( submenuButtonClass, True )
+                            , ( "category-card__submenu-btn--share", True )
+                            ]
                         , onClick (Copy copyLink)
                         ]
                         [ text "Copy url..." ]
                     ]
                 , li []
                     [ button
-                        [ class "bn tl f7 pv1 pointer bg-white w-100"
+                        [ classList
+                            [ ( submenuButtonClass, True )
+                            , ( "category-card__submenu-btn--remove", True )
+                            ]
                         , disabled isDisabled
                         , onClick (CategoryRemoveClick category.id)
                         ]
