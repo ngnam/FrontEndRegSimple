@@ -51,7 +51,7 @@ matchDecoder =
         |> required "year" (nullable int)
         |> required "url" string
         |> required "id" string
-        |> required "body" (list matchBodyDecoder)
+        |> optional "body" (list matchBodyDecoder) []
 
 
 decoder : Decoder QueryResults

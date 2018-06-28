@@ -7,7 +7,7 @@ import Html.Attributes.Aria exposing (ariaExpanded, ariaHidden, ariaControls, ar
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 import Set
-import Util exposing (boolStr, (!!))
+import Util exposing (boolStr, (!!), viewIf)
 
 
 view : Model -> Html Msg
@@ -54,12 +54,15 @@ view model =
 
                             emptyBody =
                                 { tags = []
-                                , text = ""
+                                , text = "This result contains no body. It matched your search terms against its title only."
                                 , offset = 0
-                                , summary = ""
+                                , summary = match.title
                                 , url = ""
                                 , page = 0
                                 }
+
+                            matchHasBody =
+                                0 !! match.body /= Nothing
 
                             snippet =
                                 Maybe.withDefault emptyBody (0 !! match.body)
@@ -85,7 +88,8 @@ view model =
                                     ]
                                     [ div [ innerHtml snippet.text ] []
                                     , div []
-                                        [ text ("p." ++ toString snippet.page ++ ", ")
+                                        [ viewIf matchHasBody
+                                            (text ("p." ++ toString snippet.page ++ ", "))
                                         , a
                                             [ href snippet.url
                                             , target "_blank"
