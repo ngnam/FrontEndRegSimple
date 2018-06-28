@@ -46,7 +46,7 @@ subMenu ( model, category ) =
             [ header [ class "ttc f7 h1 mv1 flex justify-center items-center dark-gray" ]
                 [ text "Category actions"
                 , button
-                    [ class "close-icon absolute top-0 right-0 w1 h1 ma1 bn pointer bg-white"
+                    [ class "close-icon--small absolute top-0 right-0 w1 h1 ma1 bn pointer bg-white"
                     , onClick (CategorySubMenuClick category.id)
                     ]
                     []

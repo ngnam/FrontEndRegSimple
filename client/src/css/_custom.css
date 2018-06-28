@@ -17,6 +17,10 @@ h1 {
   font-size: 30px;
 }
 
+button {
+  cursor: pointer;
+}
+
 .body-text em {
   background: yellow;
 }
@@ -160,10 +164,23 @@ h1 {
   background-repeat: no-repeat;
 }
 
-.close-icon {
+.close-icon--small {
   background-image: url('../assets/icons/remove--small.svg');
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.close-icon::after {
+  background-image: url('../assets/icons/remove.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .flex-1 {

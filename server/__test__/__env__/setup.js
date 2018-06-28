@@ -8,7 +8,8 @@ import countriesFixture from './fixtures/countries.js';
 module.exports = async () => {
   const emailService = {};
   const searchApiService = {
-    fetchResults: () => Promise.resolve({ data: queryResultsFixture }),
+    fetchResults: ({ countries }) =>
+      Promise.resolve({ data: queryResultsFixture }),
     fetchCountries: () => Promise.resolve({ data: countriesFixture }),
     fetchTaxonomy: () => Promise.resolve({ data: taxonomyFixture })
   };

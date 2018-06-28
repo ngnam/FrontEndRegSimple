@@ -1,30 +1,62 @@
 module QueryResultList exposing (view)
 
-import Html exposing (Html, text, div, h2, span, ul, li, button, p, a)
+import Html exposing (Html, text, div, header, h2, h3, span, ul, li, button, p, a)
 import Html.Attributes exposing (class, id, href, target, classList)
 import Html.Attributes.Extra exposing (innerHtml)
-import Html.Attributes.Aria exposing (ariaExpanded, ariaHidden, ariaControls, ariaLabelledby)
+import Html.Attributes.Aria exposing (ariaExpanded, ariaHidden, ariaControls, ariaLabelledby, ariaLabel)
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 import Set
-import Util exposing (boolStr, (!!), viewIf)
+import Util exposing (boolStr, viewIf, (!!))
+import DataTypes exposing (QueryResult)
+import Helpers.HomeData exposing (getCountryName)
 
 
-view : Model -> Html Msg
-view model =
+view : Model -> Int -> QueryResult -> Html Msg
+view model index queryResult =
     let
+        { queryResults } =
+            model
+
         { matches, totalMatches } =
-            model.queryResults
+            queryResult
+
+        isCountryCompare =
+            List.length queryResults > 1
+
+        countryId =
+            Maybe.withDefault "" (Maybe.map .country (0 !! matches))
+
+        countryName =
+            getCountryName countryId model
 
         headingText =
             "Showing " ++ toString (List.length matches) ++ " of " ++ toString (totalMatches) ++ " matches"
+
+        flagClass =
+            "f5 br-100 mr2 w1 h1 flag-icon flag-icon-squared flag-icon-" ++ String.toLower countryId
     in
-        div [ class "white shadow-2 w-100 pa4" ]
-            [ h2
-                [ class "f6 black-30 metro-b mb2"
-                , innerHtml headingText
+        div [ class "bg-white shadow-2 w-100 ph4 pv3 relative" ]
+            [ header []
+                [ viewIf isCountryCompare
+                    (div
+                        [ class "f6 black-30 metro-b mv3 tc" ]
+                        [ span [ class flagClass ] [], text countryName ]
+                    )
+                , h3
+                    [ class "f6 black-30 metro-b mb2"
+                    , innerHtml headingText
+                    ]
+                    []
+                , viewIf isCountryCompare
+                    (button
+                        [ class "close-icon absolute top-1 right-1 h1 w1 b--none bg-transparent"
+                        , onClick (QueryResultListRemoveClick index)
+                        , ariaLabel ("Remove " ++ countryName ++ " from comparison")
+                        ]
+                        []
+                    )
                 ]
-                []
             , ul [ class "list f5" ]
                 (List.indexedMap
                     (\index match ->
@@ -100,6 +132,6 @@ view model =
                                     ]
                                 ]
                     )
-                    model.queryResults.matches
+                    queryResult.matches
                 )
             ]

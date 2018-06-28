@@ -2,6 +2,7 @@ module HomeDataDecoder exposing (requestCmd)
 
 import Model exposing (Model, Msg(..))
 import DataTypes exposing (HomeDataResults, Taxonomy, HomeDataChildren(..))
+import CountrySelect exposing (CountryId, CountryName)
 import Http
 import Json.Decode
     exposing
@@ -33,7 +34,7 @@ taxonomyDecoder =
         |> required "children" (map HomeDataChildren (list (lazy (\_ -> taxonomyDecoder))))
 
 
-countriesDecoder : Decoder (List ( String, List String ))
+countriesDecoder : Decoder (List ( CountryId, List CountryName ))
 countriesDecoder =
     keyValuePairs (list string)
 

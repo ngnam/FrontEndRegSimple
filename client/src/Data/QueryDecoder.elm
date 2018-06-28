@@ -2,7 +2,7 @@ module QueryDecoder exposing (requestCmd)
 
 import Http
 import Model exposing (Model, Msg(..))
-import DataTypes exposing (QueryResults, QueryResultsMatch, QueryResultsMatchBody)
+import DataTypes exposing (QueryResults, QueryResult, QueryResultMatch, QueryResultMatchBody)
 import Json.Decode exposing (Decoder, list, int, float, string, at, oneOf, null, nullable)
 import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
 
@@ -30,9 +30,9 @@ requestCmd model =
     Http.send FetchQueryResults (request model)
 
 
-matchBodyDecoder : Decoder QueryResultsMatchBody
+matchBodyDecoder : Decoder QueryResultMatchBody
 matchBodyDecoder =
-    decode QueryResultsMatchBody
+    decode QueryResultMatchBody
         |> required "tags" (list string)
         |> required "text" string
         |> required "offset" int
@@ -41,9 +41,9 @@ matchBodyDecoder =
         |> required "page" int
 
 
-matchDecoder : Decoder QueryResultsMatch
+matchDecoder : Decoder QueryResultMatch
 matchDecoder =
-    decode QueryResultsMatch
+    decode QueryResultMatch
         |> required "score" float
         |> required "title" string
         |> required "type" nullableString
@@ -54,10 +54,16 @@ matchDecoder =
         |> optional "body" (list matchBodyDecoder) []
 
 
+queryResultDecoder : Decoder QueryResult
+queryResultDecoder =
+    decode QueryResult
+        |> required "n_matches" int
+        |> required "total_matches" int
+        |> required "max_score" (nullable float)
+        |> required "matches" (list matchDecoder)
+
+
 decoder : Decoder QueryResults
 decoder =
     decode QueryResults
-        |> required "n_matches" int
-        |> required "total_matches" int
-        |> required "max_score" float
-        |> required "matches" (list matchDecoder)
+        |> required "results" (list queryResultDecoder)

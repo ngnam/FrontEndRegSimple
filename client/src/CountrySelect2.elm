@@ -1,14 +1,4 @@
-module CountrySelect
-    exposing
-        ( Model
-        , Msg
-        , initialModel
-        , update
-        , view
-        , Country
-        , CountryId
-        , CountryName
-        )
+module CountrySelect2 exposing (Model, Msg, initialModel, update, view, Country)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -26,10 +16,6 @@ type alias Index =
 
 
 type alias CountryId =
-    String
-
-
-type alias CountryName =
     String
 
 
@@ -57,7 +43,7 @@ initialModel =
 
 
 type alias Country =
-    { name : CountryName, id : CountryId }
+    { name : String, id : CountryId }
 
 
 source : List Country -> String -> List Country
@@ -179,7 +165,7 @@ view model =
             [ input
                 [ inputClass
                 , type_ "text"
-                , placeholder "Type your country"
+                , placeholder "Compare to"
                 , onInput SetQuery
                 , onBlur HandleInputBlur
                 , value inputValue
