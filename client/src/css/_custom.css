@@ -17,7 +17,7 @@ h1 {
   font-size: 30px;
 }
 
-em {
+.body-text em {
   background: yellow;
 }
 

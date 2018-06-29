@@ -16,7 +16,7 @@ type alias Index =
 
 
 type alias Config =
-    { inputAlignment : String, inputSize : String }
+    { inputAlignment : String }
 
 
 type alias CountryId =
@@ -95,7 +95,7 @@ onKeyDown model =
 
 
 view : Model -> Config -> Html Msg
-view model { inputAlignment, inputSize } =
+view model { inputAlignment } =
     let
         { menuOpen, focused, hovered, countries, selected } =
             model
@@ -161,7 +161,7 @@ view model { inputAlignment, inputSize } =
                     model.query
     in
         div
-            [ classList [ ( "fl relative f6", True ), ( "w-30", inputSize /= "small" ), ( "w-20", inputSize == "small" ) ]
+            [ class "fl relative f6 w-100"
             , onKeyDown model
             , role "combobox"
             , ariaExpanded (boolStr menuOpen)

@@ -1,10 +1,10 @@
-module SearchInput exposing (view)
+module FilterTextInput exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Html.Attributes.Aria exposing (..)
-import Model exposing (Model, Msg(SetFilterText))
+import Model exposing (Model, Msg(FilterTextOnInput))
 
 
 view : Model -> Html Msg
@@ -19,7 +19,7 @@ view model =
             [ input
                 [ inputClass
                 , type_ "text"
-                , onInput SetFilterText
+                , onInput FilterTextOnInput
                 , placeholder "Search results..."
                 , value model.filterText
                 , role "textbox"

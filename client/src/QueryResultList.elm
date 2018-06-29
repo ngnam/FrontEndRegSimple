@@ -67,7 +67,7 @@ view model =
                             snippet =
                                 Maybe.withDefault emptyBody (0 !! match.body)
                         in
-                            li [ class "near-black mw6" ]
+                            li [ class "near-black mw6 body-text" ]
                                 [ button
                                     [ accordionToggleClass
                                     , ariaControls accordionId

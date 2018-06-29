@@ -22,7 +22,7 @@ type Msg
     | FetchQueryResults (Result Http.Error QueryResults)
     | HomeData (Result Http.Error HomeDataResults)
     | SetActiveCategory CategoryId
-    | SetFilterText String
+    | FilterTextOnInput String
     | CategoryRemoveClick CategoryId
     | CategorySubMenuClick CategoryId
     | AccordionToggleClick ( String, Int )

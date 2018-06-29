@@ -150,7 +150,7 @@ update msg model =
         SetActiveCategory categoryId ->
             ( { model | activeCategory = Just categoryId }, Cmd.none )
 
-        SetFilterText filterText ->
+        FilterTextOnInput filterText ->
             let
                 newModel =
                     { model | filterText = filterText }

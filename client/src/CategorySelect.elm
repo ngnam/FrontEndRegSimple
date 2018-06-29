@@ -51,7 +51,7 @@ initialModel =
 
 
 type alias Config =
-    { inputAlignment : String, inputSize : String }
+    { inputAlignment : String }
 
 
 type alias Category =
@@ -102,7 +102,7 @@ onKeyDown model =
 
 
 view : Model -> Config -> Html Msg
-view model { inputAlignment, inputSize } =
+view model { inputAlignment } =
     let
         { selected, menuOpen, focused, options } =
             model
@@ -148,7 +148,7 @@ view model { inputAlignment, inputSize } =
                 ]
     in
         div
-            [ classList [ ( "fl relative f6", True ), ( "w-30", inputSize /= "small" ), ( "w-20", inputSize == "small" ) ]
+            [ class "fl relative f6 w-100"
             , onKeyDown model
             ]
             [ button

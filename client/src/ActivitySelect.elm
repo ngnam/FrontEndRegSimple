@@ -25,7 +25,7 @@ type alias Activity =
 
 
 type alias Config =
-    { inputAlignment : String, inputSize : String }
+    { inputAlignment : String }
 
 
 type alias Model =
@@ -149,7 +149,7 @@ activityMenu model menuClass =
 
 
 view : Model -> Config -> Html Msg
-view model { inputAlignment, inputSize } =
+view model { inputAlignment } =
     let
         { selected, menuOpen, options } =
             model
@@ -164,11 +164,7 @@ view model { inputAlignment, inputSize } =
 
         wrapperClass =
             classList
-                [ ( "relative fl", True )
-                , ( "mr2", inputAlignment == "left" )
-                , ( "w-30", inputSize /= "small" )
-                , ( "w-20", inputSize == "small" )
-                ]
+                [ ( "relative fl w-100", True ) ]
 
         buttonClass =
             classList
