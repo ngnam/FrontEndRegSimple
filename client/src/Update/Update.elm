@@ -1,6 +1,8 @@
 port module Update exposing (..)
 
 import Model exposing (Model, Msg(..))
+import Debouncer
+import Navigation
 import LoginDecoder exposing (requestLoginCodeCmd)
 import QueryDecoder
 import HomeDataDecoder
@@ -14,7 +16,6 @@ import Set
 import Dict
 import Util exposing ((!!))
 import DataTypes exposing (Taxonomy)
-import Navigation
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
@@ -82,6 +83,16 @@ setSelectedCountry maybeId model =
         { model | countrySelect = updatedCountrySelect }
 
 
+setFilterText : Maybe String -> Model -> Model
+setFilterText maybeFilterText model =
+    case maybeFilterText of
+        Just filterText ->
+            { model | filterText = filterText }
+
+        Nothing ->
+            { model | filterText = "" }
+
+
 port copy : String -> Cmd msg
 
 
@@ -100,6 +111,8 @@ update msg model =
                             (0 !! (Maybe.withDefault [] (Dict.get "activity" newModel.search)))
                         >> setSelectedCountry
                             (0 !! (Maybe.withDefault [] (Dict.get "countries" newModel.search)))
+                        >> setFilterText
+                            (0 !! (Maybe.withDefault [] (Dict.get "filterText" newModel.search)))
 
                 homeDataCmd =
                     if model.navCount == 0 then
@@ -137,6 +150,28 @@ update msg model =
 
         SetActiveCategory categoryId ->
             ( { model | activeCategory = Just categoryId }, Cmd.none )
+
+        FilterTextOnInput filterText ->
+            let
+                ( debouncer, debouncerCmd ) =
+                    model.debouncer |> Debouncer.bounce { id = "filterText", msgToSend = OnQueryUpdate }
+
+                newModel =
+                    { model | filterText = filterText, debouncer = debouncer }
+            in
+                (newModel
+                    ! [ debouncerCmd |> Cmd.map DebouncerSelfMsg ]
+                )
+
+        OnQueryUpdate ->
+            ( model, Navigation.modifyUrl ("/#/query?" ++ (queryString model)) )
+
+        DebouncerSelfMsg debouncerMsg ->
+            let
+                ( debouncer, cmd ) =
+                    model.debouncer |> Debouncer.process debouncerMsg
+            in
+                { model | debouncer = debouncer } ! [ cmd ]
 
         CountrySelectMsg subMsg ->
             let

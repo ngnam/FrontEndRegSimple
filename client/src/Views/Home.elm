@@ -48,12 +48,12 @@ queryForm model =
         options =
             { inputAlignment = inputAlignment }
     in
-        form [ onSubmit SubmitLoginEmailForm ]
-            [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect)
+        form [ class "flex", onSubmit SubmitLoginEmailForm ]
+            [ div [ class "w-30" ] [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect options) ]
             , divider
-            , Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect options)
+            , div [ class "w-30" ] [ Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect options) ]
             , divider
-            , Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options)
+            , div [ class "w-30 relative" ] [ Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options) ]
             , submitButton model
             ]
 

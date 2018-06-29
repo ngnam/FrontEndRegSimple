@@ -164,9 +164,7 @@ view model { inputAlignment } =
 
         wrapperClass =
             classList
-                [ ( "relative w-30 fl", True )
-                , ( "mr2", inputAlignment == "left" )
-                ]
+                [ ( "relative fl w-100", True ) ]
 
         buttonClass =
             classList

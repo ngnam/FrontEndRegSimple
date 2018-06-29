@@ -12,7 +12,8 @@ const querySchema = {
       .array()
       .items(joi.string())
       .required(),
-    activity: joi.array().items(joi.string())
+    activity: joi.array().items(joi.string()),
+    filterText: joi.string().allow('')
   })
 };
 

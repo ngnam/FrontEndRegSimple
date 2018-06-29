@@ -148,7 +148,7 @@ view model { inputAlignment } =
                 ]
     in
         div
-            [ class "fl w-30 relative"
+            [ class "fl relative f6 w-100"
             , onKeyDown model
             ]
             [ button

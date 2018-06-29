@@ -15,6 +15,10 @@ type alias Index =
     Int
 
 
+type alias Config =
+    { inputAlignment : String }
+
+
 type alias CountryId =
     String
 
@@ -90,8 +94,8 @@ onKeyDown model =
         onWithOptions "keydown" options decoder
 
 
-view : Model -> Html Msg
-view model =
+view : Model -> Config -> Html Msg
+view model { inputAlignment } =
     let
         { menuOpen, focused, hovered, countries, selected } =
             model
@@ -157,7 +161,7 @@ view model =
                     model.query
     in
         div
-            [ class "w-30 fl relative f6"
+            [ class "fl relative f6 w-100"
             , onKeyDown model
             , role "combobox"
             , ariaExpanded (boolStr menuOpen)
