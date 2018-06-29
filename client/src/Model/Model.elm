@@ -1,6 +1,8 @@
 module Model exposing (Msg(..), Model, Flags, init)
 
 import Navigation
+import Debouncer
+import Time
 import CountrySelect
 import ActivitySelect
 import CategorySelect exposing (CategoryId)
@@ -13,6 +15,7 @@ import Http
 
 type Msg
     = UrlChange Navigation.Location
+    | DebouncerSelfMsg (Debouncer.SelfMsg Msg)
     | SubmitLoginEmailForm
     | LoginEmailFormOnInput String
     | RequestLoginCodeCompleted
@@ -23,6 +26,7 @@ type Msg
     | HomeData (Result Http.Error HomeDataResults)
     | SetActiveCategory CategoryId
     | FilterTextOnInput String
+    | OnQueryUpdate
     | CategoryRemoveClick CategoryId
     | CategorySubMenuClick CategoryId
     | AccordionToggleClick ( String, Int )
@@ -36,6 +40,7 @@ type alias Flags =
 
 type alias Model =
     { location : Navigation.Location
+    , debouncer : Debouncer.DebouncerState
     , search : Dict.Dict String (List String)
     , queryResults : QueryResults
     , homeData : Taxonomy
@@ -59,6 +64,7 @@ init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
 init flags location =
     ( { location = parseLocation location
       , search = Dict.empty
+      , debouncer = Debouncer.create (0.3 * Time.second)
       , queryResults = { nMatches = 0, totalMatches = 0, maxScore = 0, matches = [] }
       , homeData =
             { id = ""

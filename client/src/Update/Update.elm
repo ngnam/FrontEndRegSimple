@@ -1,6 +1,8 @@
 port module Update exposing (..)
 
 import Model exposing (Model, Msg(..))
+import Debouncer
+import Navigation
 import LoginDecoder exposing (requestLoginCodeCmd)
 import QueryDecoder
 import HomeDataDecoder
@@ -14,7 +16,6 @@ import Set
 import Dict
 import Util exposing ((!!))
 import DataTypes exposing (Taxonomy)
-import Navigation
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
@@ -152,10 +153,25 @@ update msg model =
 
         FilterTextOnInput filterText ->
             let
+                ( debouncer, debouncerCmd ) =
+                    model.debouncer |> Debouncer.bounce { id = "filterText", msgToSend = OnQueryUpdate }
+
                 newModel =
-                    { model | filterText = filterText }
+                    { model | filterText = filterText, debouncer = debouncer }
             in
-                ( newModel, Navigation.modifyUrl ("/#/query?" ++ (queryString newModel)) )
+                (newModel
+                    ! [ debouncerCmd |> Cmd.map DebouncerSelfMsg ]
+                )
+
+        OnQueryUpdate ->
+            ( model, Navigation.modifyUrl ("/#/query?" ++ (queryString model)) )
+
+        DebouncerSelfMsg debouncerMsg ->
+            let
+                ( debouncer, cmd ) =
+                    model.debouncer |> Debouncer.process debouncerMsg
+            in
+                { model | debouncer = debouncer } ! [ cmd ]
 
         CountrySelectMsg subMsg ->
             let
