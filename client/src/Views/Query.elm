@@ -9,14 +9,17 @@ import SelectedCategories
 import QueryResultList
 import CategorySelect exposing (getCategoryById)
 import Util exposing (viewIf, (!!))
+import Helpers.CountrySelect exposing (getSelectedCountry)
 
 
+viewValidationText : String -> Html msg
 viewValidationText validationText =
     header [ class "mb2 mw6" ]
         [ h1 [ class "f5 mb2" ] [ text validationText ]
         ]
 
 
+viewHeader : String -> String -> Html msg
 viewHeader name description =
     header [ class "mb2 mw6" ]
         [ h1 [ class "f5 mb2" ] [ text name ]
@@ -37,7 +40,7 @@ view model =
             List.length model.categorySelect.selected == 0
 
         noCountrySelected =
-            model.countrySelect.selected == Nothing
+            getSelectedCountry 0 model == Nothing
 
         validationText =
             if noActivitySelected then

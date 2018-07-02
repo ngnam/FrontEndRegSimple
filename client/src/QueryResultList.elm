@@ -72,7 +72,7 @@ view model index queryResult =
 
                             accordionToggleClass =
                                 classList
-                                    [ ( "button-reset bg-white b--none arrow-bullet pointer near-black f6 pv1 pl3 lh-title w-100 tl relative"
+                                    [ ( "button-reset bg-white b--none arrow-bullet near-black f6 pv1 pl3 lh-title w-100 tl relative"
                                       , True
                                       )
                                     , ( "arrow-bullet--expanded", accordionIsOpen )

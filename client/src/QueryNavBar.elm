@@ -4,10 +4,11 @@ import Html exposing (Html, nav, div, button, a, text)
 import Html.Attributes exposing (class)
 import Model exposing (Model, Msg(..))
 import CountrySelect
-import CountrySelect2
+import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import ActivitySelect
 import CategorySelect
 import FilterTextInput
+import Set
 
 
 divider : Html msg
@@ -33,17 +34,43 @@ view model =
             [ div [ class "bg-mid-gray br-pill pa2 w-90 ml2 ba b--moon-gray flex" ]
                 [ div
                     [ class "w-20 mr2" ]
-                    [ Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect options) ]
+                    [ Html.map
+                        ActivitySelectMsg
+                        (ActivitySelect.view model.activitySelect options)
+                    ]
                 , div
                     [ class "w-20" ]
-                    [ Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options) ]
+                    [ Html.map
+                        CategorySelectMsg
+                        (CategorySelect.view model.categorySelect options)
+                    ]
                 , divider
                 , div
                     [ class "w-20" ]
-                    [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect) ]
+                    [ Html.map
+                        (CountrySelectMsg 0)
+                        (CountrySelect.view
+                            (getCountrySelect 0 model)
+                            { excludedCountries = Set.empty, placeholderText = Nothing }
+                        )
+                    ]
                 , div
                     [ class "w-20 ml2" ]
-                    [ Html.map CountrySelect2Msg (CountrySelect2.view model.countrySelect2) ]
+                    [ Html.map
+                        (CountrySelectMsg 1)
+                        (CountrySelect.view
+                            (getCountrySelect 1 model)
+                            { excludedCountries =
+                                case getSelectedCountry 0 model of
+                                    Just countryId ->
+                                        Set.singleton countryId
+
+                                    Nothing ->
+                                        Set.empty
+                            , placeholderText = Just "Compare with ..."
+                            }
+                        )
+                    ]
                 , divider
                 , FilterTextInput.view model
                 ]

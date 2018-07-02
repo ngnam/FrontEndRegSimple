@@ -7,9 +7,11 @@ import Html.Attributes.Aria exposing (role)
 import Html.Events exposing (onSubmit, onInput)
 import Util exposing (viewIf)
 import CountrySelect
+import Helpers.CountrySelect exposing (getCountrySelect)
 import ActivitySelect
 import CategorySelect
 import Helpers.QueryString exposing (queryString)
+import Set
 
 
 view : Model -> Html Msg
@@ -50,11 +52,23 @@ queryForm model =
             { inputAlignment = inputAlignment }
     in
         form [ class "flex", role "search", onSubmit SubmitLoginEmailForm ]
-            [ div [ class "w-30" ] [ Html.map CountrySelectMsg (CountrySelect.view model.countrySelect) ]
+            [ div
+                [ class "w-30" ]
+                [ Html.map
+                    (CountrySelectMsg 0)
+                    (CountrySelect.view
+                        (getCountrySelect 0 model)
+                        { excludedCountries = Set.empty, placeholderText = Nothing }
+                    )
+                ]
             , divider
-            , div [ class "w-30" ] [ Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect options) ]
+            , div
+                [ class "w-30" ]
+                [ Html.map ActivitySelectMsg (ActivitySelect.view model.activitySelect options) ]
             , divider
-            , div [ class "w-30 relative" ] [ Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options) ]
+            , div
+                [ class "w-30 relative" ]
+                [ Html.map CategorySelectMsg (CategorySelect.view model.categorySelect options) ]
             , submitButton model
             ]
 
@@ -65,8 +79,12 @@ divider =
 
 
 checkFormValid : Model -> Bool
-checkFormValid { activitySelect, countrySelect, categorySelect } =
-    (activitySelect.selected /= Nothing) && (countrySelect.selected /= Nothing) && not (List.isEmpty categorySelect.selected)
+checkFormValid model =
+    model.activitySelect.selected
+        /= Nothing
+        && .selected (getCountrySelect 0 model)
+        /= Nothing
+        && not (List.isEmpty model.categorySelect.selected)
 
 
 submitButton : Model -> Html msg

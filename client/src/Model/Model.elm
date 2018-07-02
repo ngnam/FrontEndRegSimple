@@ -4,11 +4,10 @@ import Navigation
 import Debouncer
 import Time
 import CountrySelect exposing (CountryId, CountryName, Country)
-import CountrySelect2
 import ActivitySelect
 import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (parseLocation)
-import Dict
+import Dict exposing (Dict)
 import Set
 import DataTypes
     exposing
@@ -28,8 +27,7 @@ type Msg
     | SubmitLoginEmailForm
     | LoginEmailFormOnInput String
     | RequestLoginCodeCompleted
-    | CountrySelectMsg CountrySelect.Msg
-    | CountrySelect2Msg CountrySelect2.Msg
+    | CountrySelectMsg Int CountrySelect.Msg
     | ActivitySelectMsg ActivitySelect.Msg
     | CategorySelectMsg CategorySelect.Msg
     | FetchQueryResults (Result Http.Error QueryResults)
@@ -58,8 +56,7 @@ type alias Model =
     , countries : Dict.Dict CountryId CountryName
     , email : String
     , isLoggedIn : Bool
-    , countrySelect : CountrySelect.Model
-    , countrySelect2 : CountrySelect2.Model
+    , countrySelect : Dict Int CountrySelect.Model
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
     , activeCategory : Maybe CategoryId
@@ -88,8 +85,9 @@ init flags location =
       , countries = Dict.empty
       , email = ""
       , isLoggedIn = False
-      , countrySelect = CountrySelect.initialModel
-      , countrySelect2 = CountrySelect2.initialModel
+      , countrySelect =
+            Dict.fromList
+                [ ( 0, CountrySelect.initialModel ), ( 1, CountrySelect.initialModel ) ]
       , activitySelect = ActivitySelect.initialModel
       , categorySelect = CategorySelect.initialModel
       , activeCategory = Nothing

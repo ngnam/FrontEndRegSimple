@@ -2,6 +2,7 @@ module Helpers.QueryString exposing (queryString, removeFromQueryString)
 
 import Model exposing (Model)
 import Helpers.Routing exposing (parseParams)
+import Helpers.CountrySelect exposing (getCountrySelect)
 import Dict
 import DataTypes exposing (SearchParsed)
 import Util exposing ((!!))
@@ -10,12 +11,12 @@ import Util exposing ((!!))
 queryString : Model -> String
 queryString model =
     let
-        countries =
+        country1 =
             "countries[]="
-                ++ Maybe.withDefault "" model.countrySelect.selected
+                ++ Maybe.withDefault "" (.selected (getCountrySelect 0 model))
 
-        countries2 =
-            case model.countrySelect2.selected of
+        country2 =
+            case .selected (getCountrySelect 1 model) of
                 Nothing ->
                     ""
 
@@ -35,7 +36,7 @@ queryString model =
         filterText =
             "&filterText=" ++ model.filterText
     in
-        countries ++ countries2 ++ activity ++ categories ++ filterText
+        country1 ++ country2 ++ activity ++ categories ++ filterText
 
 
 removeFromSearchParsed : ( String, Int ) -> SearchParsed -> SearchParsed

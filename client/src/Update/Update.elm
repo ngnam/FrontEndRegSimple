@@ -7,12 +7,12 @@ import LoginDecoder exposing (requestLoginCodeCmd)
 import QueryDecoder
 import HomeDataDecoder
 import CountrySelect exposing (CountryId)
-import CountrySelect2
 import ActivitySelect exposing (ActivityId)
 import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (onUrlChange)
 import Helpers.QueryString exposing (queryString, removeFromQueryString)
 import Helpers.HomeData exposing (getActivities, getCategories, getCountries, getCountriesDict)
+import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
@@ -64,7 +64,7 @@ setSelectedActivity maybeId model =
 setSelectedCountries : List CountryId -> Model -> Model
 setSelectedCountries ids model =
     let
-        { countrySelect, countrySelect2 } =
+        { countrySelect } =
             model
 
         countryId maybeId =
@@ -78,15 +78,19 @@ setSelectedCountries ids model =
                 Nothing ->
                     Nothing
 
-        updatedCountrySelect =
-            { countrySelect | selected = countryId (0 !! ids) }
+        countrySelect1 =
+            getCountrySelect 0 model
 
-        updatedCountrySelect2 =
-            { countrySelect2 | selected = countryId (1 !! ids) }
+        countrySelect2 =
+            getCountrySelect 1 model
+
+        newCountrySelect =
+            countrySelect
+                |> Dict.insert 0 { countrySelect1 | selected = countryId (0 !! ids) }
+                |> Dict.insert 1 { countrySelect2 | selected = countryId (1 !! ids) }
     in
         { model
-            | countrySelect = updatedCountrySelect
-            , countrySelect2 = updatedCountrySelect2
+            | countrySelect = newCountrySelect
         }
 
 
@@ -180,18 +184,21 @@ update msg model =
             in
                 { model | debouncer = debouncer } ! [ cmd ]
 
-        CountrySelectMsg subMsg ->
+        CountrySelectMsg index subMsg ->
             let
                 ( updatedCountrySelectModel, countrySelectCmd ) =
-                    CountrySelect.update subMsg model.countrySelect
+                    CountrySelect.update subMsg (getCountrySelect index model)
+
+                newCountrySelect =
+                    Dict.insert index updatedCountrySelectModel model.countrySelect
 
                 newModel =
                     { model
-                        | countrySelect = updatedCountrySelectModel
+                        | countrySelect = newCountrySelect
                     }
 
                 selectedHasChanged =
-                    model.countrySelect.selected /= newModel.countrySelect.selected
+                    getSelectedCountry index model /= getSelectedCountry index newModel
 
                 queryCmd =
                     if newModel.location.hash == "#/query" && selectedHasChanged then
@@ -199,28 +206,10 @@ update msg model =
                     else
                         Cmd.none
             in
-                ( newModel, Cmd.batch [ Cmd.map CountrySelectMsg countrySelectCmd, queryCmd ] )
-
-        CountrySelect2Msg subMsg ->
-            let
-                ( updatedCountrySelectModel, countrySelect2Cmd ) =
-                    CountrySelect2.update subMsg model.countrySelect2
-
-                newModel =
-                    { model
-                        | countrySelect2 = updatedCountrySelectModel
-                    }
-
-                selectedHasChanged =
-                    model.countrySelect2.selected /= newModel.countrySelect2.selected
-
-                queryCmd =
-                    if newModel.location.hash == "#/query" && selectedHasChanged then
-                        Navigation.modifyUrl ("/#/query?" ++ (queryString newModel))
-                    else
-                        Cmd.none
-            in
-                ( newModel, Cmd.batch [ Cmd.map CountrySelect2Msg countrySelect2Cmd, queryCmd ] )
+                ( newModel
+                , Cmd.batch
+                    [ Cmd.map (CountrySelectMsg index) countrySelectCmd, queryCmd ]
+                )
 
         ActivitySelectMsg subMsg ->
             let
@@ -321,7 +310,7 @@ update msg model =
 
         HomeData (Ok results) ->
             let
-                { activitySelect, categorySelect, countrySelect, countrySelect2 } =
+                { activitySelect, categorySelect, countrySelect } =
                     model
 
                 newActivityModel =
@@ -336,11 +325,11 @@ update msg model =
                 countriesList =
                     getCountries results.countries
 
-                newCountryModel =
-                    { countrySelect | countries = countriesList }
+                cs1 =
+                    getCountrySelect 0 model
 
-                newCountry2Model =
-                    { countrySelect2 | countries = countriesList }
+                cs2 =
+                    getCountrySelect 1 model
 
                 countriesDict =
                     getCountriesDict results.countries
@@ -350,8 +339,10 @@ update msg model =
                     , countries = countriesDict
                     , activitySelect = newActivityModel
                     , categorySelect = newCategoryModel
-                    , countrySelect = newCountryModel
-                    , countrySelect2 = newCountry2Model
+                    , countrySelect =
+                        countrySelect
+                            |> Dict.insert 0 { cs1 | countries = countriesList }
+                            |> Dict.insert 1 { cs2 | countries = countriesList }
                   }
                 , Cmd.none
                 )
@@ -364,21 +355,31 @@ update msg model =
 
         QueryResultListRemoveClick index ->
             let
-                { location, countrySelect, countrySelect2 } =
+                { location, countrySelect } =
                     model
 
-                newCountrySelect =
-                    { countrySelect | query = countrySelect2.query }
+                countrySelect1 =
+                    getCountrySelect 0 model
+
+                countrySelect2 =
+                    getCountrySelect 1 model
+
+                newCountrySelect1 =
+                    { countrySelect1 | query = countrySelect2.query }
 
                 newCountrySelect2 =
                     { countrySelect2 | query = "" }
+
+                newCountrySelect =
+                    countrySelect
+                        |> Dict.insert 0 newCountrySelect1
+                        |> Dict.insert 1 newCountrySelect2
 
                 newQueryString =
                     removeFromQueryString location.search ( "countries", index )
             in
                 ( { model
                     | countrySelect = newCountrySelect
-                    , countrySelect2 = newCountrySelect2
                   }
                 , Navigation.modifyUrl ("/#/query?" ++ newQueryString)
                 )

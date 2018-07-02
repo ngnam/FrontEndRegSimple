@@ -16,6 +16,7 @@ import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Json
 import Util exposing (..)
+import Set exposing (Set)
 
 
 -- MODEL --
@@ -58,6 +59,10 @@ initialModel =
 
 type alias Country =
     { name : CountryName, id : CountryId }
+
+
+type alias Config =
+    { excludedCountries : Set CountryId, placeholderText : Maybe String }
 
 
 source : List Country -> String -> List Country
@@ -104,11 +109,14 @@ onKeyDown model =
         onWithOptions "keydown" options decoder
 
 
-view : Model -> Html Msg
-view model =
+view : Model -> Config -> Html Msg
+view model config =
     let
         { menuOpen, focused, hovered, countries, selected } =
             model
+
+        { excludedCountries, placeholderText } =
+            config
 
         optionFocused =
             focused /= -1
@@ -134,8 +142,9 @@ view model =
                 , ( "dn", not menuOpen )
                 ]
 
-        optionClass =
-            "relative pv1 pl3 pr4 lh-copy pointer"
+        optionClass isExcluded =
+            classList
+                [ ( "relative pv1 pl3 pr4 lh-copy pointer", True ), ( "dn", isExcluded ) ]
 
         optionBgClass active =
             classList
@@ -179,7 +188,7 @@ view model =
             [ input
                 [ inputClass
                 , type_ "text"
-                , placeholder "Type your country"
+                , placeholder (Maybe.withDefault "Type your country" placeholderText)
                 , onInput SetQuery
                 , onBlur HandleInputBlur
                 , value inputValue
@@ -204,7 +213,7 @@ view model =
                                 , onMouseEnter (HandleOptionMouseEnter index)
                                 , onMouseOut (HandleOptionMouseOut index)
                                 , value model.query
-                                , class optionClass
+                                , optionClass (Set.member country.id excludedCountries)
                                 , tabindex -1
                                 , role "option"
                                 , ariaSelected (boolStr (focused == index))
