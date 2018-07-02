@@ -53,6 +53,13 @@ button {
   color: #959bac;
 }
 
+.placeholder--login::placeholder {
+  /* font-family: Metropolis; */
+  /* dark gray */
+  color: #959bac;
+  font-weight: 100;
+}
+
 .metro {
   font-family: Metropolis;
 }
