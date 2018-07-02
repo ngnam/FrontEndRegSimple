@@ -50,7 +50,7 @@ view model index queryResult =
                     []
                 , viewIf isCountryCompare
                     (button
-                        [ class "close-icon absolute top-1 right-1 h1 w1 b--none bg-transparent"
+                        [ class "icon icon--close absolute top-1 right-1 h1 w1 b--none bg-transparent"
                         , onClick (QueryResultListRemoveClick index)
                         , ariaLabel ("Remove " ++ countryName ++ " from comparison")
                         ]
@@ -72,10 +72,10 @@ view model index queryResult =
 
                             accordionToggleClass =
                                 classList
-                                    [ ( "button-reset bg-white b--none arrow-bullet near-black f6 pv1 pl3 lh-title w-100 tl relative"
+                                    [ ( "button-reset bg-white b--none icon icon--bullet-arrow near-black f6 pv1 pl3 lh-title w-100 tl relative"
                                       , True
                                       )
-                                    , ( "arrow-bullet--expanded", accordionIsOpen )
+                                    , ( "icon--bullet-arrow-expanded", accordionIsOpen )
                                     ]
 
                             accordionHeadingId =

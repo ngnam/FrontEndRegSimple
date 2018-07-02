@@ -67,7 +67,7 @@ view model =
 
                                     Nothing ->
                                         Set.empty
-                            , placeholderText = Just "Compare with ..."
+                            , placeholderText = Just "Compare with..."
                             }
                         )
                     ]

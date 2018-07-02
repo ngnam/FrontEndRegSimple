@@ -9,20 +9,15 @@ import Model exposing (Model, Msg(FilterTextOnInput))
 
 view : Model -> Html Msg
 view model =
-    let
-        inputClass =
-            classList
-                [ ( "w-100 h2 pv2 pl4 bg-transparent bn f7 dark-gray metro placeholder--filter-text", True ) ]
-    in
-        div
-            [ class "w-20 fl relative search" ]
-            [ input
-                [ inputClass
-                , type_ "text"
-                , onInput FilterTextOnInput
-                , placeholder "Search results..."
-                , value model.filterText
-                , role "textbox"
-                ]
-                []
+    div
+        [ class "w-20 fl relative icon icon--search z-0" ]
+        [ input
+            [ class "w-100 h2 pv2 pl4 bg-transparent bn f7 dark-gray metro truncate-ns placeholder--filter-text relative z-1"
+            , type_ "text"
+            , onInput FilterTextOnInput
+            , placeholder "Search results..."
+            , value model.filterText
+            , role "textbox"
             ]
+            []
+        ]

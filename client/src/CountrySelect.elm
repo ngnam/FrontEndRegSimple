@@ -160,7 +160,7 @@ view model config =
 
         inputClass =
             classList
-                [ ( "w-100 h2 pv2 pr3 br-pill ba b--solid b--blue placeholder--country", True )
+                [ ( "w-100 h2 pv2 pr3 br-pill ba b--solid b--blue truncate-ns placeholder--country", True )
                 , ( "pl3", not showInputFlag )
                 , ( "pl4 b", showInputFlag )
                 ]

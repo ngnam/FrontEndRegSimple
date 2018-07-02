@@ -126,9 +126,9 @@ view model { inputAlignment } =
 
         buttonClass =
             classList
-                [ ( "arrows w-100 h2 pv2 pl3 pr4 tl br-pill ba b--solid b--blue bg-white truncate-ns b", True )
-                , ( "bg-blue white arrows--white", menuOpen )
-                , ( "arrows--blue", not menuOpen )
+                [ ( "w-100 h2 pv2 pl3 pr4 tl br-pill ba b--solid b--blue bg-white truncate-ns b icon icon--input-arrows", True )
+                , ( "bg-blue white icon--input-arrows-white", menuOpen )
+                , ( "icon--input-arrows-blue", not menuOpen )
                 , ( "dark-gray", not atLeastOneOption )
                 ]
 
