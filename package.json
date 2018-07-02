@@ -29,15 +29,15 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bcrypt": "^2.0.1",
+    "body-parser": "^1.18.3",
     "boom": "^7.2.0",
     "cookie-session": "^2.0.0-beta.3",
     "express": "^4.16.3",
     "joi": "^13.4.0",
     "morgan": "^1.9.0",
     "nodemailer": "^4.6.4",
-    "passwordless": "^1.1.2",
-    "passwordless-postgrestore": "github:Battochon/passwordless-postgrestore",
-    "pg": "^7.4.3"
+    "pg": "^7.4.3",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "autoprefixer": "^8.5.2",

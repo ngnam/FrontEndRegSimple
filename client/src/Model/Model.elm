@@ -20,6 +20,7 @@ import DataTypes
         , AppData
         , CountriesDictList
         , AccordionsOpen
+        , User
         )
 import RemoteData exposing (RemoteData(..), WebData)
 
@@ -29,7 +30,7 @@ type Msg
     | DebouncerSelfMsg (Debouncer.SelfMsg Msg)
     | SubmitLoginEmailForm
     | LoginEmailFormOnInput String
-    | RequestLoginCodeCompleted
+    | RequestLoginCodeCompleted (WebData User)
     | CountrySelectMsg Int CountrySelect.Msg
     | ActivitySelectMsg ActivitySelect.Msg
     | CategorySelectMsg CategorySelect.Msg
@@ -68,6 +69,7 @@ type alias Model =
     , config : { apiBaseUrl : String }
     , navCount : Int
     , config : Flags
+    , user : WebData User
     }
 
 
@@ -91,6 +93,7 @@ init flags location =
       , accordionsOpen = Set.empty
       , navCount = 0
       , config = { apiBaseUrl = flags.apiBaseUrl, clientBaseUrl = flags.clientBaseUrl }
+      , user = NotAsked
       }
     , redirectIfRoot location
     )

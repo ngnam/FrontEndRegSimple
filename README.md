@@ -15,8 +15,12 @@ Follow these steps to run the app locally:
   SMTP_HOST=*******
   SMTP_USER=*******
   SMTP_PASS=*******
+  POSTGRES_CONNECTION_STRING=*********
+  CLIENT_APP_BASE_URL=*******
+  REGSIMPLE_SEARCH_API=*******
 ```
-
+1. To create the necessary database run `psql .......`
+1. To create the necessary table run `psql -U your_username -d regsimpledb -a -f './server/sql/passwordless.sql'`
 1. To start the node server: `npm run server-dev`
 1. To start elm app: `npm run client-dev`
 1. To compile the css: `npm run css-dev`

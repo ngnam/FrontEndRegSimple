@@ -1,4 +1,5 @@
 import request from 'supertest';
+import userFixture from '../__env__/fixtures/user';
 
 const app = process.app;
 
@@ -7,12 +8,12 @@ test('POST /login/email 200', done => {
 
   return request(app)
     .post('/api/login/email')
-    .send({ user: email })
+    .send({ email })
     .end((err, res) => {
       if (err) return done(err);
 
       expect(res.status).toBe(200);
-      expect(res.body.email).toBe(email);
+      expect(res.body.data.userId).toBe(userFixture.userId);
 
       return done();
     });

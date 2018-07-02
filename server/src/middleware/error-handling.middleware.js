@@ -8,7 +8,7 @@ const errorHandler = () => (err, req, res, next) => {
     });
   }
 
-  next.status(500).send({ statusCode: 500, message: 'Internal Server Error' });
+  res.status(500).send({ message: 'Internal Server Error' });
 };
 
 export default errorHandler;

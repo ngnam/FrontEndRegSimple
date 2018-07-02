@@ -23,6 +23,10 @@ type alias CountryName =
     String
 
 
+type alias UserId =
+    String
+
+
 type alias CountriesDictList =
     DictList CountryId (List CountryName)
 
@@ -37,6 +41,10 @@ type alias SearchParsed =
 
 type alias QueryResults =
     { results : List QueryResult }
+
+
+type alias User =
+    { userId : UserId }
 
 
 type alias QueryResult =
