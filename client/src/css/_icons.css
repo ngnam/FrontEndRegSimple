@@ -1,0 +1,93 @@
+.icon::after {
+  content: '';
+  position: absolute;
+  /*display: block;*/
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.icon--search::after {
+  background-image: url('../assets/icons/search.svg');
+  background-size: 1em;
+  height: 100%;
+  width: 1em;
+  left: 0;
+  top: 0;
+}
+
+.icon--bullet-arrow::after {
+  background-image: url('../assets/icons/bullet-arrow.svg');
+  height: 1em;
+  width: 1em;
+  left: 0;
+  top: 7px;
+}
+
+.icon--bullet-arrow-expanded::after {
+  transform: rotate(90deg);
+  transform-origin: 25% 35%;
+  top: 11px;
+}
+
+.icon--menu-dots::after {
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 1em;
+}
+.icon--menu-dots-grey::after {
+  background-image: url('../assets/icons/menu-dots--grey.svg');
+}
+.icon--menu-dots-white::after {
+  background-image: url('../assets/icons/menu-dots--white.svg');
+}
+
+.icon--close-small::after {
+  background-image: url('../assets/icons/close--small.svg');
+  background-size: 9px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.icon--close::after {
+  background-image: url('../assets/icons/close.svg');
+  background-size: 15px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.icon--input-arrows-blue::after {
+  background-image: url('../assets/icons/input-arrows--blue.svg');
+}
+
+.icon--input-arrows-white::after {
+  background-image: url('../assets/icons/input-arrows--white.svg');
+}
+
+.icon--input-arrows::after {
+  width: 0.8em;
+  height: 100%;
+  top: 0;
+  right: 13px;
+}
+
+.icon--category-submenu-btn::after {
+  left: 0;
+  top: 0;
+  width: 0.8rem;
+  /* 93% height seems to be right for icon size, and the relative text position */
+  height: 93%;
+}
+
+.icon--copy::after {
+  background-image: url('../assets/icons/copy.svg');
+}
+
+.icon--trash::after {
+  background-image: url('../assets/icons/trash.svg');
+}

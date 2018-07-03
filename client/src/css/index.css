@@ -59,4 +59,5 @@
 /* your own custom styles */
 @import './_fonts';
 @import './_custom';
-@import './_flag-icon';
+@import './_icons';
+@import './_flags';

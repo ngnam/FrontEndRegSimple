@@ -41,13 +41,13 @@ subMenu ( model, category ) =
                 ++ category.id
 
         submenuButtonClass =
-            "category-card__submenu-btn relative bn tl f7 pv1 pl3 mb1 bg-white w-100"
+            "icon icon--category-submenu-btn relative bn tl f7 pv1 pl3 mb1 bg-white w-100"
     in
         div [ menuClass ]
             [ header [ class "ttc f7 h1 mv1 flex justify-center items-center dark-gray" ]
                 [ text "Category actions"
                 , button
-                    [ class "close-icon--small absolute top-0 right-0 w1 h1 ma1 bn bg-white"
+                    [ class "icon icon--close-small absolute top-0 right-0 w1 h1 ma1 bn bg-white"
                     , onClick (CategorySubMenuClick category.id)
                     ]
                     []
@@ -57,7 +57,7 @@ subMenu ( model, category ) =
                     [ button
                         [ classList
                             [ ( submenuButtonClass, True )
-                            , ( "category-card__submenu-btn--share", True )
+                            , ( "icon--copy", True )
                             ]
                         , onClick (Copy copyLink)
                         ]
@@ -67,7 +67,7 @@ subMenu ( model, category ) =
                     [ button
                         [ classList
                             [ ( submenuButtonClass, True )
-                            , ( "category-card__submenu-btn--remove", True )
+                            , ( "icon--trash", True )
                             ]
                         , disabled isDisabled
                         , onClick (CategoryRemoveClick category.id)
@@ -92,9 +92,9 @@ categoriesMenu model =
 
                     categoryMenuDotsClass =
                         classList
-                            [ ( "absolute top-0 right-0 pa2 mr1 bn", True )
-                            , ( "menu-dots--white bg-blue", (Just category.id == model.activeCategory) )
-                            , ( "menu-dots bg-white", (Just category.id /= model.activeCategory) )
+                            [ ( "absolute top-0 right-0 w1 h1 mr1 bn relative icon icon--menu-dots bg-transparent", True )
+                            , ( "icon--menu-dots-white", (Just category.id == model.activeCategory) )
+                            , ( "icon--menu-dots-grey", (Just category.id /= model.activeCategory) )
                             ]
                 in
                     li [ class "relative" ]

@@ -108,6 +108,21 @@ button {
   left: 50%;
 }
 
+
+
+.disabled {
+  cursor: not-allowed;
+}
+
+
+.flex-1 {
+  flex: 1;
+}
+
+.right--3 {
+  right: -7rem;
+}
+
 .checkbox__checkmark::after {
   left: 5px;
   top: 0px;
@@ -123,120 +138,4 @@ button {
 }
 .checkbox:checked ~ .checkbox__checkmark::after {
   display: block;
-}
-
-.disabled {
-  cursor: not-allowed;
-}
-
-.search::after {
-  content: '';
-  position: absolute;
-  display: block;
-  height: 100%;
-  width: 1em;
-  background-image: url('../assets/icons/search.svg');
-  background-size: 1em;
-  background-repeat: no-repeat;
-  background-position: center;
-  left: 0;
-  top: 0;
-}
-
-.arrow-bullet:before {
-  content: '';
-  position: absolute;
-  display: block;
-  height: 1em;
-  width: 1em;
-  background-image: url('../assets/icons/right-arrow.svg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  left: 0;
-  top: 7px;
-}
-
-.arrow-bullet--expanded:before {
-  transform: rotate(90deg);
-  transform-origin: 25% 35%;
-  top: 11px;
-}
-
-.menu-dots {
-  background-image: url('../assets/icons/menu-dots.svg');
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-.menu-dots--white {
-  background-image: url('../assets/icons/menu-dots--white.svg');
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.close-icon--small {
-  background-image: url('../assets/icons/remove--small.svg');
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.close-icon::after {
-  background-image: url('../assets/icons/remove.svg');
-  background-position: center;
-  background-repeat: no-repeat;
-  content: '';
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-
-.flex-1 {
-  flex: 1;
-}
-
-.right--3 {
-  right: -7rem;
-}
-
-.arrows--blue::after {
-  background-image: url('../assets/icons/arrows--blue.svg');
-}
-
-.arrows--white::after {
-  background-image: url('../assets/icons/arrows--white.svg');
-}
-
-.arrows::after {
-  content: '';
-  position: absolute;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  width: 0.8em;
-  height: 100%;
-  top: 0;
-  right: 13px;
-}
-
-.category-card__submenu-btn::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 0.8rem;
-  /* 93% height seems to be right for icon size, and the relative text position */
-  height: 93%;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-.category-card__submenu-btn--share::after {
-  background-image: url('../assets/icons/share.svg');
-}
-.category-card__submenu-btn--remove::after {
-  background-image: url('../assets/icons/trash.svg');
 }
