@@ -19,7 +19,7 @@ view model =
     div [ class "mb5" ]
         [ section [ class "mb4 flex justify-center" ]
             [ div [ class "flex justify-center flex-column w-25" ]
-                [ img [ class "w-100 mb2", src "/assets/logos/logo_icon+text_new.png" ] []
+                [ img [ class "w-100 mb2", src "/assets/logos/logo-with-text.png" ] []
                 , h1 [ class "mb2 metro-i" ] [ text "Regulation. Simplified." ]
                 ]
             ]
