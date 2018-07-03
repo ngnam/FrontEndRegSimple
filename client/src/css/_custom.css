@@ -92,6 +92,10 @@ button {
   min-height: 3rem;
 }
 
+.h3rem {
+  height: 3rem;
+}
+
 .top-125 {
   top: 125%;
 }

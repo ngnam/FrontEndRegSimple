@@ -11,7 +11,7 @@ view model =
     div []
         [ section [ class "mb4 flex justify-center" ]
             [ div [ class "flex justify-center flex-column w-25" ]
-                [ img [ class "w-100 mb2", src "/assets/logos/logo_icon+text_new.png" ] []
+                [ img [ class "w-100 mb2", src "/assets/logos/logo-with-text.png" ] []
                 , h1 [ class "mb2 metro-i" ] [ text "Regulation. Simplified." ]
                 ]
             ]
@@ -21,13 +21,13 @@ view model =
 
 loginForm : Html Msg
 loginForm =
-    form [ class "w-20 flex flex-column", onSubmit SubmitLoginEmailForm ]
+    form [ class "w15rem flex flex-column", onSubmit SubmitLoginEmailForm ]
         [ input
             [ type_ "email"
             , placeholder "Email"
-            , class "h2 pv3 ph3 br-pill ba b--solid b--blue bg-white mb3 f6 placeholder--login"
+            , class "h3rem pv3 ph3 br-pill ba b--solid b--blue bg-white mb3 f6 placeholder--login"
             , onInput LoginEmailFormOnInput
             ]
             []
-        , button [ class "h2 ph3 white br-pill ba b--solid b--blue bg-blue mb3 f6", value "submit" ] [ text "Sign In" ]
+        , button [ class "h3rem ph3 white br-pill ba b--solid b--blue bg-blue mb3 f6 metro-b", value "submit" ] [ text "Sign In" ]
         ]
