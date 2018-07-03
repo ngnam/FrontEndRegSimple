@@ -6,12 +6,13 @@ import Navigation
 import LoginDecoder exposing (requestLoginCodeCmd)
 import QueryDecoder
 import HomeDataDecoder
-import CountrySelect
+import CountrySelect exposing (CountryId)
 import ActivitySelect exposing (ActivityId)
 import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (onUrlChange)
-import Helpers.QueryString exposing (queryString)
-import Helpers.HomeData exposing (getActivities, getCategories, getCountries)
+import Helpers.QueryString exposing (queryString, removeFromQueryString)
+import Helpers.HomeData exposing (getActivities, getCategories, getCountries, getCountriesDict)
+import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
@@ -60,13 +61,13 @@ setSelectedActivity maybeId model =
         { model | activitySelect = updatedActivitySelect }
 
 
-setSelectedCountry : Maybe String -> Model -> Model
-setSelectedCountry maybeId model =
+setSelectedCountries : List CountryId -> Model -> Model
+setSelectedCountries ids model =
     let
         { countrySelect } =
             model
 
-        id =
+        countryId maybeId =
             case maybeId of
                 Just "" ->
                     Nothing
@@ -77,10 +78,20 @@ setSelectedCountry maybeId model =
                 Nothing ->
                     Nothing
 
-        updatedCountrySelect =
-            { countrySelect | selected = id }
+        countrySelect1 =
+            getCountrySelect 0 model
+
+        countrySelect2 =
+            getCountrySelect 1 model
+
+        newCountrySelect =
+            countrySelect
+                |> Dict.insert 0 { countrySelect1 | selected = countryId (0 !! ids) }
+                |> Dict.insert 1 { countrySelect2 | selected = countryId (1 !! ids) }
     in
-        { model | countrySelect = updatedCountrySelect }
+        { model
+            | countrySelect = newCountrySelect
+        }
 
 
 setFilterText : Maybe String -> Model -> Model
@@ -109,8 +120,8 @@ update msg model =
                         (Maybe.withDefault [] (Dict.get "categories" newModel.search))
                         >> setSelectedActivity
                             (0 !! (Maybe.withDefault [] (Dict.get "activity" newModel.search)))
-                        >> setSelectedCountry
-                            (0 !! (Maybe.withDefault [] (Dict.get "countries" newModel.search)))
+                        >> setSelectedCountries
+                            (Maybe.withDefault [] (Dict.get "countries" newModel.search))
                         >> setFilterText
                             (0 !! (Maybe.withDefault [] (Dict.get "filterText" newModel.search)))
 
@@ -173,18 +184,21 @@ update msg model =
             in
                 { model | debouncer = debouncer } ! [ cmd ]
 
-        CountrySelectMsg subMsg ->
+        CountrySelectMsg index subMsg ->
             let
                 ( updatedCountrySelectModel, countrySelectCmd ) =
-                    CountrySelect.update subMsg model.countrySelect
+                    CountrySelect.update subMsg (getCountrySelect index model)
+
+                newCountrySelect =
+                    Dict.insert index updatedCountrySelectModel model.countrySelect
 
                 newModel =
                     { model
-                        | countrySelect = updatedCountrySelectModel
+                        | countrySelect = newCountrySelect
                     }
 
                 selectedHasChanged =
-                    model.countrySelect.selected /= newModel.countrySelect.selected
+                    getSelectedCountry index model /= getSelectedCountry index newModel
 
                 queryCmd =
                     if newModel.location.hash == "#/query" && selectedHasChanged then
@@ -192,7 +206,10 @@ update msg model =
                     else
                         Cmd.none
             in
-                ( newModel, Cmd.batch [ Cmd.map CountrySelectMsg countrySelectCmd, queryCmd ] )
+                ( newModel
+                , Cmd.batch
+                    [ Cmd.map (CountrySelectMsg index) countrySelectCmd, queryCmd ]
+                )
 
         ActivitySelectMsg subMsg ->
             let
@@ -286,7 +303,7 @@ update msg model =
                 ( { model | categorySelect = updatedCategorySelectModel }, Cmd.none )
 
         FetchQueryResults (Ok results) ->
-            ( { model | queryResults = results }, Cmd.none )
+            ( { model | queryResults = results.results }, Cmd.none )
 
         FetchQueryResults (Err _) ->
             ( model, Cmd.none )
@@ -305,15 +322,27 @@ update msg model =
                 newCategoryModel =
                     { categorySelect | options = getCategories results.taxonomy selected }
 
-                newCountryModel =
-                    { countrySelect | countries = getCountries results.countries }
+                countriesList =
+                    getCountries results.countries
+
+                cs1 =
+                    getCountrySelect 0 model
+
+                cs2 =
+                    getCountrySelect 1 model
+
+                countriesDict =
+                    getCountriesDict results.countries
             in
                 ( { model
                     | homeData = results.taxonomy
-                    , countries = results.countries
+                    , countries = countriesDict
                     , activitySelect = newActivityModel
                     , categorySelect = newCategoryModel
-                    , countrySelect = newCountryModel
+                    , countrySelect =
+                        countrySelect
+                            |> Dict.insert 0 { cs1 | countries = countriesList }
+                            |> Dict.insert 1 { cs2 | countries = countriesList }
                   }
                 , Cmd.none
                 )
@@ -323,6 +352,37 @@ update msg model =
 
         Copy copyLink ->
             ( { model | categorySubMenuOpen = Nothing }, copy copyLink )
+
+        QueryResultListRemoveClick index ->
+            let
+                { location, countrySelect } =
+                    model
+
+                countrySelect1 =
+                    getCountrySelect 0 model
+
+                countrySelect2 =
+                    getCountrySelect 1 model
+
+                newCountrySelect1 =
+                    { countrySelect1 | query = countrySelect2.query }
+
+                newCountrySelect2 =
+                    { countrySelect2 | query = "" }
+
+                newCountrySelect =
+                    countrySelect
+                        |> Dict.insert 0 newCountrySelect1
+                        |> Dict.insert 1 newCountrySelect2
+
+                newQueryString =
+                    removeFromQueryString location.search ( "countries", index )
+            in
+                ( { model
+                    | countrySelect = newCountrySelect
+                  }
+                , Navigation.modifyUrl ("/#/query?" ++ newQueryString)
+                )
 
         _ ->
             ( model, Cmd.none )

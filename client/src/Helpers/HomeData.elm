@@ -1,8 +1,10 @@
-module Helpers.HomeData exposing (getActivities, getCategories, getCountries)
+module Helpers.HomeData exposing (getActivities, getCategories, getCountries, getCountriesDict, getCountryName)
 
 import DataTypes exposing (HomeDataItem, Taxonomy, HomeDataChildren(..))
 import ActivitySelect exposing (Activity, ActivityId)
-import CountrySelect exposing (Country)
+import CountrySelect exposing (Country, CountryId, CountryName)
+import Util exposing ((!!))
+import Dict
 
 
 removeChildren : List Taxonomy -> List HomeDataItem
@@ -56,7 +58,7 @@ getCategories taxonomy activityId =
         |> removeChildren
 
 
-getCountries : List ( String, List String ) -> List Country
+getCountries : List ( CountryId, List CountryName ) -> List Country
 getCountries countryList =
     countryList
         |> List.map
@@ -66,3 +68,17 @@ getCountries countryList =
                 }
             )
         |> List.sortBy .name
+
+
+getCountriesDict : List ( CountryId, List CountryName ) -> Dict.Dict CountryId CountryName
+getCountriesDict countryList =
+    countryList
+        |> List.map
+            (\( id, names ) ->
+                ( id, Maybe.withDefault "" (0 !! names) )
+            )
+        |> Dict.fromList
+
+
+getCountryName countryId model =
+    Maybe.withDefault "" (Dict.get countryId model.countries)

@@ -3,13 +3,21 @@ module Model exposing (Msg(..), Model, Flags, init)
 import Navigation
 import Debouncer
 import Time
-import CountrySelect
+import CountrySelect exposing (CountryId, CountryName, Country)
 import ActivitySelect
 import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (parseLocation)
-import Dict
+import Dict exposing (Dict)
 import Set
-import DataTypes exposing (QueryResults, Taxonomy, HomeDataResults, HomeDataChildren(..))
+import DataTypes
+    exposing
+        ( QueryResults
+        , QueryResult
+        , Taxonomy
+        , HomeDataResults
+        , HomeDataChildren(..)
+        , SearchParsed
+        )
 import Http
 
 
@@ -19,7 +27,7 @@ type Msg
     | SubmitLoginEmailForm
     | LoginEmailFormOnInput String
     | RequestLoginCodeCompleted
-    | CountrySelectMsg CountrySelect.Msg
+    | CountrySelectMsg Int CountrySelect.Msg
     | ActivitySelectMsg ActivitySelect.Msg
     | CategorySelectMsg CategorySelect.Msg
     | FetchQueryResults (Result Http.Error QueryResults)
@@ -30,6 +38,7 @@ type Msg
     | CategoryRemoveClick CategoryId
     | CategorySubMenuClick CategoryId
     | AccordionToggleClick ( String, Int )
+    | QueryResultListRemoveClick Int
     | Copy String
     | NoOp
 
@@ -41,13 +50,13 @@ type alias Flags =
 type alias Model =
     { location : Navigation.Location
     , debouncer : Debouncer.DebouncerState
-    , search : Dict.Dict String (List String)
-    , queryResults : QueryResults
+    , search : SearchParsed
+    , queryResults : List QueryResult
     , homeData : Taxonomy
-    , countries : List ( String, List String )
+    , countries : Dict.Dict CountryId CountryName
     , email : String
     , isLoggedIn : Bool
-    , countrySelect : CountrySelect.Model
+    , countrySelect : Dict Int CountrySelect.Model
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
     , activeCategory : Maybe CategoryId
@@ -65,7 +74,7 @@ init flags location =
     ( { location = parseLocation location
       , search = Dict.empty
       , debouncer = Debouncer.create (0.3 * Time.second)
-      , queryResults = { nMatches = 0, totalMatches = 0, maxScore = 0, matches = [] }
+      , queryResults = []
       , homeData =
             { id = ""
             , enabled = False
@@ -73,10 +82,12 @@ init flags location =
             , description = ""
             , children = HomeDataChildren []
             }
-      , countries = []
+      , countries = Dict.empty
       , email = ""
       , isLoggedIn = False
-      , countrySelect = CountrySelect.initialModel
+      , countrySelect =
+            Dict.fromList
+                [ ( 0, CountrySelect.initialModel ), ( 1, CountrySelect.initialModel ) ]
       , activitySelect = ActivitySelect.initialModel
       , categorySelect = CategorySelect.initialModel
       , activeCategory = Nothing

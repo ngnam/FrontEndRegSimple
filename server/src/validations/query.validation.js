@@ -6,7 +6,7 @@ const querySchema = {
     countries: joi
       .array()
       .items(joi.string())
-      .max(1)
+      .max(2)
       .required(),
     categories: joi
       .array()

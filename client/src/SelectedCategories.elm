@@ -5,6 +5,7 @@ import Html.Attributes exposing (id, class, tabindex, value, disabled, classList
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(Copy, CategorySubMenuClick, CategoryRemoveClick))
 import CategorySelect exposing (Category, emptyCategory, getCategoriesFromIds)
+import Helpers.CountrySelect exposing (getCountrySelect)
 
 
 subMenu : ( Model, Category ) -> Html Msg
@@ -24,7 +25,7 @@ subMenu ( model, category ) =
             ((List.length (model.categorySelect.selected)) == 1)
 
         countries =
-            Maybe.withDefault "" model.countrySelect.selected
+            Maybe.withDefault "" (.selected (getCountrySelect 0 model))
 
         activity =
             Maybe.withDefault "" model.activitySelect.selected
@@ -40,13 +41,13 @@ subMenu ( model, category ) =
                 ++ category.id
 
         submenuButtonClass =
-            "category-card__submenu-btn relative bn tl f7 pv1 pl3 mb1 pointer bg-white w-100"
+            "category-card__submenu-btn relative bn tl f7 pv1 pl3 mb1 bg-white w-100"
     in
         div [ menuClass ]
             [ header [ class "ttc f7 h1 mv1 flex justify-center items-center dark-gray" ]
                 [ text "Category actions"
                 , button
-                    [ class "close-icon absolute top-0 right-0 w1 h1 ma1 bn pointer bg-white"
+                    [ class "close-icon--small absolute top-0 right-0 w1 h1 ma1 bn bg-white"
                     , onClick (CategorySubMenuClick category.id)
                     ]
                     []
@@ -85,7 +86,7 @@ categoriesMenu model =
                 let
                     categoryClass =
                         classList
-                            [ ( "tl f7 bg-white shadow-1 br1 mb1 pv1 ph2 min-h3rem black-30 pointer bn relative w-100", True )
+                            [ ( "tl f7 bg-white shadow-1 br1 mb1 pv1 ph2 min-h3rem black-30 bn relative w-100", True )
                             , ( "bg-blue white", (Just category.id == model.activeCategory) )
                             ]
 

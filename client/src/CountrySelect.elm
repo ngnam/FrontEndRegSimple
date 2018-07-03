@@ -1,4 +1,14 @@
-module CountrySelect exposing (Model, Msg, initialModel, update, view, Country)
+module CountrySelect
+    exposing
+        ( Model
+        , Msg
+        , initialModel
+        , update
+        , view
+        , Country
+        , CountryId
+        , CountryName
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -6,6 +16,7 @@ import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Json
 import Util exposing (..)
+import Set exposing (Set)
 
 
 -- MODEL --
@@ -15,11 +26,11 @@ type alias Index =
     Int
 
 
-type alias Config =
-    { inputAlignment : String }
-
-
 type alias CountryId =
+    String
+
+
+type alias CountryName =
     String
 
 
@@ -47,7 +58,11 @@ initialModel =
 
 
 type alias Country =
-    { name : String, id : CountryId }
+    { name : CountryName, id : CountryId }
+
+
+type alias Config =
+    { excludedCountries : Set CountryId, placeholderText : Maybe String }
 
 
 source : List Country -> String -> List Country
@@ -95,10 +110,13 @@ onKeyDown model =
 
 
 view : Model -> Config -> Html Msg
-view model { inputAlignment } =
+view model config =
     let
         { menuOpen, focused, hovered, countries, selected } =
             model
+
+        { excludedCountries, placeholderText } =
+            config
 
         optionFocused =
             focused /= -1
@@ -124,8 +142,9 @@ view model { inputAlignment } =
                 , ( "dn", not menuOpen )
                 ]
 
-        optionClass =
-            "relative pv1 ph3 lh-copy pointer"
+        optionClass isExcluded =
+            classList
+                [ ( "relative pv1 pl3 pr4 lh-copy pointer", True ), ( "dn", isExcluded ) ]
 
         optionBgClass active =
             classList
@@ -169,7 +188,7 @@ view model { inputAlignment } =
             [ input
                 [ inputClass
                 , type_ "text"
-                , placeholder "Type your country"
+                , placeholder (Maybe.withDefault "Type your country" placeholderText)
                 , onInput SetQuery
                 , onBlur HandleInputBlur
                 , value inputValue
@@ -194,7 +213,7 @@ view model { inputAlignment } =
                                 , onMouseEnter (HandleOptionMouseEnter index)
                                 , onMouseOut (HandleOptionMouseOut index)
                                 , value model.query
-                                , class optionClass
+                                , optionClass (Set.member country.id excludedCountries)
                                 , tabindex -1
                                 , role "option"
                                 , ariaSelected (boolStr (focused == index))

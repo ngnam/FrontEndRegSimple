@@ -2,21 +2,24 @@ module Views.Query exposing (..)
 
 import Model exposing (Model, Msg(..))
 import Html exposing (Html, text, div, p, h1, span, ul, li, header)
-import Html.Attributes exposing (class, tabindex)
+import Html.Attributes exposing (class, tabindex, classList)
 import QueryNavBar
 import QuerySideBar
 import SelectedCategories
 import QueryResultList
 import CategorySelect exposing (getCategoryById)
-import Util exposing (viewIf)
+import Util exposing (viewIf, (!!))
+import Helpers.CountrySelect exposing (getSelectedCountry)
 
 
+viewValidationText : String -> Html msg
 viewValidationText validationText =
     header [ class "mb2 mw6" ]
         [ h1 [ class "f5 mb2" ] [ text validationText ]
         ]
 
 
+viewHeader : String -> String -> Html msg
 viewHeader name description =
     header [ class "mb2 mw6" ]
         [ h1 [ class "f5 mb2" ] [ text name ]
@@ -37,7 +40,7 @@ view model =
             List.length model.categorySelect.selected == 0
 
         noCountrySelected =
-            model.countrySelect.selected == Nothing
+            getSelectedCountry 0 model == Nothing
 
         validationText =
             if noActivitySelected then
@@ -51,6 +54,15 @@ view model =
 
         inValidQuery =
             noActivitySelected || noCategorySelected || noCountrySelected
+
+        isCountryCompare =
+            List.length model.queryResults > 1
+
+        resultsContainerClass =
+            classList
+                [ ( "tl flex-1 ph5 pt3 pb4 near-black", True )
+                , ( "mw7", not isCountryCompare )
+                ]
     in
         div [ class "flex min-vh-100" ]
             [ QuerySideBar.view model
@@ -58,10 +70,18 @@ view model =
                 [ QueryNavBar.view model
                 , div [ class "flex-1 flex" ]
                     [ SelectedCategories.view model
-                    , div [ class "tl flex-1 ph5 pt3 pb4 near-black mw7" ]
+                    , div [ resultsContainerClass ]
                         [ viewIf inValidQuery (viewValidationText validationText)
                         , viewIf (not inValidQuery) (viewHeader name description)
-                        , viewIf (not inValidQuery) (QueryResultList.view model)
+                        , viewIf (not inValidQuery)
+                            (div [ class "flex flex-row" ]
+                                (List.indexedMap
+                                    (\index queryResult ->
+                                        QueryResultList.view model index queryResult
+                                    )
+                                    model.queryResults
+                                )
+                            )
                         ]
                     ]
                 ]

@@ -1,15 +1,25 @@
 module DataTypes exposing (..)
 
+import Dict
+
+
+type alias SearchParsed =
+    Dict.Dict String (List String)
+
 
 type alias QueryResults =
+    { results : List QueryResult }
+
+
+type alias QueryResult =
     { nMatches : Int
     , totalMatches : Int
-    , maxScore : Float
-    , matches : List QueryResultsMatch
+    , maxScore : Maybe Float
+    , matches : List QueryResultMatch
     }
 
 
-type alias QueryResultsMatch =
+type alias QueryResultMatch =
     { score : Float
     , title : String
     , type_ : String
@@ -17,11 +27,11 @@ type alias QueryResultsMatch =
     , year : Maybe Int
     , url : String
     , id : String
-    , body : List QueryResultsMatchBody
+    , body : List QueryResultMatchBody
     }
 
 
-type alias QueryResultsMatchBody =
+type alias QueryResultMatchBody =
     { tags : List String
     , text : String
     , offset : Int
