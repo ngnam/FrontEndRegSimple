@@ -18,7 +18,7 @@ import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Json
 import Util exposing (..)
-import DataTypes exposing (HomeDataItem, TaxonomyId)
+import DataTypes exposing (AppDataItem, TaxonomyId, InputAlignment(..))
 import Dict
 
 
@@ -51,11 +51,11 @@ initialModel =
 
 
 type alias Config =
-    { inputAlignment : String }
+    { inputAlignment : InputAlignment, loadingButtonInner : Maybe (Html Msg) }
 
 
 type alias Category =
-    HomeDataItem
+    AppDataItem
 
 
 emptyCategory : Category
@@ -102,7 +102,7 @@ onKeyDown model =
 
 
 view : Model -> Config -> Html Msg
-view model { inputAlignment } =
+view model { inputAlignment, loadingButtonInner } =
     let
         { selected, menuOpen, focused, options } =
             model
@@ -110,8 +110,8 @@ view model { inputAlignment } =
         menuClass =
             classList
                 [ ( "list bg-white absolute z-4 ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem", menuOpen )
-                , ( "right-0", inputAlignment /= "left" )
-                , ( "left-0", inputAlignment == "left" )
+                , ( "right-0", inputAlignment == Right )
+                , ( "left-0", inputAlignment == Left )
                 , ( "dn", not menuOpen )
                 ]
 
@@ -141,6 +141,14 @@ view model { inputAlignment } =
             else
                 toString (List.length selected) ++ " categories selected"
 
+        buttonInner =
+            case loadingButtonInner of
+                Just el ->
+                    el
+
+                _ ->
+                    text buttonText
+
         inputUnderlineClass =
             classList
                 [ ( "absolute top-125 w-100 ba b--blue", True )
@@ -159,7 +167,7 @@ view model { inputAlignment } =
                 , type_ "button"
                 , ariaControls "category-list"
                 ]
-                [ text buttonText ]
+                [ buttonInner ]
             , div [ inputUnderlineClass ] []
             , viewIf (not atLeastOneOption)
                 (div
@@ -173,7 +181,7 @@ view model { inputAlignment } =
                     [ div [ class "ph4 pv2 f6" ] [ text "Please select an Activity" ] ]
                 )
             , viewIf (atLeastOneOption)
-                (div
+                (fieldset
                     [ id "category-list"
                     , menuClass
                     , ariaExpanded (boolStr menuOpen)
@@ -182,64 +190,69 @@ view model { inputAlignment } =
                     , onBlur HandleMenuBlur
                     , tabindex -1
                     ]
-                    (List.indexedMap
-                        (\index category ->
-                            let
-                                isDisabled =
-                                    not category.enabled
+                    ((legend
+                        [ class "clip" ]
+                        [ text "Please select from the following categories (at least one required)" ]
+                     )
+                        :: (List.indexedMap
+                                (\index category ->
+                                    let
+                                        isDisabled =
+                                            not category.enabled
 
-                                isFocused =
-                                    focused == index
+                                        isFocused =
+                                            focused == index
 
-                                isSelected =
-                                    List.member category.id selected
+                                        isSelected =
+                                            List.member category.id selected
 
-                                checkboxClass =
-                                    "absolute checkbox o-0"
+                                        checkboxClass =
+                                            "absolute checkbox o-0"
 
-                                checkmarkClass =
-                                    classList
-                                        [ ( "checkbox__checkmark absolute w1 h1 bg-white ba bw1 b--blue br1 left-1", True )
-                                        , ( "bg-blue", isSelected )
-                                        ]
+                                        checkmarkClass =
+                                            classList
+                                                [ ( "checkbox__checkmark absolute w1 h1 bg-white ba bw1 b--blue br1 left-1", True )
+                                                , ( "bg-blue", isSelected )
+                                                ]
 
-                                labelClass =
-                                    classList
-                                        [ ( "relative db fl w-50 pt1 pb2 pl4 pr2 pointer outline-0 f6", True )
-                                        , ( "o-30", isDisabled )
-                                        ]
+                                        labelClass =
+                                            classList
+                                                [ ( "relative db fl w-50 pt1 pb2 pl4 pr2 pointer outline-0 f6", True )
+                                                , ( "o-30", isDisabled )
+                                                ]
 
-                                optionBgClass =
-                                    classList
-                                        [ ( "absolute absolute--fill", True )
-                                        , ( "bg-blue o-20", isFocused )
-                                        ]
-                            in
-                                label
-                                    [ labelClass
-                                    , for ("category-" ++ (toString index))
-                                    , onFocus HandleLabelFocus
-                                    , onBlur HandleLabelBlur
-                                    , tabindex -1
-                                    ]
-                                    [ input
-                                        [ type_ "checkbox"
-                                        , onClick (HandleCheckboxClick category.id)
-                                        , checked isSelected
-                                        , disabled isDisabled
-                                        , onFocus (HandleCheckboxFocus index)
-                                        , onBlur HandleCheckboxBlur
-                                        , name "category"
-                                        , id ("category-" ++ (toString index))
-                                        , class checkboxClass
-                                        ]
-                                        []
-                                    , span [ checkmarkClass ] []
-                                    , div [ class "ml2" ] [ text category.name ]
-                                    , div [ optionBgClass ] []
-                                    ]
-                        )
-                        model.options
+                                        optionBgClass =
+                                            classList
+                                                [ ( "absolute absolute--fill", True )
+                                                , ( "bg-blue o-20", isFocused )
+                                                ]
+                                    in
+                                        label
+                                            [ labelClass
+                                            , for ("category-" ++ (toString index))
+                                            , onFocus HandleLabelFocus
+                                            , onBlur HandleLabelBlur
+                                            , tabindex -1
+                                            ]
+                                            [ input
+                                                [ type_ "checkbox"
+                                                , onClick (HandleCheckboxClick category.id)
+                                                , checked isSelected
+                                                , disabled isDisabled
+                                                , onFocus (HandleCheckboxFocus index)
+                                                , onBlur HandleCheckboxBlur
+                                                , name "category"
+                                                , id ("category-" ++ (toString index))
+                                                , class checkboxClass
+                                                ]
+                                                []
+                                            , span [ checkmarkClass ] []
+                                            , div [ class "ml2" ] [ text category.name ]
+                                            , div [ optionBgClass ] []
+                                            ]
+                                )
+                                model.options
+                           )
                     )
                 )
             ]

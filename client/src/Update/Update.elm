@@ -5,18 +5,20 @@ import Debouncer
 import Navigation
 import LoginDecoder exposing (requestLoginCodeCmd)
 import QueryDecoder
-import HomeDataDecoder
-import CountrySelect exposing (CountryId)
+import AppDataDecoder
+import CountrySelect
 import ActivitySelect exposing (ActivityId)
 import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (onUrlChange)
 import Helpers.QueryString exposing (queryString, removeFromQueryString)
-import Helpers.HomeData exposing (getActivities, getCategories, getCountries, getCountriesDict)
+import Helpers.AppData exposing (getActivities, getCategories, getCountries, getCountriesDict)
 import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
-import DataTypes exposing (Taxonomy)
+import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId)
+import RemoteData exposing (RemoteData(..))
+import DictList
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
@@ -24,8 +26,8 @@ getFromListById id items =
     0 !! (List.filter (\item -> item.id == id) items)
 
 
-setSelectedCategories : Taxonomy -> List CategoryId -> Model -> Model
-setSelectedCategories homeData categoryIds model =
+setSelectedCategories : List CategoryId -> Model -> Model
+setSelectedCategories categoryIds model =
     let
         { categorySelect } =
             model
@@ -115,8 +117,16 @@ update msg model =
                 newModel =
                     onUrlChange location model
 
+                taxonomy =
+                    case model.appData of
+                        Success appData ->
+                            appData.taxonomy
+
+                        _ ->
+                            emptyTaxonomy
+
                 queryUpdate =
-                    setSelectedCategories model.homeData
+                    setSelectedCategories
                         (Maybe.withDefault [] (Dict.get "categories" newModel.search))
                         >> setSelectedActivity
                             (0 !! (Maybe.withDefault [] (Dict.get "activity" newModel.search)))
@@ -125,9 +135,9 @@ update msg model =
                         >> setFilterText
                             (0 !! (Maybe.withDefault [] (Dict.get "filterText" newModel.search)))
 
-                homeDataCmd =
+                appDataCmd =
                     if model.navCount == 0 then
-                        HomeDataDecoder.requestCmd newModel
+                        AppDataDecoder.requestCmd newModel
                     else
                         Cmd.none
 
@@ -149,8 +159,9 @@ update msg model =
             in
                 ( { updatedModel
                     | navCount = model.navCount + 1
+                    , queryResults = Loading
                   }
-                , Cmd.batch [ homeDataCmd, queryCmd ]
+                , Cmd.batch [ appDataCmd, queryCmd ]
                 )
 
         SubmitLoginEmailForm ->
@@ -219,11 +230,19 @@ update msg model =
                 selected =
                     Maybe.withDefault "" updatedActivitySelectModel.selected
 
-                { categorySelect, homeData } =
+                { categorySelect } =
                     model
 
+                taxonomy =
+                    case model.appData of
+                        Success appData ->
+                            appData.taxonomy
+
+                        _ ->
+                            emptyTaxonomy
+
                 newCategoryModel =
-                    { categorySelect | options = getCategories homeData selected }
+                    { categorySelect | options = getCategories taxonomy selected }
 
                 newModel =
                     { model
@@ -302,53 +321,52 @@ update msg model =
             in
                 ( { model | categorySelect = updatedCategorySelectModel }, Cmd.none )
 
-        FetchQueryResults (Ok results) ->
-            ( { model | queryResults = results.results }, Cmd.none )
+        FetchQueryResults results ->
+            ( { model | queryResults = results }, Cmd.none )
 
-        FetchQueryResults (Err _) ->
-            ( model, Cmd.none )
+        FetchAppData results ->
+            case results of
+                Success data ->
+                    let
+                        { activitySelect, categorySelect, countrySelect } =
+                            model
 
-        HomeData (Ok results) ->
-            let
-                { activitySelect, categorySelect, countrySelect } =
-                    model
+                        { countries, taxonomy } =
+                            data
 
-                newActivityModel =
-                    { activitySelect | options = getActivities results.taxonomy }
+                        newActivityModel =
+                            { activitySelect | options = getActivities taxonomy }
 
-                selected =
-                    Maybe.withDefault "" activitySelect.selected
+                        selected =
+                            Maybe.withDefault "" activitySelect.selected
 
-                newCategoryModel =
-                    { categorySelect | options = getCategories results.taxonomy selected }
+                        newCategoryModel =
+                            { categorySelect | options = getCategories taxonomy selected }
 
-                countriesList =
-                    getCountries results.countries
+                        countriesSorted =
+                            countries
+                                |> DictList.sortBy (\names -> Maybe.withDefault "" (List.head names))
 
-                cs1 =
-                    getCountrySelect 0 model
+                        cs1 =
+                            getCountrySelect 0 model
 
-                cs2 =
-                    getCountrySelect 1 model
+                        cs2 =
+                            getCountrySelect 1 model
+                    in
+                        ( { model
+                            | appData = Success { taxonomy = taxonomy, countries = countriesSorted }
+                            , activitySelect = newActivityModel
+                            , categorySelect = newCategoryModel
+                            , countrySelect =
+                                countrySelect
+                                    |> Dict.insert 0 { cs1 | countries = countriesSorted }
+                                    |> Dict.insert 1 { cs2 | countries = countriesSorted }
+                          }
+                        , Cmd.none
+                        )
 
-                countriesDict =
-                    getCountriesDict results.countries
-            in
-                ( { model
-                    | homeData = results.taxonomy
-                    , countries = countriesDict
-                    , activitySelect = newActivityModel
-                    , categorySelect = newCategoryModel
-                    , countrySelect =
-                        countrySelect
-                            |> Dict.insert 0 { cs1 | countries = countriesList }
-                            |> Dict.insert 1 { cs2 | countries = countriesList }
-                  }
-                , Cmd.none
-                )
-
-        HomeData (Err _) ->
-            ( model, Cmd.none )
+                _ ->
+                    ( { model | appData = results }, Cmd.none )
 
         Copy copyLink ->
             ( { model | categorySubMenuOpen = Nothing }, copy copyLink )
@@ -364,16 +382,19 @@ update msg model =
                 countrySelect2 =
                     getCountrySelect 1 model
 
-                newCountrySelect1 =
-                    { countrySelect1 | query = countrySelect2.query }
-
-                newCountrySelect2 =
-                    { countrySelect2 | query = "" }
-
                 newCountrySelect =
-                    countrySelect
-                        |> Dict.insert 0 newCountrySelect1
-                        |> Dict.insert 1 newCountrySelect2
+                    case index of
+                        0 ->
+                            countrySelect
+                                |> Dict.insert 0 { countrySelect1 | query = countrySelect2.query }
+                                |> Dict.insert 1 { countrySelect2 | query = "" }
+
+                        1 ->
+                            countrySelect
+                                |> Dict.insert 1 { countrySelect2 | query = "" }
+
+                        _ ->
+                            countrySelect
 
                 newQueryString =
                     removeFromQueryString location.search ( "countries", index )

@@ -1,8 +1,7 @@
-module HomeDataDecoder exposing (requestCmd)
+module AppDataDecoder exposing (requestCmd)
 
 import Model exposing (Model, Msg(..))
-import DataTypes exposing (HomeDataResults, Taxonomy, HomeDataChildren(..))
-import CountrySelect exposing (CountryId, CountryName)
+import DataTypes exposing (AppDataResults, Taxonomy, AppDataChildren(..), CountryId, CountryName, CountriesDictList)
 import Http
 import Json.Decode
     exposing
@@ -22,6 +21,8 @@ import Json.Decode
         , map2
         )
 import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
+import RemoteData
+import DictList exposing (decodeObject)
 
 
 taxonomyDecoder : Decoder Taxonomy
@@ -31,12 +32,18 @@ taxonomyDecoder =
         |> required "enabled" bool
         |> optional "name" string ""
         |> optional "description" string ""
-        |> required "children" (map HomeDataChildren (list (lazy (\_ -> taxonomyDecoder))))
+        |> required "children" (map AppDataChildren (list (lazy (\_ -> taxonomyDecoder))))
 
 
-countriesDecoder : Decoder (List ( CountryId, List CountryName ))
+
+-- countriesDecoder : Decoder (List ( CountryId, List CountryName ))
+-- countriesDecoder =
+--     keyValuePairs (list string)
+
+
+countriesDecoder : Decoder CountriesDictList
 countriesDecoder =
-    keyValuePairs (list string)
+    decodeObject (list string)
 
 
 nullableString : Decoder String
@@ -44,19 +51,19 @@ nullableString =
     oneOf [ string, null "" ]
 
 
-decoder : Decoder HomeDataResults
+decoder : Decoder AppDataResults
 decoder =
-    decode HomeDataResults
+    decode AppDataResults
         |> required "taxonomy" taxonomyDecoder
         |> required "countries" countriesDecoder
 
 
-request : Model -> Http.Request HomeDataResults
+request : Model -> Http.Request AppDataResults
 request model =
     Http.request
         { method = "GET"
         , headers = [ Http.header "Content-Type" "application/json" ]
-        , url = model.config.apiBaseUrl ++ "/home-data"
+        , url = model.config.apiBaseUrl ++ "/app-data"
         , body = Http.emptyBody
         , expect = Http.expectJson (at [ "data" ] decoder)
         , timeout = Nothing
@@ -66,4 +73,6 @@ request model =
 
 requestCmd : Model -> Cmd Msg
 requestCmd model =
-    Http.send HomeData (request model)
+    request model
+        |> RemoteData.sendRequest
+        |> Cmd.map FetchAppData

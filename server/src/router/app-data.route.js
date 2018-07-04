@@ -2,9 +2,9 @@ export default ({ searchApiService }) => async (req, res, next) => {
   const { fetchTaxonomy, fetchCountries } = searchApiService;
 
   try {
-    const homeDataRes = await Promise.all([fetchTaxonomy(), fetchCountries()]);
+    const appDataRes = await Promise.all([fetchTaxonomy(), fetchCountries()]);
 
-    const [{ data: taxonomy }, { data: countries }] = homeDataRes;
+    const [{ data: taxonomy }, { data: countries }] = appDataRes;
 
     res.json({
       data: { taxonomy, countries }

@@ -6,7 +6,7 @@ import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Util exposing (..)
 import Json.Decode as Json
-import DataTypes exposing (HomeDataItem)
+import DataTypes exposing (AppDataItem, InputAlignment(..))
 
 
 -- MODEL --
@@ -21,11 +21,11 @@ type alias ActivityId =
 
 
 type alias Activity =
-    HomeDataItem
+    AppDataItem
 
 
 type alias Config =
-    { inputAlignment : String }
+    { inputAlignment : InputAlignment, loadingButtonInner : Maybe (Html Msg) }
 
 
 type alias Model =
@@ -74,7 +74,7 @@ activityMenu model menuClass =
         { options, selected, menuOpen } =
             model
     in
-        div
+        fieldset
             [ id "activity-list"
             , menuClass
             , ariaExpanded (boolStr menuOpen)
@@ -83,83 +83,88 @@ activityMenu model menuClass =
             , onBlur HandleMenuBlur
             , tabindex -1
             ]
-            (List.indexedMap
-                (\index activity ->
-                    let
-                        isDisabled =
-                            not activity.enabled
+            (legend
+                [ class "clip" ]
+                [ text "Please select from the following activities (required)" ]
+                :: (List.indexedMap
+                        (\index activity ->
+                            let
+                                isDisabled =
+                                    not activity.enabled
 
-                        labelClass =
-                            classList
-                                [ ( "relative pl4 pt1 pb2 w-50 tl f6"
-                                  , True
-                                  )
-                                , ( "o-30"
-                                  , isDisabled
-                                  )
-                                , ( "pointer"
-                                  , not isDisabled
-                                  )
-                                ]
-
-                        tabable =
-                            if isDisabled then
-                                -1
-                            else
-                                0
-                    in
-                        label
-                            [ labelClass
-                            , for ("activity-" ++ (toString index))
-                            , tabindex tabable
-                            , onFocus (HandleOptionFocused index)
-                            , onBlur HandleOptionBlur
-                            , onMouseEnter (HandleOptionHovered index)
-                            , onKeyDown
-                                model
-                            ]
-                            [ div
-                                [ class
-                                    "absolute left-1 w1 h1 br-100 bg-white b--blue ba fl flex flex-column justify-center items-center mr1"
-                                ]
-                                [ div
-                                    [ classList
-                                        [ ( "absolute w-75 h-75 bg-blue br-100"
-                                          , Just activity.id == selected
+                                labelClass =
+                                    classList
+                                        [ ( "relative db fl pl4 pt1 pb2 w-50 tl f6"
+                                          , True
+                                          )
+                                        , ( "o-30"
+                                          , isDisabled
+                                          )
+                                        , ( "pointer"
+                                          , not isDisabled
                                           )
                                         ]
+
+                                tabable =
+                                    if isDisabled then
+                                        -1
+                                    else
+                                        0
+                            in
+                                label
+                                    [ labelClass
+                                    , for ("activity-" ++ (toString index))
+                                    , tabindex tabable
+                                    , onFocus (HandleOptionFocused index)
+                                    , onBlur HandleOptionBlur
+                                    , onMouseEnter (HandleOptionHovered index)
+                                    , onKeyDown
+                                        model
                                     ]
-                                    []
-                                ]
-                            , input
-                                [ type_ "radio"
-                                , onClick (SetSelected activity.id)
-                                , name "activity"
-                                , disabled isDisabled
-                                , tabindex -1
-                                , id ("activity-" ++ (toString index))
-                                , class "clip"
-                                ]
-                                []
-                            , div [ class "ml2" ] [ text activity.name ]
-                            ]
-                )
-                options
+                                    [ div
+                                        [ class
+                                            "absolute left-1 w1 h1 br-100 bg-white b--blue ba fl flex flex-column justify-center items-center mr1"
+                                        ]
+                                        [ div
+                                            [ classList
+                                                [ ( "absolute w-75 h-75 bg-blue br-100"
+                                                  , Just activity.id == selected
+                                                  )
+                                                ]
+                                            ]
+                                            []
+                                        ]
+                                    , input
+                                        [ type_ "radio"
+                                        , onClick (SetSelected activity.id)
+                                        , name "activity"
+                                        , disabled isDisabled
+                                        , tabindex -1
+                                        , id ("activity-" ++ (toString index))
+                                        , class "clip"
+                                        , required True
+                                        ]
+                                        []
+                                    , div [ class "ml2" ] [ text activity.name ]
+                                    ]
+                        )
+                        options
+                   )
             )
 
 
 view : Model -> Config -> Html Msg
-view model { inputAlignment } =
+view model { inputAlignment, loadingButtonInner } =
     let
         { selected, menuOpen, options } =
             model
 
         menuClass =
             classList
-                [ ( "list bg-white ttc w30rem top-150 ba b--gray shadow-1 pv2 ph0", True )
-                , ( "absolute z-4 flex flex-wrap justify-between", menuOpen )
+                [ ( "list bg-white ttc w30rem top-150 ba b--light-gray shadow-1 pv2 ph0", True )
+                , ( "absolute z-4", menuOpen )
                 , ( "dn", not menuOpen )
-                , ( "translate-center", inputAlignment /= "left" )
+                , ( "translate-center", inputAlignment == Center )
                 ]
 
         wrapperClass =
@@ -176,6 +181,14 @@ view model { inputAlignment } =
 
         buttonUnderlineClass =
             "absolute top-125 w-100 ba b--blue"
+
+        buttonInner =
+            case loadingButtonInner of
+                Just el ->
+                    el
+
+                _ ->
+                    text (getActivityName selected options)
     in
         div
             [ wrapperClass, onKeyDown model ]
@@ -188,7 +201,7 @@ view model { inputAlignment } =
                 , buttonClass
                 , ariaControls "activity-list"
                 ]
-                [ text (getActivityName selected options) ]
+                [ buttonInner ]
             , viewIf menuOpen (div [ class buttonUnderlineClass ] [])
             , activityMenu
                 model

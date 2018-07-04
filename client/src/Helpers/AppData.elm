@@ -1,18 +1,19 @@
-module Helpers.HomeData exposing (getActivities, getCategories, getCountries, getCountriesDict, getCountryName)
+module Helpers.AppData exposing (getActivities, getCategories, getCountries, getCountriesDict, getCountryName)
 
-import DataTypes exposing (HomeDataItem, Taxonomy, HomeDataChildren(..))
+import DataTypes exposing (AppDataItem, Taxonomy, AppDataChildren(..), CountryId, CountryName, CountriesDictList)
 import ActivitySelect exposing (Activity, ActivityId)
-import CountrySelect exposing (Country, CountryId, CountryName)
+import CountrySelect exposing (Country)
 import Util exposing ((!!))
 import Dict
+import DictList
 
 
-removeChildren : List Taxonomy -> List HomeDataItem
+removeChildren : List Taxonomy -> List AppDataItem
 removeChildren taxonomies =
     taxonomies
         |> List.map
             (\taxonomy ->
-                HomeDataItem
+                AppDataItem
                     taxonomy.id
                     taxonomy.enabled
                     taxonomy.name
@@ -28,20 +29,20 @@ getFirstLevelChildren :
             , id : String
             , name : String
             , description : String
-            , children : HomeDataChildren
+            , children : AppDataChildren
             }
 getFirstLevelChildren taxonomy =
-    (\(HomeDataChildren children) -> children) taxonomy.children
+    (\(AppDataChildren children) -> children) taxonomy.children
 
 
-getActivities : Taxonomy -> List HomeDataItem
+getActivities : Taxonomy -> List AppDataItem
 getActivities taxonomy =
     taxonomy
         |> getFirstLevelChildren
         |> removeChildren
 
 
-getCategories : Taxonomy -> ActivityId -> List HomeDataItem
+getCategories : Taxonomy -> ActivityId -> List AppDataItem
 getCategories taxonomy activityId =
     taxonomy
         |> getFirstLevelChildren
@@ -52,7 +53,7 @@ getCategories taxonomy activityId =
             , name = ""
             , enabled = False
             , description = ""
-            , children = HomeDataChildren []
+            , children = AppDataChildren []
             }
         |> getFirstLevelChildren
         |> removeChildren
@@ -80,5 +81,8 @@ getCountriesDict countryList =
         |> Dict.fromList
 
 
-getCountryName countryId model =
-    Maybe.withDefault "" (Dict.get countryId model.countries)
+getCountryName : CountryId -> CountriesDictList -> CountryName
+getCountryName countryId countriesDictList =
+    DictList.get countryId countriesDictList
+        |> Maybe.andThen List.head
+        |> Maybe.withDefault ""

@@ -1,11 +1,45 @@
-module Helpers.QueryString exposing (queryString, removeFromQueryString)
+module Helpers.QueryString exposing (queryString, removeFromQueryString, queryValidation)
 
 import Model exposing (Model)
 import Helpers.Routing exposing (parseParams)
-import Helpers.CountrySelect exposing (getCountrySelect)
+import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Dict
 import DataTypes exposing (SearchParsed)
 import Util exposing ((!!))
+import Validation exposing (Validation(..))
+
+
+queryValidation : Model -> Validation
+queryValidation model =
+    let
+        noActivitySelected =
+            model.activitySelect.selected == Nothing
+
+        noCategorySelected =
+            List.isEmpty model.categorySelect.selected
+
+        noCountrySelected =
+            getSelectedCountry 0 model == Nothing
+
+        validationText =
+            if noActivitySelected then
+                "Please select an Activity"
+            else if noCategorySelected then
+                "Please select a Category"
+            else if noCountrySelected then
+                "Please select a Country"
+            else
+                ""
+
+        inValidQuery =
+            noActivitySelected || noCategorySelected || noCountrySelected
+    in
+        case inValidQuery of
+            True ->
+                Invalid validationText
+
+            False ->
+                Valid
 
 
 queryString : Model -> String

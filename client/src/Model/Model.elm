@@ -3,7 +3,7 @@ module Model exposing (Msg(..), Model, Flags, init)
 import Navigation
 import Debouncer
 import Time
-import CountrySelect exposing (CountryId, CountryName, Country)
+import CountrySelect exposing (Country)
 import ActivitySelect
 import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (parseLocation)
@@ -14,11 +14,14 @@ import DataTypes
         ( QueryResults
         , QueryResult
         , Taxonomy
-        , HomeDataResults
-        , HomeDataChildren(..)
+        , AppDataResults
+        , AppDataChildren(..)
         , SearchParsed
+        , AppData
+        , CountriesDictList
+        , AccordionsOpen
         )
-import Http
+import RemoteData exposing (RemoteData(..), WebData)
 
 
 type Msg
@@ -30,8 +33,8 @@ type Msg
     | CountrySelectMsg Int CountrySelect.Msg
     | ActivitySelectMsg ActivitySelect.Msg
     | CategorySelectMsg CategorySelect.Msg
-    | FetchQueryResults (Result Http.Error QueryResults)
-    | HomeData (Result Http.Error HomeDataResults)
+    | FetchQueryResults (WebData QueryResults)
+    | FetchAppData (WebData AppDataResults)
     | SetActiveCategory CategoryId
     | FilterTextOnInput String
     | OnQueryUpdate
@@ -51,9 +54,8 @@ type alias Model =
     { location : Navigation.Location
     , debouncer : Debouncer.DebouncerState
     , search : SearchParsed
-    , queryResults : List QueryResult
-    , homeData : Taxonomy
-    , countries : Dict.Dict CountryId CountryName
+    , queryResults : WebData QueryResults
+    , appData : WebData AppData
     , email : String
     , isLoggedIn : Bool
     , countrySelect : Dict Int CountrySelect.Model
@@ -62,7 +64,7 @@ type alias Model =
     , activeCategory : Maybe CategoryId
     , filterText : String
     , categorySubMenuOpen : Maybe CategoryId
-    , accordionsOpen : Set.Set ( String, Int )
+    , accordionsOpen : AccordionsOpen
     , config : { apiBaseUrl : String }
     , navCount : Int
     , config : Flags
@@ -74,15 +76,8 @@ init flags location =
     ( { location = parseLocation location
       , search = Dict.empty
       , debouncer = Debouncer.create (0.3 * Time.second)
-      , queryResults = []
-      , homeData =
-            { id = ""
-            , enabled = False
-            , name = ""
-            , description = ""
-            , children = HomeDataChildren []
-            }
-      , countries = Dict.empty
+      , queryResults = NotAsked
+      , appData = Loading
       , email = ""
       , isLoggedIn = False
       , countrySelect =

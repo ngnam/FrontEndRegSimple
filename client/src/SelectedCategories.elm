@@ -1,11 +1,12 @@
 module SelectedCategories exposing (..)
 
-import Html exposing (Html, section, div, a, button, input, header, img, text, ul, li, p)
+import Html exposing (Html, section, div, a, button, input, header, img, text, ul, li, p, span)
 import Html.Attributes exposing (id, class, tabindex, value, disabled, classList)
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(Copy, CategorySubMenuClick, CategoryRemoveClick))
 import CategorySelect exposing (Category, emptyCategory, getCategoriesFromIds)
 import Helpers.CountrySelect exposing (getCountrySelect)
+import RemoteData exposing (RemoteData(..))
 
 
 subMenu : ( Model, Category ) -> Html Msg
@@ -96,11 +97,19 @@ categoriesMenu model =
                             , ( "icon--menu-dots-white", (Just category.id == model.activeCategory) )
                             , ( "icon--menu-dots-grey", (Just category.id /= model.activeCategory) )
                             ]
+
+                    buttonInner =
+                        case model.appData of
+                            Loading ->
+                                span [ class "dib w-100 h1 bg-mid-gray br2" ] []
+
+                            _ ->
+                                text category.name
                 in
                     li [ class "relative" ]
                         [ button
                             [ categoryClass, onClick (Model.SetActiveCategory category.id), tabindex 0 ]
-                            [ text category.name ]
+                            [ buttonInner ]
                         , button [ categoryMenuDotsClass, onClick (CategorySubMenuClick category.id) ] []
                         , subMenu ( model, category )
                         ]
