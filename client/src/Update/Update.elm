@@ -17,9 +17,10 @@ import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
-import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId)
-import RemoteData exposing (RemoteData(..))
+import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, FeedbackType(..))
+import RemoteData exposing (RemoteData(..), WebData)
 import DictList
+import FeedbackDecoder
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
@@ -292,16 +293,16 @@ update msg model =
                 , Cmd.batch [ Cmd.map ActivitySelectMsg activitySelectCmd, queryCmd ]
                 )
 
-        AccordionToggleClick ( id, index ) ->
+        AccordionToggleClick snippetId ->
             let
                 accordionIsOpen =
-                    Set.member ( id, index ) model.accordionsOpen
+                    Set.member snippetId model.accordionsOpen
 
                 accordionsOpen =
                     if not accordionIsOpen then
-                        Set.insert ( id, index ) model.accordionsOpen
+                        Set.insert snippetId model.accordionsOpen
                     else
-                        Set.remove ( id, index ) model.accordionsOpen
+                        Set.remove snippetId model.accordionsOpen
             in
                 ( { model | accordionsOpen = accordionsOpen }, Cmd.none )
 
@@ -433,6 +434,46 @@ update msg model =
                   }
                 , Navigation.modifyUrl ("/#/query?" ++ newQueryString)
                 )
+
+        SnippetRejectClick ( snippetId, resultIndex ) ->
+            let
+                modifiedQueryResults =
+                    case model.queryResults of
+                        Success queryResults ->
+                            Success
+                                { results =
+                                    (List.map
+                                        (\queryResult ->
+                                            { queryResult
+                                                | matches =
+                                                    (List.filter
+                                                        (\match ->
+                                                            (match.body
+                                                                |> List.head
+                                                                |> Maybe.map .id
+                                                                |> Maybe.withDefault ""
+                                                            )
+                                                                /= snippetId
+                                                        )
+                                                        queryResult.matches
+                                                    )
+                                                , nMatches = queryResult.nMatches - 1
+                                                , totalMatches = queryResult.totalMatches - 1
+                                            }
+                                        )
+                                        queryResults.results
+                                    )
+                                }
+
+                        _ ->
+                            model.queryResults
+            in
+                ( { model | queryResults = modifiedQueryResults }, FeedbackDecoder.requestCmd model (RejectSnippet snippetId) )
+
+        FeedbackRequest feedbackType results ->
+            ( model
+            , Cmd.none
+            )
 
         _ ->
             ( model, Cmd.none )

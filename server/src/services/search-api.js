@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 const createSearchApiService = ({ config }) => {
-  const { REGSIMPLE_SEARCH_API } = config;
+  const {
+    REGSIMPLE_SEARCH_API,
+    SEARCH_API_USERNAME,
+    SEARCH_API_PASSWORD
+  } = config;
 
   const fetchResults = async ({ countries, categories, filterText }) => {
     return axios({
@@ -28,10 +32,29 @@ const createSearchApiService = ({ config }) => {
     });
   };
 
+  const rejectSnippet = async ({
+    snippetId,
+    userId,
+    categories,
+    countries
+  }) => {
+    return axios({
+      method: 'PUT',
+      url: `${REGSIMPLE_SEARCH_API}/reject/${snippetId}`,
+      data: { user_id: userId, categories, countries },
+      headers: { 'Content-Type': 'application/json' },
+      auth: {
+        username: SEARCH_API_USERNAME,
+        password: SEARCH_API_PASSWORD
+      }
+    });
+  };
+
   return {
     fetchResults,
     fetchCountries,
-    fetchTaxonomy
+    fetchTaxonomy,
+    rejectSnippet
   };
 };
 

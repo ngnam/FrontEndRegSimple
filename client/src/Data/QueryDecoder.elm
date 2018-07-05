@@ -42,6 +42,7 @@ matchBodyDecoder =
         |> required "summary" string
         |> required "url" string
         |> required "page" int
+        |> required "id" string
 
 
 matchDecoder : Decoder QueryResultMatch

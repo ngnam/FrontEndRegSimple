@@ -32,7 +32,7 @@ viewHeader name description =
 view : Model -> Html Msg
 view model =
     let
-        { accordionsOpen, appData, queryResults } =
+        { accordionsOpen, appData, queryResults, isLoggedIn } =
             model
 
         { name, description } =
@@ -71,6 +71,7 @@ view model =
                                                 , isCountryCompare = isCountryCompare
                                                 , countries = appData.countries
                                                 , resultIndex = index
+                                                , isLoggedIn = isLoggedIn
                                                 , countryId =
                                                     Maybe.withDefault
                                                         ""

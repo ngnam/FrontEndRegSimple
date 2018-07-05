@@ -15,7 +15,9 @@ const envVarNames = [
   'SESSION_SECRET',
   'REGSIMPLE_SEARCH_API',
   'CLIENT_APP_BASE_URL',
-  'JWT_SECRET'
+  'JWT_SECRET',
+  'SEARCH_API_USERNAME',
+  'SEARCH_API_PASSWORD'
 ];
 
 export default envVarNames.reduce((config, varName) => {

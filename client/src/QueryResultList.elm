@@ -19,13 +19,14 @@ type alias ViewModel =
     , countries : CountriesDictList
     , resultIndex : Int
     , countryId : CountryId
+    , isLoggedIn : Bool
     }
 
 
 view : ViewModel -> Html Msg
 view viewModel =
     let
-        { queryResult, isCountryCompare, accordionsOpen, countries, resultIndex, countryId } =
+        { queryResult, isCountryCompare, accordionsOpen, countries, resultIndex, countryId, isLoggedIn } =
             viewModel
 
         { matches, totalMatches } =
@@ -64,12 +65,28 @@ view viewModel =
                 (List.indexedMap
                     (\matchIndex match ->
                         let
+                            emptyBody =
+                                { tags = []
+                                , text = "This result contains no body. It matched your search terms against its title only."
+                                , offset = 0
+                                , summary = match.title
+                                , url = ""
+                                , page = 0
+                                , id = ""
+                                }
+
+                            matchHasBody =
+                                0 !! match.body /= Nothing
+
+                            snippet =
+                                Maybe.withDefault emptyBody (0 !! match.body)
+
                             accordionIsOpen =
-                                Set.member ( match.id, matchIndex ) accordionsOpen
+                                Set.member snippet.id accordionsOpen
 
                             accordionClass =
                                 classList
-                                    [ ( "f7 bg-mid-gray mt1 mb2 br2 b--moon-gray ba pa3 lh-copy", True )
+                                    [ ( "f7 bg-mid-gray mt1 mb2 br2 b--moon-gray ba pa3 lh-copy relative", True )
                                     , ( "dn", not accordionIsOpen )
                                     ]
 
@@ -82,31 +99,16 @@ view viewModel =
                                     ]
 
                             accordionHeadingId =
-                                "heading" ++ match.id ++ toString matchIndex
+                                "heading" ++ snippet.id
 
                             accordionId =
-                                "section" ++ match.id ++ toString matchIndex
-
-                            emptyBody =
-                                { tags = []
-                                , text = "This result contains no body. It matched your search terms against its title only."
-                                , offset = 0
-                                , summary = match.title
-                                , url = ""
-                                , page = 0
-                                }
-
-                            matchHasBody =
-                                0 !! match.body /= Nothing
-
-                            snippet =
-                                Maybe.withDefault emptyBody (0 !! match.body)
+                                "section" ++ snippet.id
                         in
                             li [ class "near-black mw6 body-text" ]
                                 [ button
                                     [ accordionToggleClass
                                     , ariaControls accordionId
-                                    , onClick (AccordionToggleClick ( match.id, matchIndex ))
+                                    , onClick (AccordionToggleClick snippet.id)
                                     ]
                                     [ span
                                         [ id accordionHeadingId
@@ -132,6 +134,13 @@ view viewModel =
                                             ]
                                             []
                                         ]
+                                    , viewIf isLoggedIn
+                                        (button
+                                            [ class "icon icon--close-small br-100 bg-white ba absolute top-0 right-0 ma1 h1 w1 ba b--moon-gray"
+                                            , onClick (SnippetRejectClick ( snippet.id, resultIndex ))
+                                            ]
+                                            []
+                                        )
                                     ]
                                 ]
                     )
