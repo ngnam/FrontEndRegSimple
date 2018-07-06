@@ -15,5 +15,3 @@ node_modules
 
 # Environment variables
 *.env
-
-client/public/style.min.css
