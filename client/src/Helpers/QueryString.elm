@@ -31,10 +31,10 @@ queryValidation model =
             else
                 ""
 
-        inValidQuery =
+        invalidQuery =
             noActivitySelected || noCategorySelected || noCountrySelected
     in
-        case inValidQuery of
+        case invalidQuery of
             True ->
                 Invalid validationText
 

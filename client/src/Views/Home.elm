@@ -35,7 +35,7 @@ view model =
         , section
             [ class "flex justify-center items-center" ]
             [ case model.appData of
-                Failure error ->
+                Failure _ ->
                     div [ class "w-60 mt3" ] [ text "There was a problem connecting to our servers. Please check your internet connection and try again." ]
 
                 _ ->
