@@ -8,27 +8,31 @@ import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 import Set
 import Util exposing (boolStr, viewIf, (!!))
-import DataTypes exposing (QueryResult)
-import Helpers.HomeData exposing (getCountryName)
+import DataTypes exposing (QueryResult, AccordionsOpen, CountriesDictList, CountryId)
+import Helpers.AppData exposing (getCountryName)
 
 
-view : Model -> Int -> QueryResult -> Html Msg
-view model index queryResult =
+type alias ViewModel =
+    { accordionsOpen : AccordionsOpen
+    , queryResult : QueryResult
+    , isCountryCompare : Bool
+    , countries : CountriesDictList
+    , resultIndex : Int
+    , countryId : CountryId
+    }
+
+
+view : ViewModel -> Html Msg
+view viewModel =
     let
-        { queryResults } =
-            model
+        { queryResult, isCountryCompare, accordionsOpen, countries, resultIndex, countryId } =
+            viewModel
 
         { matches, totalMatches } =
             queryResult
 
-        isCountryCompare =
-            List.length queryResults > 1
-
-        countryId =
-            Maybe.withDefault "" (Maybe.map .country (0 !! matches))
-
         countryName =
-            getCountryName countryId model
+            getCountryName countryId countries
 
         headingText =
             "Showing " ++ toString (List.length matches) ++ " of " ++ toString (totalMatches) ++ " matches"
@@ -45,13 +49,12 @@ view model index queryResult =
                     )
                 , h3
                     [ class "f6 black-30 metro-b mb2"
-                    , innerHtml headingText
                     ]
-                    []
+                    [ text headingText ]
                 , viewIf isCountryCompare
                     (button
                         [ class "icon icon--close absolute top-1 right-1 h1 w1 b--none bg-transparent"
-                        , onClick (QueryResultListRemoveClick index)
+                        , onClick (QueryResultListRemoveClick resultIndex)
                         , ariaLabel ("Remove " ++ countryName ++ " from comparison")
                         ]
                         []
@@ -59,10 +62,10 @@ view model index queryResult =
                 ]
             , ul [ class "list f5" ]
                 (List.indexedMap
-                    (\index match ->
+                    (\matchIndex match ->
                         let
                             accordionIsOpen =
-                                Set.member ( match.id, index ) model.accordionsOpen
+                                Set.member ( match.id, matchIndex ) accordionsOpen
 
                             accordionClass =
                                 classList
@@ -79,10 +82,10 @@ view model index queryResult =
                                     ]
 
                             accordionHeadingId =
-                                "heading" ++ match.id ++ toString index
+                                "heading" ++ match.id ++ toString matchIndex
 
                             accordionId =
-                                "section" ++ match.id ++ toString index
+                                "section" ++ match.id ++ toString matchIndex
 
                             emptyBody =
                                 { tags = []
@@ -103,7 +106,7 @@ view model index queryResult =
                                 [ button
                                     [ accordionToggleClass
                                     , ariaControls accordionId
-                                    , onClick (AccordionToggleClick ( match.id, index ))
+                                    , onClick (AccordionToggleClick ( match.id, matchIndex ))
                                     ]
                                     [ span
                                         [ id accordionHeadingId

@@ -1,6 +1,34 @@
 module DataTypes exposing (..)
 
-import Dict
+import Dict exposing (Dict)
+import DictList exposing (DictList)
+import Set exposing (Set)
+
+
+type InputAlignment
+    = Left
+    | Right
+    | Center
+
+
+type alias AccordionsOpen =
+    Set ( String, Int )
+
+
+type alias CountryId =
+    String
+
+
+type alias CountryName =
+    String
+
+
+type alias CountriesDictList =
+    DictList CountryId (List CountryName)
+
+
+type alias AppData =
+    { countries : CountriesDictList, taxonomy : Taxonomy }
 
 
 type alias SearchParsed =
@@ -41,9 +69,9 @@ type alias QueryResultMatchBody =
     }
 
 
-type alias HomeDataResults =
+type alias AppDataResults =
     { taxonomy : Taxonomy
-    , countries : List ( String, List String )
+    , countries : CountriesDictList
     }
 
 
@@ -56,11 +84,21 @@ type alias Taxonomy =
     , enabled : Bool
     , name : String
     , description : String
-    , children : HomeDataChildren
+    , children : AppDataChildren
     }
 
 
-type alias HomeDataItem =
+emptyTaxonomy : Taxonomy
+emptyTaxonomy =
+    { id = ""
+    , enabled = False
+    , name = ""
+    , description = ""
+    , children = AppDataChildren []
+    }
+
+
+type alias AppDataItem =
     { id : TaxonomyId
     , enabled : Bool
     , name : String
@@ -68,5 +106,5 @@ type alias HomeDataItem =
     }
 
 
-type HomeDataChildren
-    = HomeDataChildren (List Taxonomy)
+type AppDataChildren
+    = AppDataChildren (List Taxonomy)

@@ -18,6 +18,9 @@
 .flag-icon.flag-icon-squared {
   width: 1em;
 }
+.flag-icon {
+  background-image: url(../assets/icons/flag.svg);
+}
 .flag-icon-ad {
   background-image: url(../assets/flags/4x3/ad.svg);
 }

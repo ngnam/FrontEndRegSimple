@@ -6,7 +6,7 @@ import querySchema from '../validations/query.validation';
 
 import loginEmail from './login-email.route';
 import query from './query.route';
-import homeData from './home-data.route';
+import appData from './app-data.route';
 
 const createRouter = dependencies => {
   const router = Router();
@@ -23,7 +23,7 @@ const createRouter = dependencies => {
 
   router.get('/query', validate(querySchema), query(dependencies));
 
-  router.get('/home-data', homeData(dependencies));
+  router.get('/app-data', appData(dependencies));
 
   return router;
 };

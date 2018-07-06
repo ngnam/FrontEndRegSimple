@@ -10,10 +10,10 @@ import Model exposing (Model, Msg(FilterTextOnInput))
 view : Model -> Html Msg
 view model =
     div
-        [ class "w-20 fl relative icon icon--search z-0" ]
+        [ class "w-100 fl relative icon icon--search z-0" ]
         [ input
             [ class "w-100 h2 pv2 pl4 bg-transparent bn f7 dark-gray metro truncate-ns placeholder--filter-text relative z-1"
-            , type_ "text"
+            , type_ "search"
             , onInput FilterTextOnInput
             , placeholder "Search results..."
             , value model.filterText

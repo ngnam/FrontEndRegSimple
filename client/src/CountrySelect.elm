@@ -6,8 +6,6 @@ module CountrySelect
         , update
         , view
         , Country
-        , CountryId
-        , CountryName
         )
 
 import Html exposing (..)
@@ -17,6 +15,8 @@ import Html.Events exposing (..)
 import Json.Decode as Json
 import Util exposing (..)
 import Set exposing (Set)
+import DataTypes exposing (CountriesDictList, CountryId, CountryName)
+import DictList
 
 
 -- MODEL --
@@ -26,22 +26,14 @@ type alias Index =
     Int
 
 
-type alias CountryId =
-    String
-
-
-type alias CountryName =
-    String
-
-
 type alias Model =
     { focused : Index
     , hovered : Index
     , menuOpen : Bool
     , query : String
-    , options : List Country
+    , options : CountriesDictList
     , selected : Maybe CountryId
-    , countries : List Country
+    , countries : CountriesDictList
     }
 
 
@@ -51,9 +43,9 @@ initialModel =
     , hovered = -1
     , menuOpen = False
     , query = ""
-    , options = []
+    , options = DictList.empty
     , selected = Nothing
-    , countries = []
+    , countries = DictList.empty
     }
 
 
@@ -62,17 +54,31 @@ type alias Country =
 
 
 type alias Config =
-    { excludedCountries : Set CountryId, placeholderText : Maybe String }
+    { excludedCountries : Set CountryId
+    , placeholderText : Maybe String
+    , maxOptionsToShow : Int
+    , loadingInputInner : Maybe (Html Msg)
+    , required : Bool
+    }
 
 
-source : List Country -> String -> List Country
+source : CountriesDictList -> String -> CountriesDictList
 source countries query =
-    List.filter (\c -> String.contains (String.toLower query) (String.toLower c.name)) countries
+    DictList.filter
+        (\id names ->
+            List.foldl
+                (\name accum ->
+                    accum || String.contains (String.toLower query) (String.toLower name)
+                )
+                False
+                names
+        )
+        countries
 
 
-optionsAvailable : List Country -> Bool
+optionsAvailable : CountriesDictList -> Bool
 optionsAvailable options =
-    List.length options > 0
+    DictList.length options > 0
 
 
 
@@ -112,10 +118,10 @@ onKeyDown model =
 view : Model -> Config -> Html Msg
 view model config =
     let
-        { menuOpen, focused, hovered, countries, selected } =
+        { focused, menuOpen, hovered, countries, selected } =
             model
 
-        { excludedCountries, placeholderText } =
+        { excludedCountries, placeholderText, maxOptionsToShow, loadingInputInner } =
             config
 
         optionFocused =
@@ -141,10 +147,6 @@ view model config =
                 [ ( "absolute top-125 w-100 ba b--blue", True )
                 , ( "dn", not menuOpen )
                 ]
-
-        optionClass isExcluded =
-            classList
-                [ ( "relative pv1 pl3 pr4 lh-copy pointer", True ), ( "dn", isExcluded ) ]
 
         optionBgClass active =
             classList
@@ -178,6 +180,27 @@ view model config =
 
                 _ ->
                     model.query
+
+        emptyCountries =
+            DictList.empty
+
+        inputInnerClass =
+            classList
+                [ ( "absolute top-0 left-0 w-100 h2 pv2 pr3", True )
+                , ( "pl3", not showInputFlag )
+                , ( "pl4", showInputFlag )
+                ]
+
+        showInputLoading =
+            countries == emptyCountries
+
+        inputLoadingInner =
+            case loadingInputInner of
+                Just el ->
+                    div [ inputInnerClass ] [ el ]
+
+                _ ->
+                    text ""
     in
         div
             [ class "fl relative f6 w-100"
@@ -189,13 +212,15 @@ view model config =
                 [ inputClass
                 , type_ "text"
                 , placeholder (Maybe.withDefault "Type your country" placeholderText)
-                , onInput SetQuery
+                , onInput (SetQuery excludedCountries)
                 , onBlur HandleInputBlur
                 , value inputValue
                 , role "textbox"
+                , required config.required
                 , ariaActiveDescendant activeDescendant
                 ]
                 []
+            , viewIf showInputLoading inputLoadingInner
             , viewIf showInputFlag
                 (div
                     [ class "absolute top-0 bottom-0 flex flex-column justify-center pl2" ]
@@ -205,22 +230,23 @@ view model config =
             , div [ (inputUnderlineClass menuOpen) ] []
             , ul [ menuClass, role "listbox" ]
                 (model.options
-                    |> List.take 8
+                    |> DictList.take maxOptionsToShow
+                    |> DictList.toList
                     |> List.indexedMap
-                        (\index country ->
+                        (\index ( countryId, names ) ->
                             li
-                                [ onClick (HandleOptionClick country.id)
+                                [ onClick (HandleOptionClick countryId)
                                 , onMouseEnter (HandleOptionMouseEnter index)
                                 , onMouseOut (HandleOptionMouseOut index)
                                 , value model.query
-                                , optionClass (Set.member country.id excludedCountries)
+                                , class "relative pv1 pl3 pr4 lh-copy pointer"
                                 , tabindex -1
                                 , role "option"
                                 , ariaSelected (boolStr (focused == index))
                                 ]
                                 [ div [ (optionBgClass (focused == index || hovered == index)) ] []
-                                , div [ class (flagClass country.id) ] []
-                                , text country.name
+                                , div [ class (flagClass countryId) ] []
+                                , text (Maybe.withDefault "" (0 !! names))
                                 ]
                         )
                 )
@@ -232,7 +258,7 @@ view model config =
 
 
 type Msg
-    = SetQuery String
+    = SetQuery (Set CountryId) String
     | HandleUpArrow
     | HandleDownArrow
     | HandleOptionClick CountryId
@@ -245,19 +271,18 @@ type Msg
     | NoOp
 
 
-idFromIndex : Index -> List Country -> Maybe CountryId
+idFromIndex : Index -> CountriesDictList -> Maybe CountryId
 idFromIndex index options =
-    Maybe.map .id (index !! options)
+    DictList.getKeyAt index options
 
 
-getCountryName : Maybe CountryId -> List Country -> String
-getCountryName id countries =
-    case id of
-        Just a ->
+getCountryName : Maybe CountryId -> CountriesDictList -> String
+getCountryName maybeId countries =
+    case maybeId of
+        Just id ->
             countries
-                |> List.filter (\country -> Just country.id == id)
-                |> List.head
-                |> Maybe.map .name
+                |> DictList.get id
+                |> Maybe.andThen List.head
                 |> Maybe.withDefault ""
 
         Nothing ->
@@ -340,7 +365,7 @@ handleEnter model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SetQuery query ->
+        SetQuery excludedCountries query ->
             let
                 queryEmpty =
                     String.isEmpty query
@@ -351,8 +376,13 @@ update msg model =
                 searchForOptions =
                     queryChanged && not queryEmpty
 
+                availableCountries =
+                    DictList.filter
+                        (\countryId name -> not (Set.member countryId excludedCountries))
+                        model.countries
+
                 options =
-                    source model.countries query
+                    source availableCountries query
 
                 menuOpen =
                     searchForOptions && optionsAvailable options
@@ -390,7 +420,7 @@ update msg model =
 
                 isNotAtBottom =
                     -- this *was* `selected` ... changed to `focused`
-                    focused /= List.length options - 1
+                    focused /= DictList.length options - 1
 
                 allowMoveDown =
                     isNotAtBottom && menuOpen

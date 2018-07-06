@@ -5,6 +5,7 @@ import Model exposing (Model, Msg(..))
 import DataTypes exposing (QueryResults, QueryResult, QueryResultMatch, QueryResultMatchBody)
 import Json.Decode exposing (Decoder, list, int, float, string, at, oneOf, null, nullable)
 import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
+import RemoteData
 
 
 request : Model -> Http.Request QueryResults
@@ -27,7 +28,9 @@ nullableString =
 
 requestCmd : Model -> Cmd Msg
 requestCmd model =
-    Http.send FetchQueryResults (request model)
+    request model
+        |> RemoteData.sendRequest
+        |> Cmd.map FetchQueryResults
 
 
 matchBodyDecoder : Decoder QueryResultMatchBody

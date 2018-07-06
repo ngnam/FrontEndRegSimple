@@ -8,8 +8,10 @@ import QuerySideBar
 import SelectedCategories
 import QueryResultList
 import CategorySelect exposing (getCategoryById)
-import Util exposing (viewIf, (!!))
 import Helpers.CountrySelect exposing (getSelectedCountry)
+import Helpers.QueryString exposing (queryValidation)
+import Validation exposing (Validation(..))
+import RemoteData exposing (RemoteData(..))
 
 
 viewValidationText : String -> Html msg
@@ -30,37 +32,23 @@ viewHeader name description =
 view : Model -> Html Msg
 view model =
     let
+        { accordionsOpen, appData, queryResults } =
+            model
+
         { name, description } =
             getCategoryById model.categorySelect.options (Maybe.withDefault "" model.activeCategory)
 
-        noActivitySelected =
-            model.activitySelect.selected == Nothing
-
-        noCategorySelected =
-            List.length model.categorySelect.selected == 0
-
-        noCountrySelected =
-            getSelectedCountry 0 model == Nothing
-
-        validationText =
-            if noActivitySelected then
-                "Please select an Activity"
-            else if noCategorySelected then
-                "Please select a Category"
-            else if noCountrySelected then
-                "Please select a Country"
-            else
-                ""
-
-        inValidQuery =
-            noActivitySelected || noCategorySelected || noCountrySelected
-
         isCountryCompare =
-            List.length model.queryResults > 1
+            case queryResults of
+                Success query ->
+                    List.length query.results > 1
+
+                _ ->
+                    False
 
         resultsContainerClass =
             classList
-                [ ( "tl flex-1 ph5 pt3 pb4 near-black", True )
+                [ ( "tl flex-1 flex flex-column ph5 pt3 pb4 near-black", True )
                 , ( "mw7", not isCountryCompare )
                 ]
     in
@@ -71,17 +59,44 @@ view model =
                 , div [ class "flex-1 flex" ]
                     [ SelectedCategories.view model
                     , div [ resultsContainerClass ]
-                        [ viewIf inValidQuery (viewValidationText validationText)
-                        , viewIf (not inValidQuery) (viewHeader name description)
-                        , viewIf (not inValidQuery)
-                            (div [ class "flex flex-row" ]
-                                (List.indexedMap
-                                    (\index queryResult ->
-                                        QueryResultList.view model index queryResult
+                        [ viewHeader name description
+                        , case ( queryValidation model, queryResults, appData ) of
+                            ( Valid, Success queryResults, Success appData ) ->
+                                (div [ class "flex flex-row" ]
+                                    (List.indexedMap
+                                        (\index queryResult ->
+                                            QueryResultList.view
+                                                { accordionsOpen = accordionsOpen
+                                                , queryResult = queryResult
+                                                , isCountryCompare = isCountryCompare
+                                                , countries = appData.countries
+                                                , resultIndex = index
+                                                , countryId =
+                                                    Maybe.withDefault
+                                                        ""
+                                                        (getSelectedCountry index model)
+                                                }
+                                        )
+                                        queryResults.results
                                     )
-                                    model.queryResults
                                 )
-                            )
+
+                            ( Invalid validationText, _, Success appData ) ->
+                                viewValidationText validationText
+
+                            ( _, _, Failure error ) ->
+                                div [] [ text "There was a problem connecting to our servers. Please check your internet connection and try again." ]
+
+                            ( Invalid validationText, Failure error, _ ) ->
+                                div [] [ text "There was an error loading your search results." ]
+
+                            ( _, Loading, _ ) ->
+                                div
+                                    [ class "w-100 relative flex-1" ]
+                                    [ div [ class "spinner" ] [] ]
+
+                            _ ->
+                                div [] []
                         ]
                     ]
                 ]

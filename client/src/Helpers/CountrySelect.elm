@@ -1,8 +1,9 @@
 module Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 
 import Model exposing (Model)
-import CountrySelect exposing (CountryId)
+import CountrySelect
 import Dict
+import DataTypes exposing (CountryId)
 
 
 getCountrySelect : Int -> Model -> CountrySelect.Model
