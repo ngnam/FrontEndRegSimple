@@ -9,6 +9,7 @@ import CategorySelect exposing (CategoryId)
 import Helpers.Routing exposing (parseLocation)
 import Dict exposing (Dict)
 import Set
+import RemoteData exposing (RemoteData(..), WebData)
 import DataTypes
     exposing
         ( QueryResults
@@ -21,16 +22,19 @@ import DataTypes
         , CountriesDictList
         , AccordionsOpen
         , User
+        , Email
         )
-import RemoteData exposing (RemoteData(..), WebData)
 
 
 type Msg
     = UrlChange Navigation.Location
     | DebouncerSelfMsg (Debouncer.SelfMsg Msg)
-    | SubmitLoginEmailForm
-    | LoginEmailFormOnInput String
-    | RequestLoginCodeCompleted (WebData User)
+    | LoginEmailFormOnInput Email
+    | LoginEmailFormOnSubmit
+    | LoginEmailFormOnResponse (WebData User)
+    | LoginCodeFormOnInput String
+    | LoginCodeFormOnSubmit
+    | LoginCodeFormOnResponse (WebData User)
     | CountrySelectMsg Int CountrySelect.Msg
     | ActivitySelectMsg ActivitySelect.Msg
     | CategorySelectMsg CategorySelect.Msg
@@ -57,7 +61,7 @@ type alias Model =
     , search : SearchParsed
     , queryResults : WebData QueryResults
     , appData : WebData AppData
-    , email : String
+    , email : Email
     , isLoggedIn : Bool
     , countrySelect : Dict Int CountrySelect.Model
     , activitySelect : ActivitySelect.Model
@@ -69,7 +73,9 @@ type alias Model =
     , config : { apiBaseUrl : String }
     , navCount : Int
     , config : Flags
-    , user : WebData User
+    , loginCodeResponse : WebData User
+    , loginEmailResponse : WebData User
+    , loginCode : String
     }
 
 
@@ -81,6 +87,7 @@ init flags location =
       , queryResults = NotAsked
       , appData = Loading
       , email = ""
+      , loginCode = ""
       , isLoggedIn = False
       , countrySelect =
             Dict.fromList
@@ -93,7 +100,8 @@ init flags location =
       , accordionsOpen = Set.empty
       , navCount = 0
       , config = { apiBaseUrl = flags.apiBaseUrl, clientBaseUrl = flags.clientBaseUrl }
-      , user = NotAsked
+      , loginCodeResponse = NotAsked
+      , loginEmailResponse = NotAsked
       }
     , redirectIfRoot location
     )

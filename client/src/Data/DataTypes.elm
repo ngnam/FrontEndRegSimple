@@ -43,8 +43,12 @@ type alias QueryResults =
     { results : List QueryResult }
 
 
+type alias Email =
+    String
+
+
 type alias User =
-    { userId : UserId }
+    { id : UserId, email : Email }
 
 
 type alias QueryResult =

@@ -5,6 +5,7 @@ import queryResultsFixture from './fixtures/query-results.js';
 import taxonomyFixture from './fixtures/taxonomy.js';
 import countriesFixture from './fixtures/countries.js';
 import userFixture from './fixtures/user.js';
+import passwordlessFixture from './fixtures/passwordless.js';
 
 module.exports = async () => {
   const emailService = { send: () => null };
@@ -18,13 +19,19 @@ module.exports = async () => {
   const userService = {
     getUserByEmail: email =>
       email // simulate user not existing by not passing argument
-        ? Promise.resolve({ rows: [{ id: userFixture.userId }] })
-        : Promise.resolve({ rows: [] }),
-    createUser: () => Promise.resolve({ rows: [{ id: '67890' }] })
+        ? Promise.resolve(userFixture)
+        : Promise.resolve(undefined),
+    createUser: () => Promise.resolve(userFixture),
+    getUserById: _userId => Promise.resolve(userFixture)
   };
   const passwordlessService = {
-    sendCode: (_email, _code, cb) => cb(),
-    createOneTimeCode: () => '0000'
+    sendCode: (_email, _code) => Promise.resolve(),
+    createOneTimeCode: () => passwordlessFixture,
+    getCodeDetailsByUserId: async _userId => passwordlessFixture
+  };
+  const jwtService = {
+    encode: () => Promise.resolve('token'),
+    decode: () => Promise.resolve(userFixture)
   };
   const app = await createApp({
     config,
@@ -32,7 +39,8 @@ module.exports = async () => {
     searchApiService,
     dbClient,
     passwordlessService,
-    userService
+    userService,
+    jwtService
   });
 
   process.app = app;

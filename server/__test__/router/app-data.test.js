@@ -19,9 +19,7 @@ describe('GET /app-data', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.data.taxonomy).toMatchObject(taxonomyItemFormat);
-        // expect(res.body.data.children[0]).toEqual(
-        //   expect.objectContaining(layerFormat)
-        // );
+
         return done();
       });
   });

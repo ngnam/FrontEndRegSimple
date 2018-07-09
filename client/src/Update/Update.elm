@@ -3,7 +3,8 @@ port module Update exposing (..)
 import Model exposing (Model, Msg(..))
 import Debouncer
 import Navigation
-import LoginDecoder exposing (requestLoginCodeCmd)
+import LoginEmailDecoder
+import LoginCodeDecoder
 import QueryDecoder
 import AppDataDecoder
 import CountrySelect
@@ -164,25 +165,39 @@ update msg model =
                 , Cmd.batch [ appDataCmd, queryCmd ]
                 )
 
-        SubmitLoginEmailForm ->
-            ( model, requestLoginCodeCmd model )
-
         LoginEmailFormOnInput email ->
             ( { model | email = email }, Cmd.none )
 
-        RequestLoginCodeCompleted user ->
-            case user of
-                Success user ->
-                    ( { model | user = Success user }, Cmd.none )
+        LoginEmailFormOnSubmit ->
+            ( { model | loginEmailResponse = Loading }, LoginEmailDecoder.requestCmd model )
 
-                NotAsked ->
-                    ( model, Cmd.none )
+        LoginEmailFormOnResponse response ->
+            ( { model | loginEmailResponse = response }, Cmd.none )
 
-                Loading ->
-                    ( { model | user = Loading }, Cmd.none )
+        LoginCodeFormOnInput code ->
+            ( { model | loginCode = code }, Cmd.none )
 
-                Failure errMessage ->
-                    ( { model | user = Failure errMessage }, Cmd.none )
+        LoginCodeFormOnSubmit ->
+            ( { model | loginCodeResponse = Loading }, LoginCodeDecoder.requestCmd model )
+
+        LoginCodeFormOnResponse response ->
+            ( { model
+                | loginCodeResponse = response
+                , isLoggedIn =
+                    case response of
+                        Success _ ->
+                            True
+
+                        _ ->
+                            False
+              }
+            , case response of
+                Success _ ->
+                    Navigation.modifyUrl "/#/"
+
+                _ ->
+                    Cmd.none
+            )
 
         SetActiveCategory categoryId ->
             ( { model | activeCategory = Just categoryId }, Cmd.none )

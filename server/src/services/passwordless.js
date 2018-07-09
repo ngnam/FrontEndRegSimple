@@ -11,35 +11,46 @@ const createPasswordlessService = ({ emailService }) => dbClient => {
     );
   };
 
-  const createOneTimeCode = userId => {
+  const getCodeDetailsByUserId = async userId => {
+    const query = {
+      text: 'SELECT * from passwordless WHERE user_id=$1',
+      values: [userId]
+    };
+
+    const res = await dbClient.query(query);
+
+    return res.rows[0];
+  };
+
+  const createOneTimeCode = async userId => {
     const code = generateOneTimeCode();
 
     const query = {
       text:
-        'INSERT INTO passwordless (user_id, code) VALUES($1, $2) ON CONFLICT (user_id) DO UPDATE SET code=$2',
+        'INSERT INTO passwordless (user_id, code) VALUES($1, $2) ON CONFLICT (user_id) DO UPDATE SET code=$2 RETURNING *',
       values: [userId, code]
     };
 
-    return dbClient.query(query).then(() => code);
+    const res = await dbClient.query(query);
+
+    return res.rows[0];
   };
 
-  const sendCode = (code, recipient, cb) => {
+  const sendCode = async (code, recipient) => {
     const emailContent = 'Hello!\nHere is your One Time Code: ' + code;
 
-    emailService.send(
-      {
-        recipient,
-        subject: `Here's your token, ${code}`,
-        plainText: emailContent,
-        html: emailContent
-      },
-      cb
-    );
+    return await emailService.send({
+      recipient,
+      subject: `Here's your token, ${code}`,
+      plainText: emailContent,
+      html: emailContent
+    });
   };
 
   return {
     sendCode,
-    createOneTimeCode
+    createOneTimeCode,
+    getCodeDetailsByUserId
   };
 };
 

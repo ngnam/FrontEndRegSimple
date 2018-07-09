@@ -8,32 +8,33 @@
   },
   "scripts": {
     "start": "node ./dist/server/index.js",
-    "server-dev": "NODE_ENV=development nodemon --exec babel-node ./server/src/index.js",
+    "server-dev":
+      "NODE_ENV=development nodemon --exec babel-node ./server/src/index.js",
     "client-dev": "cd client && elm-app start",
     "server-build": "babel ./server/src --out-dir ./dist/server",
     "client-build": "npm run css-build && cd client && elm-app build ",
-    "css-build": "postcss ./client/src/css/index.css --output ./client/build/style.min.css --config ./postcss.config.js",
-    "css-dev": "postcss ./client/src/css/index.css --output ./client/public/style.min.css --watch --config ./postcss.config.js",
+    "css-build":
+      "postcss ./client/src/css/index.css --output ./client/build/style.min.css --config ./postcss.config.js",
+    "css-dev":
+      "postcss ./client/src/css/index.css --output ./client/public/style.min.css --watch --config ./postcss.config.js",
     "lint": "prettier --write './server/**/*.js'",
     "server-test": "NODE_ENV=test jest",
     "client-test": "cd client && elm-app test",
     "test": "npm run server-test && npm run client-test"
   },
   "author": "",
-  "pre-commit": [
-    "server-test",
-    "client-test",
-    "lint"
-  ],
+  "pre-commit": ["server-test", "client-test", "lint"],
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
     "bcrypt": "^2.0.1",
     "body-parser": "^1.18.3",
     "boom": "^7.2.0",
-    "cookie-session": "^2.0.0-beta.3",
+    "cookie-parser": "^1.4.3",
+    "date-fns": "^1.29.0",
     "express": "^4.16.3",
     "joi": "^13.4.0",
+    "jsonwebtoken": "^8.3.0",
     "morgan": "^1.9.0",
     "nodemailer": "^4.6.4",
     "pg": "^7.4.3",
