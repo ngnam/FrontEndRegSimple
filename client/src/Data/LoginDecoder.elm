@@ -1,9 +1,12 @@
 module LoginDecoder exposing (requestLoginCodeCmd)
 
 import Http
+import RemoteData
+import DataTypes exposing (User)
 import Model exposing (Model, Msg(..))
-import Json.Decode as Decode exposing (..)
-import Json.Encode as Encode exposing (..)
+import Json.Decode exposing (Decoder, string, at)
+import Json.Decode.Pipeline exposing (decode, required)
+import Json.Encode as Encode
 
 
 ---- LOGIN FUNCTION ----
@@ -11,13 +14,13 @@ import Json.Encode as Encode exposing (..)
 
 requestLoginCodeUrl : String
 requestLoginCodeUrl =
-    "login/email"
+    "/login/email"
 
 
 emailEncoder : Model -> Encode.Value
 emailEncoder model =
     Encode.object
-        [ ( "user", Encode.string model.email )
+        [ ( "email", Encode.string model.email )
         ]
 
 
@@ -25,32 +28,33 @@ emailEncoder model =
 -- POST register / login request
 
 
-requestLoginCode : Model -> String -> Http.Request String
-requestLoginCode model apiUrl =
+request : Model -> String -> Http.Request User
+request model apiUrl =
     let
         body =
             model
                 |> emailEncoder
                 |> Http.jsonBody
     in
-        Http.post (model.config.apiBaseUrl ++ apiUrl) body responseDecoder
+        Http.request
+            { method = "POST"
+            , headers = []
+            , url = model.config.apiBaseUrl ++ apiUrl
+            , body = body
+            , expect = Http.expectJson (at [ "data" ] decoder)
+            , timeout = Nothing
+            , withCredentials = False
+            }
 
 
 requestLoginCodeCmd : Model -> Cmd Msg
 requestLoginCodeCmd model =
-    Http.send requestLoginCodeCompleted (requestLoginCode model requestLoginCodeUrl)
+    request model requestLoginCodeUrl
+        |> RemoteData.sendRequest
+        |> Cmd.map RequestLoginCodeCompleted
 
 
-responseDecoder : Decoder String
-responseDecoder =
-    Decode.string
-
-
-requestLoginCodeCompleted : Result Http.Error String -> Msg
-requestLoginCodeCompleted result =
-    case result of
-        Ok _ ->
-            RequestLoginCodeCompleted
-
-        Err _ ->
-            RequestLoginCodeCompleted
+decoder : Decoder User
+decoder =
+    decode User
+        |> required "userId" string

@@ -170,6 +170,20 @@ update msg model =
         LoginEmailFormOnInput email ->
             ( { model | email = email }, Cmd.none )
 
+        RequestLoginCodeCompleted user ->
+            case user of
+                Success user ->
+                    ( { model | user = Success user }, Cmd.none )
+
+                NotAsked ->
+                    ( model, Cmd.none )
+
+                Loading ->
+                    ( { model | user = Loading }, Cmd.none )
+
+                Failure errMessage ->
+                    ( { model | user = Failure errMessage }, Cmd.none )
+
         SetActiveCategory categoryId ->
             ( { model | activeCategory = Just categoryId }, Cmd.none )
 
