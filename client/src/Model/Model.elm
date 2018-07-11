@@ -23,6 +23,9 @@ import DataTypes
         , AccordionsOpen
         , User
         , Email
+        , SnippetId
+        , FeedbackResults
+        , FeedbackType
         )
 
 
@@ -43,9 +46,11 @@ type Msg
     | SetActiveCategory CategoryId
     | FilterTextOnInput String
     | OnQueryUpdate
+    | SnippetRejectClick ( SnippetId, Int )
+    | FeedbackRequest FeedbackType (WebData FeedbackResults)
     | CategoryRemoveClick CategoryId
     | CategorySubMenuClick CategoryId
-    | AccordionToggleClick ( String, Int )
+    | AccordionToggleClick SnippetId
     | QueryResultListRemoveClick Int
     | Copy String
     | NoOp

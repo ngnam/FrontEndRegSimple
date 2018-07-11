@@ -6,11 +6,13 @@ import auth from '../middleware/auth.middleware';
 import querySchema from '../validations/query.validation';
 import loginSchema from '../validations/login.validation';
 import loginCodeSchema from '../validations/login-code.validation';
+import feedbackSnippetSchema from '../validations/feedback-snippet.validation';
 
 import loginEmail from './login-email.route';
 import loginCode from './login-code.route';
 import query from './query.route';
 import appData from './app-data.route';
+import feedbackSnippet from './feedback-snippet.route';
 
 const createRouter = dependencies => {
   const router = Router();
@@ -25,6 +27,12 @@ const createRouter = dependencies => {
   );
 
   router.get('/query', validate(querySchema), query(dependencies));
+
+  router.put(
+    '/feedback/snippet/:snippetId/:action',
+    validate(feedbackSnippetSchema),
+    feedbackSnippet(dependencies)
+  );
 
   router.get('/app-data', appData(dependencies));
 

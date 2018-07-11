@@ -5,6 +5,18 @@ import DictList exposing (DictList)
 import Set exposing (Set)
 
 
+type alias FeedbackResults =
+    { id : SnippetId }
+
+
+type FeedbackType
+    = RejectSnippet SnippetId
+
+
+type alias SnippetId =
+    String
+
+
 type InputAlignment
     = Left
     | Right
@@ -12,7 +24,7 @@ type InputAlignment
 
 
 type alias AccordionsOpen =
-    Set ( String, Int )
+    Set SnippetId
 
 
 type alias CountryId =
@@ -78,6 +90,7 @@ type alias QueryResultMatchBody =
     , summary : String
     , url : String
     , page : Int
+    , id : String
     }
 
 
