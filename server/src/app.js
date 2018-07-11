@@ -10,6 +10,7 @@ import createPostgresService from './services/postgresConnect';
 import createPasswordlessService from './services/passwordless';
 import createUserService from './services/user';
 import createJwtService from './services/jwt';
+import createAnalyticsService from './services/analytics';
 import { PRODUCTION } from './constants/environments';
 
 import cors from './middleware/cors.middleware';
@@ -24,7 +25,8 @@ const createApp = async function({
   searchApiService,
   passwordlessService,
   dbClient,
-  jwtService
+  jwtService,
+  analyticsService
 }) {
   try {
     emailService = emailService || (await createEmailService({ config }));
@@ -37,6 +39,8 @@ const createApp = async function({
       (await createPasswordlessService({ config, emailService })(dbClient));
 
     jwtService = jwtService || createJwtService({ config });
+    analyticsService =
+      analyticsService || createAnalyticsService({ config })(dbClient);
 
     const app = express();
 
