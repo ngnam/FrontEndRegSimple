@@ -29,7 +29,7 @@ describe('GET /feedback/snippet/:snippetId/:feedbackType', () => {
       .end((err, res) => {
         if (err) return done(err);
 
-        expect(res.status).toBe(403);
+        expect(res.status).toBe(401);
 
         return done();
       });

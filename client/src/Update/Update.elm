@@ -108,6 +108,25 @@ setFilterText maybeFilterText model =
             { model | filterText = "" }
 
 
+removeSnippetFromResults snippetId queryResult =
+    { queryResult
+        | matches =
+            (List.filter
+                (\match ->
+                    (match.body
+                        |> List.head
+                        |> Maybe.map .id
+                        |> Maybe.withDefault ""
+                    )
+                        /= snippetId
+                )
+                queryResult.matches
+            )
+        , nMatches = queryResult.nMatches - 1
+        , totalMatches = queryResult.totalMatches - 1
+    }
+
+
 port copy : String -> Cmd msg
 
 
@@ -443,24 +462,7 @@ update msg model =
                             Success
                                 { results =
                                     (List.map
-                                        (\queryResult ->
-                                            { queryResult
-                                                | matches =
-                                                    (List.filter
-                                                        (\match ->
-                                                            (match.body
-                                                                |> List.head
-                                                                |> Maybe.map .id
-                                                                |> Maybe.withDefault ""
-                                                            )
-                                                                /= snippetId
-                                                        )
-                                                        queryResult.matches
-                                                    )
-                                                , nMatches = queryResult.nMatches - 1
-                                                , totalMatches = queryResult.totalMatches - 1
-                                            }
-                                        )
+                                        (removeSnippetFromResults snippetId)
                                         queryResults.results
                                     )
                                 }

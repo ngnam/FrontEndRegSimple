@@ -7,7 +7,7 @@ export default ({ config, searchApiService }) => async (req, res, next) => {
 
   if (!userId) {
     return next(
-      boom.forbidden(
+      boom.unauthorized(
         'searchApiService.rejectSnippet failed, user not authorised'
       )
     );
