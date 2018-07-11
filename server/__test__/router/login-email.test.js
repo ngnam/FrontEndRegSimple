@@ -13,7 +13,7 @@ test('POST /login/email 200', done => {
       if (err) return done(err);
 
       expect(res.status).toBe(200);
-      expect(res.body.data.userId).toBe(userFixture.userId);
+      expect(res.body.data.id).toBe(userFixture.id);
 
       return done();
     });

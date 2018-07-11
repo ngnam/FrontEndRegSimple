@@ -1,26 +1,44 @@
 import uuid from 'uuid/v4';
 
 const createUserService = () => dbClient => {
-  const getUserByEmail = email => {
+  const getUserById = async id => {
+    const query = {
+      text: 'SELECT * from users WHERE id=$1',
+      values: [id]
+    };
+
+    const res = await dbClient.query(query);
+
+    return res.rows[0];
+  };
+
+  const getUserByEmail = async email => {
     const query = {
       text: 'SELECT id from users WHERE email=$1',
       values: [email]
     };
-    return dbClient.query(query);
+
+    const res = await dbClient.query(query);
+
+    return res.rows[0];
   };
 
-  const createUser = email => {
+  const createUser = async email => {
     const userId = uuid();
     const query = {
       text: 'INSERT INTO users (id, email) VALUES($1, $2) RETURNING id',
       values: [userId, email]
     };
-    return dbClient.query(query);
+
+    const res = await dbClient.query(query);
+
+    return res.rows[0];
   };
 
   return {
     getUserByEmail,
-    createUser
+    createUser,
+    getUserById
   };
 };
 

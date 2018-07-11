@@ -7,16 +7,15 @@ export default ({ userService, passwordlessService }) => async (
 ) => {
   const { email } = req.body;
   try {
-    let user = await userService.getUserByEmail(email);
+    const user =
+      (await userService.getUserByEmail(email)) ||
+      (await userService.createUser(email));
 
-    if (!user.rows[0]) user = await userService.createUser(email);
+    const { code } = await passwordlessService.createOneTimeCode(user.id);
 
-    const userId = user.rows[0].id;
-    const code = await passwordlessService.createOneTimeCode(userId);
+    await passwordlessService.sendCode(code, email);
 
-    passwordlessService.sendCode(code, email, (err, pgRes) => {
-      res.json({ data: { userId } });
-    });
+    return res.json({ data: { id: user.id, email } });
   } catch (err) {
     console.error(err);
     return next(boom.forbidden('login route failed', err.details));

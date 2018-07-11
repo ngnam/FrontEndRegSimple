@@ -1,14 +1,15 @@
 import path from 'path';
 import express from 'express';
 import morgan from 'morgan';
-import cookieSession from 'cookie-session';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 
 import createEmailService from './services/email';
 import createSearchApiService from './services/search-api';
 import createPostgresService from './services/postgresConnect';
 import createPasswordlessService from './services/passwordless';
 import createUserService from './services/user';
+import createJwtService from './services/jwt';
 import { PRODUCTION } from './constants/environments';
 
 import cors from './middleware/cors.middleware';
@@ -22,7 +23,8 @@ const createApp = async function({
   userService,
   searchApiService,
   passwordlessService,
-  dbClient
+  dbClient,
+  jwtService
 }) {
   try {
     emailService = emailService || (await createEmailService({ config }));
@@ -34,6 +36,8 @@ const createApp = async function({
       passwordlessService ||
       (await createPasswordlessService({ config, emailService })(dbClient));
 
+    jwtService = jwtService || createJwtService({ config });
+
     const app = express();
 
     const { SESSION_SECRET } = config;
@@ -44,16 +48,8 @@ const createApp = async function({
 
     app.use(morgan('tiny'));
     app.use(express.static(publicDir));
+    app.use(cookieParser());
     app.use(bodyParser.json());
-    app.use(
-      cookieSession({
-        name: 'session',
-        secret: SESSION_SECRET,
-
-        // Cookie Options
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-      })
-    );
     app.use(cors());
     app.use(
       '/api',
@@ -61,7 +57,8 @@ const createApp = async function({
         config,
         passwordlessService,
         searchApiService,
-        userService
+        userService,
+        jwtService
       })
     );
     app.use(errorHandler());

@@ -1,4 +1,4 @@
-module LoginDecoder exposing (requestLoginCodeCmd)
+module LoginEmailDecoder exposing (requestCmd)
 
 import Http
 import RemoteData
@@ -9,52 +9,41 @@ import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode
 
 
----- LOGIN FUNCTION ----
-
-
-requestLoginCodeUrl : String
-requestLoginCodeUrl =
-    "/login/email"
-
-
-emailEncoder : Model -> Encode.Value
-emailEncoder model =
+encoder : Model -> Encode.Value
+encoder model =
     Encode.object
         [ ( "email", Encode.string model.email )
         ]
 
 
-
--- POST register / login request
-
-
-request : Model -> String -> Http.Request User
-request model apiUrl =
+request : Model -> Http.Request User
+request model =
     let
         body =
             model
-                |> emailEncoder
+                |> encoder
                 |> Http.jsonBody
     in
         Http.request
             { method = "POST"
             , headers = []
-            , url = model.config.apiBaseUrl ++ apiUrl
+            , url = model.config.apiBaseUrl ++ "/login/email"
             , body = body
             , expect = Http.expectJson (at [ "data" ] decoder)
             , timeout = Nothing
-            , withCredentials = False
+            , withCredentials = True
             }
 
 
-requestLoginCodeCmd : Model -> Cmd Msg
-requestLoginCodeCmd model =
-    request model requestLoginCodeUrl
+requestCmd : Model -> Cmd Msg
+requestCmd model =
+    request model
         |> RemoteData.sendRequest
-        |> Cmd.map RequestLoginCodeCompleted
+        |> Cmd.map LoginEmailFormOnResponse
 
 
 decoder : Decoder User
 decoder =
     decode User
-        |> required "userId" string
+        |> required "id" string
+        |> required "email" string

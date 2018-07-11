@@ -41,18 +41,20 @@ const createEmailservice = ({ config }) =>
     };
 
     const send = (data, cb) => {
-      const mailOptions = options(data);
-      console.log(data);
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log('Message %s sent: %s', info.messageId, info.response);
-        }
+      return new Promise((resolve, reject) => {
+        const mailOptions = options(data);
+        console.log(data);
+        transporter.sendMail(mailOptions, (err, info) => {
+          if (err) {
+            console.log(err);
 
-        if (cb) {
-          return cb(err, info);
-        }
+            reject(err);
+          } else {
+            console.log('Message %s sent: %s', info.messageId, info.response);
+
+            resolve(info);
+          }
+        });
       });
     };
 

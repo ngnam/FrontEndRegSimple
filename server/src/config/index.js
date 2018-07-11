@@ -14,7 +14,8 @@ const envVarNames = [
   'PORT',
   'SESSION_SECRET',
   'REGSIMPLE_SEARCH_API',
-  'CLIENT_APP_BASE_URL'
+  'CLIENT_APP_BASE_URL',
+  'JWT_SECRET'
 ];
 
 export default envVarNames.reduce((config, varName) => {

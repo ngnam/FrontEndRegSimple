@@ -17,7 +17,7 @@ request model =
         , body = Http.emptyBody
         , expect = Http.expectJson (at [ "data" ] decoder)
         , timeout = Nothing
-        , withCredentials = False
+        , withCredentials = True
         }
 
 
