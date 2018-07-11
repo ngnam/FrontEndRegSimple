@@ -13,7 +13,7 @@ const createPasswordlessService = ({ emailService }) => dbClient => {
 
   const getCodeDetailsByUserId = async userId => {
     const query = {
-      text: 'SELECT * from passwordless WHERE user_id=$1',
+      text: 'SELECT * from passwordless WHERE user_id=$1 LIMIT 1',
       values: [userId]
     };
 
