@@ -3,7 +3,7 @@ import uuid from 'uuid/v4';
 const createUserService = () => dbClient => {
   const getUserById = async id => {
     const query = {
-      text: 'SELECT * from users WHERE id=$1',
+      text: 'SELECT * from users WHERE id=$1 LIMIT 1',
       values: [id]
     };
 
@@ -14,7 +14,7 @@ const createUserService = () => dbClient => {
 
   const getUserByEmail = async email => {
     const query = {
-      text: 'SELECT id from users WHERE email=$1',
+      text: 'SELECT id from users WHERE email=$1 LIMIT 1',
       values: [email]
     };
 
