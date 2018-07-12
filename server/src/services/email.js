@@ -18,7 +18,7 @@ const createEmailservice = ({ config }) =>
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
       port: SMTP_PORT,
-      secure: SMTP_PORT === 465, // use TLS when port is 465
+      secure: parseInt(SMTP_PORT) === 465, // use TLS when port is 465
       auth: {
         user: SMTP_USER,
         pass: SMTP_PASS
@@ -32,7 +32,7 @@ const createEmailservice = ({ config }) =>
     // setup email data with unicode symbols
     const options = data => {
       return {
-        from: `RegSimple <${SMTP_USER}>`, // sender address
+        from: `RegSimple <info@regsimple.io>`, // sender address
         to: data.recipient, // list of receivers
         subject: data.subject, // Subject line
         text: data.plainText, // plain text body
