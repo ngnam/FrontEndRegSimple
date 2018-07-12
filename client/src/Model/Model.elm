@@ -1,4 +1,4 @@
-module Model exposing (Msg(..), Model, Flags, init)
+module Model exposing (Msg(..), Model, Flags, init, initialModel)
 
 import Navigation
 import Debouncer
@@ -53,6 +53,8 @@ type Msg
     | AccordionToggleClick SnippetId
     | QueryResultListRemoveClick Int
     | Copy String
+    | LogoutClick
+    | LogoutOnResponse (WebData String)
     | NoOp
 
 
@@ -84,29 +86,49 @@ type alias Model =
     }
 
 
+initialModel : Model
+initialModel =
+    { search = Dict.empty
+    , debouncer = Debouncer.create (0.3 * Time.second)
+    , queryResults = NotAsked
+    , appData = Loading
+    , email = ""
+    , loginCode = ""
+    , isLoggedIn = False
+    , countrySelect =
+        Dict.fromList
+            [ ( 0, CountrySelect.initialModel ), ( 1, CountrySelect.initialModel ) ]
+    , activitySelect = ActivitySelect.initialModel
+    , categorySelect = CategorySelect.initialModel
+    , activeCategory = Nothing
+    , filterText = ""
+    , categorySubMenuOpen = Nothing
+    , accordionsOpen = Set.empty
+    , navCount = 0
+    , loginCodeResponse = NotAsked
+    , loginEmailResponse = NotAsked
+    , location =
+        { href = ""
+        , host = ""
+        , hostname = ""
+        , protocol = ""
+        , origin = ""
+        , port_ = ""
+        , pathname = ""
+        , search = ""
+        , hash = ""
+        , username = ""
+        , password = ""
+        }
+    , config = { apiBaseUrl = "", clientBaseUrl = "" }
+    }
+
+
 init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
 init flags location =
-    ( { location = parseLocation location
-      , search = Dict.empty
-      , debouncer = Debouncer.create (0.3 * Time.second)
-      , queryResults = NotAsked
-      , appData = Loading
-      , email = ""
-      , loginCode = ""
-      , isLoggedIn = False
-      , countrySelect =
-            Dict.fromList
-                [ ( 0, CountrySelect.initialModel ), ( 1, CountrySelect.initialModel ) ]
-      , activitySelect = ActivitySelect.initialModel
-      , categorySelect = CategorySelect.initialModel
-      , activeCategory = Nothing
-      , filterText = ""
-      , categorySubMenuOpen = Nothing
-      , accordionsOpen = Set.empty
-      , navCount = 0
-      , config = { apiBaseUrl = flags.apiBaseUrl, clientBaseUrl = flags.clientBaseUrl }
-      , loginCodeResponse = NotAsked
-      , loginEmailResponse = NotAsked
+    ( { initialModel
+        | location = parseLocation location
+        , config = { apiBaseUrl = flags.apiBaseUrl, clientBaseUrl = flags.clientBaseUrl }
       }
     , redirectIfRoot location
     )

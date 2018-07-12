@@ -10,6 +10,7 @@ import feedbackSnippetSchema from '../validations/feedback-snippet.validation';
 
 import loginEmail from './login-email.route';
 import loginCode from './login-code.route';
+import logout from './logout.route';
 import query from './query.route';
 import appData from './app-data.route';
 import feedbackSnippet from './feedback-snippet.route';
@@ -25,6 +26,7 @@ const createRouter = dependencies => {
     validate(loginCodeSchema),
     loginCode(dependencies)
   );
+  router.post('/logout', logout());
 
   router.get('/query', validate(querySchema), query(dependencies));
 
