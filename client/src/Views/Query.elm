@@ -88,7 +88,7 @@ view model =
                             ( _, _, Failure error ) ->
                                 div [] [ text "There was a problem connecting to our servers. Please check your internet connection and try again." ]
 
-                            ( Invalid validationText, Failure error, _ ) ->
+                            ( _, Failure error, _ ) ->
                                 div [] [ text "There was an error loading your search results." ]
 
                             ( _, Loading, _ ) ->
