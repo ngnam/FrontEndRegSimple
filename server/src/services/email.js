@@ -18,7 +18,7 @@ const createEmailservice = ({ config }) =>
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
       port: SMTP_PORT,
-      secure: parseInt(SMTP_PORT) === 465, // use TLS when port is 465
+      secure: parseInt(SMTP_PORT) === 465,
       auth: {
         user: SMTP_USER,
         pass: SMTP_PASS
@@ -27,6 +27,7 @@ const createEmailservice = ({ config }) =>
         // do not fail on invalid certs
         rejectUnauthorized: false
       }
+      // service: 'SES-EU-WEST-1'
     });
 
     // setup email data with unicode symbols
