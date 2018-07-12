@@ -33,7 +33,7 @@ export default ({ passwordlessService, userService, jwtService }) => async (
 
     const token = await jwtService.encode(userData);
 
-    res.cookie('token', token);
+    res.cookie('token', token, { httpOnly: true });
 
     res.send({ data: userData });
   } catch (err) {
