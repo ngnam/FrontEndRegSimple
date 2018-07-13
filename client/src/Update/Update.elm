@@ -1,10 +1,11 @@
 port module Update exposing (..)
 
-import Model exposing (Model, Msg(..))
+import Model exposing (Model, Msg(..), initialModel)
 import Debouncer
 import Navigation
 import LoginEmailDecoder
 import LoginCodeDecoder
+import LogoutDecoder
 import QueryDecoder
 import AppDataDecoder
 import CountrySelect
@@ -475,6 +476,17 @@ update msg model =
         FeedbackRequest feedbackType results ->
             ( model
             , Cmd.none
+            )
+
+        LogoutClick ->
+            ( model, LogoutDecoder.requestCmd model )
+
+        LogoutOnResponse response ->
+            ( { initialModel
+                | config = model.config
+                , appData = model.appData
+              }
+            , Navigation.modifyUrl "/#/"
             )
 
         _ ->
