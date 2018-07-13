@@ -33,7 +33,10 @@ const createEmailservice = ({ config }) =>
     // setup email data with unicode symbols
     const options = data => {
       return {
-        from: `RegSimple <info@regsimple.io>`, // sender address
+        from: {
+          name: 'ResSimple',
+          address: 'info@regsimple.io'
+        },
         to: data.recipient, // list of receivers
         subject: data.subject, // Subject line
         text: data.plainText, // plain text body
