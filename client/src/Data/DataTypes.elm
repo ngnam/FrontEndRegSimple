@@ -100,6 +100,17 @@ type alias AppDataResults =
     }
 
 
+type AnalyticsEventName
+    = Event1
+    | Event2
+
+
+type alias AnalyticsEvent =
+    { eventName : AnalyticsEventName
+    , params : String
+    }
+
+
 type alias TaxonomyId =
     String
 

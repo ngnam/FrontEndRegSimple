@@ -2,42 +2,50 @@ module AnalyticsDecoder exposing (requestCmd)
 
 import Http
 import Model exposing (Model, Msg(..))
-import DataTypes
-    exposing
-        ( FeedbackType(..)
-        , FeedbackResults
-        )
-import Json.Decode exposing (Decoder, list, int, float, string, at, oneOf, null, nullable, bool)
-import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
-import RemoteData
+import DataTypes exposing (..)
+import Json.Encode as Encode
 
 
-request : Model -> FeedbackType -> Http.Request FeedbackResults
-request model body =
-    Http.request
-        { method = "POST"
-        , headers = [ Http.header "Content-Type" "application/json" ]
-        , url = model.config.apiBaseUrl ++ "/feedback"
-        , body = body
-        , expect = Http.expectJson (at [ "data" ] decoder)
-        , timeout = Nothing
-        , withCredentials = True
-        }
+request : Model -> AnalyticsEvent -> Http.Request ()
+request model data =
+    let
+        body =
+            data
+                |> encoder
+                |> Http.jsonBody
+    in
+        Http.request
+            { method = "POST"
+            , headers = []
+            , url = model.config.apiBaseUrl ++ "/analytics"
+            , body = body
+            , expect = Http.expectStringResponse (\_ -> Ok ())
+            , timeout = Nothing
+            , withCredentials = True
+            }
 
 
-nullableString : Decoder String
-nullableString =
-    oneOf [ string, null "" ]
+requestCmd : Model -> AnalyticsEvent -> Cmd Msg
+requestCmd model data =
+    request model data
+        |> Http.send (\_ -> NoOp)
 
 
-requestCmd : Model -> FeedbackType -> Cmd Msg
-requestCmd model feedbackType =
-    request model feedbackType
-        |> RemoteData.sendRequest
-        |> Cmd.map (FeedbackRequest feedbackType)
+encoder : AnalyticsEvent -> Encode.Value
+encoder { eventName, params } =
+    Encode.object
+        [ ( "eventName", Encode.string (eventNameEncoder eventName) )
+        , ( "params", Encode.string params )
+        ]
 
 
-decoder : Decoder FeedbackResults
-decoder =
-    decode FeedbackResults
-        |> required "id" string
+eventNameEncoder : AnalyticsEventName -> String
+eventNameEncoder =
+    (\event ->
+        case event of
+            Event1 ->
+                "Event1"
+
+            Event2 ->
+                "Event2"
+    )

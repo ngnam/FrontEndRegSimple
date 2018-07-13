@@ -28,6 +28,7 @@ import DataTypes
         , SnippetId
         , FeedbackResults
         , FeedbackType
+        , AnalyticsEvent
         )
 import Decoders
 
@@ -51,6 +52,7 @@ type Msg
     | OnQueryUpdate
     | SnippetRejectClick ( SnippetId, Int )
     | FeedbackRequest FeedbackType (WebData FeedbackResults)
+    | AnalyticsEventRequest AnalyticsEvent
     | CategoryRemoveClick CategoryId
     | CategorySubMenuClick CategoryId
     | AccordionToggleClick SnippetId
