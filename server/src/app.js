@@ -62,7 +62,8 @@ const createApp = async function({
         passwordlessService,
         searchApiService,
         userService,
-        jwtService
+        jwtService,
+        analyticsService
       })
     );
     app.use(errorHandler());
