@@ -34,7 +34,7 @@ const createEmailservice = ({ config }) =>
     const options = data => {
       return {
         from: {
-          name: 'ResSimple',
+          name: 'RegSimple',
           address: 'info@regsimple.io'
         },
         to: data.recipient, // list of receivers
