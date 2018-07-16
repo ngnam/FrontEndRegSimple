@@ -5,14 +5,14 @@ import RemoteData
 import DataTypes exposing (User)
 import Model exposing (Model, Msg(..))
 import Json.Decode exposing (Decoder, string, at)
-import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode
+import Decoders
 
 
 encoder : Model -> Encode.Value
 encoder model =
     Encode.object
-        [ ( "email", Encode.string model.email )
+        [ ( "email", Encode.string model.loginEmail )
         ]
 
 
@@ -29,7 +29,7 @@ request model =
             , headers = []
             , url = model.config.apiBaseUrl ++ "/login/email"
             , body = body
-            , expect = Http.expectJson (at [ "data" ] decoder)
+            , expect = Http.expectJson (at [ "data" ] Decoders.user)
             , timeout = Nothing
             , withCredentials = True
             }
@@ -40,10 +40,3 @@ requestCmd model =
     request model
         |> RemoteData.sendRequest
         |> Cmd.map LoginEmailFormOnResponse
-
-
-decoder : Decoder User
-decoder =
-    decode User
-        |> required "id" string
-        |> required "email" string
