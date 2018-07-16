@@ -59,6 +59,7 @@ loginEmailForm loginEmailResponse =
         , inputPattern = "*"
         , inputMaxlength = 99999
         , inputMinlength = 0
+        , errorText = "We had some trouble on our end, please contact support"
         }
 
 
@@ -74,6 +75,7 @@ loginCodeForm loginCodeResponse =
         , inputPattern = "\\d*"
         , inputMaxlength = 4
         , inputMinlength = 4
+        , errorText = "That code doesn't seem to be right or has expired, please try again."
         }
 
 
@@ -87,11 +89,12 @@ type alias LoginFormModel =
     , inputPattern : String
     , inputMaxlength : Int
     , inputMinlength : Int
+    , errorText : String
     }
 
 
 loginForm : LoginFormModel -> Html Msg
-loginForm { onInputMsg, onSubmitMsg, inputType, inputPlaceholder, inputPattern, inputMaxlength, inputMinlength, buttonText, response } =
+loginForm { onInputMsg, onSubmitMsg, inputType, inputPlaceholder, inputPattern, inputMaxlength, inputMinlength, buttonText, response, errorText } =
     let
         ( isFailure, isLoading ) =
             case response of
@@ -132,6 +135,6 @@ loginForm { onInputMsg, onSubmitMsg, inputType, inputPlaceholder, inputPattern, 
             , viewIf isFailure
                 (div
                     [ class "absolute tc left-0 right-0 bottom-0" ]
-                    [ text "That doesn't look right, please try again." ]
+                    [ text errorText ]
                 )
             ]
