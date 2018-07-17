@@ -1,4 +1,4 @@
-module ContactBanner exposing (..)
+module ContactBanner exposing (view)
 
 import Html exposing (Html, header, div, button, a, text)
 import Html.Attributes exposing (class, href)

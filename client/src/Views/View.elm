@@ -14,7 +14,7 @@ view : Model -> Html Msg
 view model =
     div [ class "bg-near-white min-vh-100 flex flex-column justify-between" ]
         [ ContactBanner.view
-        , viewIf (not (String.contains "query" model.location.hash)) (Header.view model)
+        , viewIf (not (model.location.hash == "#/query")) (Header.view model)
         , matchView model
         , Footer.view model
         ]
