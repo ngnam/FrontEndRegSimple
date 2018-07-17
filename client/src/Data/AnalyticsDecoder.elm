@@ -8,21 +8,15 @@ import Json.Encode as Encode
 
 request : Model -> AnalyticsEvent -> Http.Request ()
 request model data =
-    let
-        body =
-            data
-                |> encoder
-                |> Http.jsonBody
-    in
-        Http.request
-            { method = "POST"
-            , headers = []
-            , url = model.config.apiBaseUrl ++ "/analytics"
-            , body = body
-            , expect = Http.expectStringResponse (\_ -> Ok ())
-            , timeout = Nothing
-            , withCredentials = True
-            }
+    Http.request
+        { method = "POST"
+        , headers = []
+        , url = model.config.apiBaseUrl ++ "/analytics"
+        , body = Http.jsonBody (encoder data)
+        , expect = Http.expectStringResponse (\_ -> Ok ())
+        , timeout = Nothing
+        , withCredentials = True
+        }
 
 
 requestCmd : Model -> AnalyticsEvent -> Cmd Msg

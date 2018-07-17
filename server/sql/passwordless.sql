@@ -26,7 +26,7 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE TABLE analytics
 (
-  event_name character(36) not null,
+  event_name varchar(50) not null,
   params text not null,
   created_at timestamp not null default now()
 );

@@ -1,15 +1,20 @@
 const createAnalyticsService = () => dbClient => {
-  const logEvent = ({ eventName, params }) => {
-    const query = {
-      text: 'INSERT INTO analytics values($1, $2)',
-      values: [eventName, JSON.stringify(params)]
-    };
-    dbClient
-      .query(query)
-      .then(() => console.log(`ANALYTICS ${eventName} success`) || 'success')
-      .catch(
-        () => console.error(`ANALYTICS ${eventName} failure`) || 'failure'
-      );
+  const logEvent = async ({ eventName, params }) => {
+    try {
+      const query = {
+        text: 'INSERT INTO analytics values($1, $2)',
+        values: [eventName, JSON.stringify(params)]
+      };
+      await dbClient.query(query);
+
+      console.log(`ANALYTICS ${eventName} success`);
+
+      return { success: true };
+    } catch (e) {
+      console.error(`ANALYTICS ${eventName} failure.\nERROR ${e}`);
+
+      return { success: false };
+    }
   };
 
   return {
