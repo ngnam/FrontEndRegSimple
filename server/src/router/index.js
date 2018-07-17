@@ -4,7 +4,7 @@ import validate from '../middleware/validation.middleware';
 import auth from '../middleware/auth.middleware';
 
 import querySchema from '../validations/query.validation';
-import loginSchema from '../validations/login.validation';
+import loginEmailSchema from '../validations/login-email.validation';
 import loginCodeSchema from '../validations/login-code.validation';
 import feedbackSnippetSchema from '../validations/feedback-snippet.validation';
 
@@ -20,7 +20,11 @@ const createRouter = dependencies => {
 
   router.use(auth(dependencies));
 
-  router.post('/login/email', validate(loginSchema), loginEmail(dependencies));
+  router.post(
+    '/login/email',
+    validate(loginEmailSchema),
+    loginEmail(dependencies)
+  );
   router.post(
     '/login/code',
     validate(loginCodeSchema),
