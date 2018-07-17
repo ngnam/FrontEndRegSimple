@@ -29,8 +29,8 @@ view { session, loginEmail, loginCode, loginEmailResponse, loginCodeResponse } =
                 ]
             , section [ class "flex justify-center relative" ]
                 [ case ( session, loginEmailResponse ) of
-                    ( Just _, _ ) ->
-                        logoutForm
+                    ( Just user, _ ) ->
+                        logoutForm user
 
                     ( _, Success _ ) ->
                         loginCodeForm ( loginCode, loginCodeResponse )
@@ -46,12 +46,12 @@ loadingSpinner =
     div [ class "w15rem h3rem mv3 spinner" ] []
 
 
-logoutForm : Html Msg
-logoutForm =
+logoutForm : User -> Html Msg
+logoutForm { email } =
     loginForm
         { onInputMsg = (\_ -> NoOp)
         , onSubmitMsg = LogoutClick
-        , replaceInputWith = Just "You're already logged in, want to log out?"
+        , replaceInputWith = Just ("You're already logged in as " ++ email ++ ", want to log out?")
         , inputPlaceholder = ""
         , inputType = ""
         , buttonText = "Log out"
