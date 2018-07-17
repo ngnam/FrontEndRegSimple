@@ -14,10 +14,7 @@ const validate = schema => async (req, res, next) => {
   try {
     const validatedData = await joi.validate(dataToValidate, schema);
 
-    req = {
-      ...req,
-      ...validatedData
-    };
+    Object.keys(validatedData).forEach(key => (req[key] = validatedData[key]));
 
     return next();
   } catch (err) {

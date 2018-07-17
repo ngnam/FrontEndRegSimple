@@ -14,7 +14,7 @@ const createUserService = () => dbClient => {
 
   const getUserByEmail = async email => {
     const query = {
-      text: 'SELECT id from users WHERE email=$1 LIMIT 1',
+      text: 'SELECT id from users WHERE email=lower($1) LIMIT 1',
       values: [email]
     };
 
@@ -26,7 +26,7 @@ const createUserService = () => dbClient => {
   const createUser = async email => {
     const userId = uuid();
     const query = {
-      text: 'INSERT INTO users (id, email) VALUES($1, $2) RETURNING id',
+      text: 'INSERT INTO users (id, email) VALUES($1, lower($2)) RETURNING id',
       values: [userId, email]
     };
 

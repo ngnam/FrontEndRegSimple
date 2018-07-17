@@ -4,6 +4,7 @@ const querySchema = {
   body: joi.object().keys({
     email: joi
       .string()
+      .lowercase()
       .email()
       .required()
   })
