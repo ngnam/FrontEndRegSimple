@@ -35,6 +35,12 @@ type alias CountryName =
     String
 
 
+type Role
+    = RoleUser
+    | RoleEditor
+    | RoleAdmin
+
+
 type alias UserId =
     String
 
@@ -60,7 +66,7 @@ type alias Email =
 
 
 type alias User =
-    { id : UserId, email : Email }
+    { id : UserId, email : Email, role : Role }
 
 
 type alias QueryResult =

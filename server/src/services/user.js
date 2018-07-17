@@ -1,5 +1,7 @@
 import uuid from 'uuid/v4';
 
+import { ROLE_USER } from '../constants/roles';
+
 const createUserService = () => dbClient => {
   const getUserById = async id => {
     const query = {
@@ -14,7 +16,7 @@ const createUserService = () => dbClient => {
 
   const getUserByEmail = async email => {
     const query = {
-      text: 'SELECT id from users WHERE email=lower($1) LIMIT 1',
+      text: 'SELECT * from users WHERE email=lower($1) LIMIT 1',
       values: [email]
     };
 
@@ -25,9 +27,11 @@ const createUserService = () => dbClient => {
 
   const createUser = async email => {
     const userId = uuid();
+    const role = ROLE_USER;
     const query = {
-      text: 'INSERT INTO users (id, email) VALUES($1, lower($2)) RETURNING id',
-      values: [userId, email]
+      text:
+        'INSERT INTO users (id, email, role) VALUES($1, lower($2), $3) RETURNING *',
+      values: [userId, email, role]
     };
 
     const res = await dbClient.query(query);

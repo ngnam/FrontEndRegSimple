@@ -12,7 +12,7 @@ import Helpers.CountrySelect exposing (getSelectedCountry)
 import Helpers.QueryString exposing (queryValidation)
 import Validation exposing (Validation(..))
 import RemoteData exposing (RemoteData(..))
-import Selectors exposing (isLoggedIn)
+import Selectors exposing (isAdmin)
 
 
 viewValidationText : String -> Html msg
@@ -72,7 +72,7 @@ view model =
                                                 , isCountryCompare = isCountryCompare
                                                 , countries = appData.countries
                                                 , resultIndex = index
-                                                , isLoggedIn = isLoggedIn model
+                                                , isAdmin = isAdmin model
                                                 , countryId =
                                                     Maybe.withDefault
                                                         ""

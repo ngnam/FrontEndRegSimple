@@ -31,10 +31,6 @@ module.exports = async () => {
     createOneTimeCode: () => passwordlessFixture,
     getCodeDetailsByUserId: async _userId => passwordlessFixture
   };
-  const jwtService = {
-    encode: () => Promise.resolve('token'),
-    decode: () => Promise.resolve(userFixture)
-  };
   const analyticsService = {
     logEvent: () => null
   };
@@ -45,7 +41,6 @@ module.exports = async () => {
     dbClient,
     passwordlessService,
     userService,
-    jwtService,
     analyticsService
   });
 

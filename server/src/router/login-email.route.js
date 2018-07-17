@@ -15,7 +15,7 @@ export default ({ userService, passwordlessService }) => async (
 
     await passwordlessService.sendCode(code, email);
 
-    return res.json({ data: { id: user.id, email } });
+    return res.json({ data: user });
   } catch (err) {
     console.error(err);
     return next(boom.forbidden('login route failed', err.details));

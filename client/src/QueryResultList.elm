@@ -19,14 +19,14 @@ type alias ViewModel =
     , countries : CountriesDictList
     , resultIndex : Int
     , countryId : CountryId
-    , isLoggedIn : Bool
+    , isAdmin : Bool
     }
 
 
 view : ViewModel -> Html Msg
 view viewModel =
     let
-        { queryResult, isCountryCompare, accordionsOpen, countries, resultIndex, countryId, isLoggedIn } =
+        { queryResult, isCountryCompare, accordionsOpen, countries, resultIndex, countryId, isAdmin } =
             viewModel
 
         { matches, totalMatches } =
@@ -134,7 +134,7 @@ view viewModel =
                                             ]
                                             []
                                         ]
-                                    , viewIf isLoggedIn
+                                    , viewIf isAdmin
                                         (button
                                             [ class "icon icon--close-small br-100 bg-white ba absolute top-0 right-0 ma1 h1 w1 ba b--moon-gray"
                                             , onClick (SnippetRejectClick ( snippet.id, resultIndex ))
