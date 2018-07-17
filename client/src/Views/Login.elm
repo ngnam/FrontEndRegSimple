@@ -10,16 +10,8 @@ import DataTypes exposing (User)
 
 
 view : Model -> Html Msg
-view { loginEmailResponse, loginCodeResponse } =
+view { session, loginEmail, loginCode, loginEmailResponse, loginCodeResponse } =
     let
-        showLoadingSpinner =
-            case loginEmailResponse of
-                Loading ->
-                    True
-
-                _ ->
-                    False
-
         showCodeForm =
             case loginEmailResponse of
                 Success _ ->
@@ -36,8 +28,15 @@ view { loginEmailResponse, loginCodeResponse } =
                     ]
                 ]
             , section [ class "flex justify-center relative" ]
-                [ viewIf (not showCodeForm) (loginEmailForm loginEmailResponse)
-                , viewIf showCodeForm (loginCodeForm loginCodeResponse)
+                [ case ( session, loginEmailResponse ) of
+                    ( Just user, _ ) ->
+                        logoutForm user
+
+                    ( _, Success _ ) ->
+                        loginCodeForm ( loginCode, loginCodeResponse )
+
+                    ( _, _ ) ->
+                        loginEmailForm ( loginEmail, loginEmailResponse )
                 ]
             ]
 
@@ -47,15 +46,35 @@ loadingSpinner =
     div [ class "w15rem h3rem mv3 spinner" ] []
 
 
-loginEmailForm : WebData User -> Html Msg
-loginEmailForm loginEmailResponse =
+logoutForm : User -> Html Msg
+logoutForm { email } =
+    loginForm
+        { onInputMsg = (\_ -> NoOp)
+        , onSubmitMsg = LogoutClick
+        , replaceInputWith = Just ("You're already logged in as " ++ email ++ ", want to log out?")
+        , inputPlaceholder = ""
+        , inputType = ""
+        , buttonText = "Log out"
+        , response = NotAsked
+        , inputValue = ""
+        , inputPattern = "*"
+        , inputMaxlength = 0
+        , inputMinlength = 0
+        , errorText = "We had some trouble on our end, please contact support"
+        }
+
+
+loginEmailForm : ( String, WebData User ) -> Html Msg
+loginEmailForm ( loginEmail, loginEmailResponse ) =
     loginForm
         { onInputMsg = LoginEmailFormOnInput
         , onSubmitMsg = LoginEmailFormOnSubmit
+        , replaceInputWith = Nothing
         , inputPlaceholder = "Email"
         , inputType = "email"
         , buttonText = "Sign In"
         , response = loginEmailResponse
+        , inputValue = loginEmail
         , inputPattern = "*"
         , inputMaxlength = 99999
         , inputMinlength = 0
@@ -63,15 +82,17 @@ loginEmailForm loginEmailResponse =
         }
 
 
-loginCodeForm : WebData User -> Html Msg
-loginCodeForm loginCodeResponse =
+loginCodeForm : ( String, WebData User ) -> Html Msg
+loginCodeForm ( loginCode, loginCodeResponse ) =
     loginForm
         { onInputMsg = LoginCodeFormOnInput
         , onSubmitMsg = LoginCodeFormOnSubmit
+        , replaceInputWith = Nothing
         , inputPlaceholder = "4 digit One Time Code"
         , inputType = "text"
         , buttonText = "Submit"
         , response = loginCodeResponse
+        , inputValue = loginCode
         , inputPattern = "\\d*"
         , inputMaxlength = 4
         , inputMinlength = 4
@@ -82,10 +103,12 @@ loginCodeForm loginCodeResponse =
 type alias LoginFormModel =
     { onInputMsg : String -> Msg
     , onSubmitMsg : Msg
+    , replaceInputWith : Maybe String
     , inputType : String
     , inputPlaceholder : String
     , buttonText : String
     , response : WebData User
+    , inputValue : String
     , inputPattern : String
     , inputMaxlength : Int
     , inputMinlength : Int
@@ -94,7 +117,7 @@ type alias LoginFormModel =
 
 
 loginForm : LoginFormModel -> Html Msg
-loginForm { onInputMsg, onSubmitMsg, inputType, inputPlaceholder, inputPattern, inputMaxlength, inputMinlength, buttonText, response, errorText } =
+loginForm { onInputMsg, onSubmitMsg, inputType, replaceInputWith, inputValue, inputPlaceholder, inputPattern, inputMaxlength, inputMinlength, buttonText, response, errorText } =
     let
         ( isFailure, isLoading ) =
             case response of
@@ -108,21 +131,27 @@ loginForm { onInputMsg, onSubmitMsg, inputType, inputPlaceholder, inputPattern, 
                     ( False, False )
     in
         form [ class "w15rem flex flex-column", onSubmit onSubmitMsg ]
-            [ input
-                [ type_ inputType
-                , pattern inputPattern
-                , maxlength inputMaxlength
-                , minlength inputMinlength
-                , placeholder inputPlaceholder
-                , classList
-                    [ ( "h3rem pv3 ph3 br-pill ba b--solid bg-white mb3 f6 placeholder--login", True )
-                    , ( "b--blue", not isFailure )
-                    , ( "b--red", isFailure )
-                    ]
-                , onInput onInputMsg
-                , required True
-                ]
-                []
+            [ case replaceInputWith of
+                Nothing ->
+                    input
+                        [ type_ inputType
+                        , pattern inputPattern
+                        , maxlength inputMaxlength
+                        , minlength inputMinlength
+                        , placeholder inputPlaceholder
+                        , value inputValue
+                        , classList
+                            [ ( "h3rem pv3 ph3 br-pill ba b--solid bg-white mb3 f6 placeholder--login", True )
+                            , ( "b--blue", not isFailure )
+                            , ( "b--red", isFailure )
+                            ]
+                        , onInput onInputMsg
+                        , required True
+                        ]
+                        []
+
+                Just replacementText ->
+                    text replacementText
             , button
                 [ class "h3rem ph3 white br-pill ba b--solid b--blue bg-blue mb4 f6 metro-b relative"
                 , value "submit"

@@ -18,10 +18,15 @@ import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
-import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, FeedbackType(..))
+import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, FeedbackType(..), User)
 import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
+import Ports exposing (copy)
+import Json.Decode exposing (decodeValue)
+import Json.Encode exposing (encode, null)
+import Decoders
+import Encoders
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
@@ -128,7 +133,17 @@ removeSnippetFromResults snippetId queryResult =
     }
 
 
-port copy : String -> Cmd msg
+storeSession : User -> Cmd msg
+storeSession user =
+    Encoders.user user
+        |> encode 0
+        |> Just
+        |> Ports.storeSession
+
+
+removeSession : Cmd msg
+removeSession =
+    Ports.storeSession Nothing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -187,7 +202,7 @@ update msg model =
                 )
 
         LoginEmailFormOnInput email ->
-            ( { model | email = email }, Cmd.none )
+            ( { model | loginEmail = email }, Cmd.none )
 
         LoginEmailFormOnSubmit ->
             ( { model | loginEmailResponse = Loading }, LoginEmailDecoder.requestCmd model )
@@ -204,17 +219,17 @@ update msg model =
         LoginCodeFormOnResponse response ->
             ( { model
                 | loginCodeResponse = response
-                , isLoggedIn =
+                , session =
                     case response of
-                        Success _ ->
-                            True
+                        Success user ->
+                            Just user
 
                         _ ->
-                            False
+                            Nothing
               }
             , case response of
-                Success _ ->
-                    Navigation.modifyUrl "/#/"
+                Success user ->
+                    Cmd.batch [ storeSession user, Navigation.modifyUrl "/#/" ]
 
                 _ ->
                     Cmd.none
@@ -486,7 +501,7 @@ update msg model =
                 | config = model.config
                 , appData = model.appData
               }
-            , Navigation.modifyUrl "/#/"
+            , Cmd.batch [ removeSession, Navigation.modifyUrl "/#/" ]
             )
 
         _ ->

@@ -10,6 +10,8 @@ import Helpers.Routing exposing (parseLocation)
 import Dict exposing (Dict)
 import Set
 import RemoteData exposing (RemoteData(..), WebData)
+import Json.Decode exposing (Decoder, Value, decodeString, decodeValue, string, bool)
+import Json.Decode.Pipeline exposing (decode, optional)
 import DataTypes
     exposing
         ( QueryResults
@@ -27,6 +29,7 @@ import DataTypes
         , FeedbackResults
         , FeedbackType
         )
+import Decoders
 
 
 type Msg
@@ -58,8 +61,14 @@ type Msg
     | NoOp
 
 
-type alias Flags =
+type alias Config =
     { apiBaseUrl : String, clientBaseUrl : String }
+
+
+type alias Flags =
+    { config : Config
+    , session : Value
+    }
 
 
 type alias Model =
@@ -68,8 +77,6 @@ type alias Model =
     , search : SearchParsed
     , queryResults : WebData QueryResults
     , appData : WebData AppData
-    , email : Email
-    , isLoggedIn : Bool
     , countrySelect : Dict Int CountrySelect.Model
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
@@ -79,10 +86,12 @@ type alias Model =
     , accordionsOpen : AccordionsOpen
     , config : { apiBaseUrl : String }
     , navCount : Int
-    , config : Flags
-    , loginCodeResponse : WebData User
+    , config : Config
+    , loginEmail : Email
     , loginEmailResponse : WebData User
     , loginCode : String
+    , loginCodeResponse : WebData User
+    , session : Maybe User
     }
 
 
@@ -92,9 +101,8 @@ initialModel =
     , debouncer = Debouncer.create (0.3 * Time.second)
     , queryResults = NotAsked
     , appData = Loading
-    , email = ""
+    , loginEmail = ""
     , loginCode = ""
-    , isLoggedIn = False
     , countrySelect =
         Dict.fromList
             [ ( 0, CountrySelect.initialModel ), ( 1, CountrySelect.initialModel ) ]
@@ -121,6 +129,7 @@ initialModel =
         , password = ""
         }
     , config = { apiBaseUrl = "", clientBaseUrl = "" }
+    , session = Nothing
     }
 
 
@@ -128,7 +137,17 @@ init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
 init flags location =
     ( { initialModel
         | location = parseLocation location
-        , config = { apiBaseUrl = flags.apiBaseUrl, clientBaseUrl = flags.clientBaseUrl }
+        , config = flags.config
+        , session =
+            let
+                decodeUserFromJson : Value -> Maybe User
+                decodeUserFromJson json =
+                    json
+                        |> decodeValue string
+                        |> Result.toMaybe
+                        |> Maybe.andThen (decodeString Decoders.user >> Result.toMaybe)
+            in
+                decodeUserFromJson flags.session
       }
     , redirectIfRoot location
     )
