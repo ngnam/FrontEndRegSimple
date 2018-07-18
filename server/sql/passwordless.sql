@@ -23,3 +23,10 @@ CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON passwordless
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TABLE analytics
+(
+  event_name varchar(50) not null,
+  params text not null,
+  created_at timestamp not null default now()
+);

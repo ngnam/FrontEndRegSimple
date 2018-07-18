@@ -35,6 +35,9 @@ module.exports = async () => {
     encode: () => Promise.resolve('token'),
     decode: () => Promise.resolve(userFixture)
   };
+  const analyticsService = {
+    logEvent: () => null
+  };
   const app = await createApp({
     config,
     emailService,
@@ -42,7 +45,8 @@ module.exports = async () => {
     dbClient,
     passwordlessService,
     userService,
-    jwtService
+    jwtService,
+    analyticsService
   });
 
   process.app = app;
