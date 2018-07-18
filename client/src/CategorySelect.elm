@@ -109,7 +109,7 @@ view model { inputAlignment, loadingButtonInner } =
 
         menuClass =
             classList
-                [ ( "list bg-white absolute z-4 ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem", menuOpen )
+                [ ( "list bg-white absolute z-4 ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem dropdown-menu", menuOpen )
                 , ( "right-0", inputAlignment == Right )
                 , ( "left-0", inputAlignment == Left )
                 , ( "dn", not menuOpen )

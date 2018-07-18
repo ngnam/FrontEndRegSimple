@@ -1,0 +1,15 @@
+.main--home,
+.main--login {
+  height: var(--h--main-home);
+}
+
+.main--home .dropdown-menu {
+  max-height: calc(
+    var(--h--main-home) / 2 + var(--h--footer) - var(--h--query-form)
+  );
+  overflow-y: scroll;
+}
+
+.main--query {
+  min-height: calc(100vh - var(--h--banner));
+}

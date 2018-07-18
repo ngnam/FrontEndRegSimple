@@ -1,7 +1,7 @@
 module Views.Login exposing (..)
 
 import Model exposing (Model, Msg(..))
-import Html exposing (Html, button, input, form, text, section, div, h1, img, span)
+import Html exposing (Html, main_, button, input, form, text, section, div, h1, img, span)
 import Html.Attributes exposing (type_, placeholder, value, class, src, required, classList, pattern, maxlength, minlength)
 import Html.Events exposing (onSubmit, onInput)
 import Util exposing (viewIf)
@@ -20,8 +20,8 @@ view { session, loginEmail, loginCode, loginEmailResponse, loginCodeResponse } =
                 _ ->
                     False
     in
-        div []
-            [ section [ class "mb4 flex justify-center" ]
+        main_ [ class "main--login" ]
+            [ section [ class "h-50 flex justify-center" ]
                 [ div [ class "flex justify-center flex-column w-25" ]
                     [ img [ class "w-100 mb2", src "/assets/logos/logo-with-text.png" ] []
                     , h1 [ class "mb2 metro-i" ] [ text "Regulation. Simplified." ]
