@@ -7,7 +7,7 @@ import QueryNavBar
 import QuerySideBar
 import SelectedCategories
 import QueryResultList
-import CategorySelect exposing (getCategoryById)
+import Helpers.AppData exposing (getCategoryById)
 import Helpers.CountrySelect exposing (getSelectedCountry, getSelectedCountryIds)
 import Helpers.QueryString exposing (queryValidation)
 import Validation exposing (Validation(..))

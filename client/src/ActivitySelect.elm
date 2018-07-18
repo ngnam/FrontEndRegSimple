@@ -1,4 +1,4 @@
-module ActivitySelect exposing (Model, Msg, initialModel, update, view, Activity, ActivityId)
+module ActivitySelect exposing (Model, Msg, initialModel, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -6,22 +6,11 @@ import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Util exposing (..)
 import Json.Decode as Json
-import DataTypes exposing (AppDataItem, InputAlignment(..))
+import DataTypes exposing (AppDataItem, InputAlignment(..), Activity, ActivityId, Index)
+import Helpers.AppData exposing (getActivityName)
 
 
 -- MODEL --
-
-
-type alias Index =
-    Int
-
-
-type alias ActivityId =
-    String
-
-
-type alias Activity =
-    AppDataItem
 
 
 type alias Config =
@@ -206,24 +195,6 @@ view model { inputAlignment, loadingButtonInner } =
                 model
                 menuClass
             ]
-
-
-getActivityName : Maybe ActivityId -> List Activity -> String
-getActivityName maybeId activities =
-    let
-        defaultButtonText =
-            "Choose an Activity"
-    in
-        case maybeId of
-            Just id ->
-                activities
-                    |> List.filter (\activity -> activity.id == id)
-                    |> List.head
-                    |> Maybe.map .name
-                    |> Maybe.withDefault defaultButtonText
-
-            Nothing ->
-                defaultButtonText
 
 
 getActivityId : Index -> List Activity -> ActivityId

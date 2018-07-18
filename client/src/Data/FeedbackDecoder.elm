@@ -10,6 +10,7 @@ import DataTypes
 import Json.Decode exposing (Decoder, list, int, float, string, at, oneOf, null, nullable, bool)
 import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
 import RemoteData
+import Encoders
 
 
 feedbackEndpoint : FeedbackType -> String
@@ -23,9 +24,9 @@ request : Model -> FeedbackType -> Http.Request FeedbackResults
 request model feedbackType =
     Http.request
         { method = "PUT"
-        , headers = [ Http.header "Content-Type" "application/json" ]
+        , headers = []
         , url = model.config.apiBaseUrl ++ "/feedback" ++ (feedbackEndpoint feedbackType) ++ model.location.search
-        , body = Http.emptyBody
+        , body = Http.jsonBody (Encoders.snippetFeedback model.snippetFeedback)
         , expect = Http.expectJson (at [ "data" ] decoder)
         , timeout = Nothing
         , withCredentials = True

@@ -4,9 +4,10 @@ import Html exposing (Html, section, div, a, button, input, header, img, text, u
 import Html.Attributes exposing (id, class, tabindex, value, disabled, classList)
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(Copy, CategorySubMenuClick, CategoryRemoveClick))
-import CategorySelect exposing (Category, emptyCategory, getCategoriesFromIds)
+import Helpers.AppData exposing (emptyCategory, getCategoriesFromIds)
 import Helpers.CountrySelect exposing (getCountrySelect)
 import RemoteData exposing (RemoteData(..))
+import DataTypes exposing (Category)
 
 
 subMenu : ( Model, Category ) -> Html Msg

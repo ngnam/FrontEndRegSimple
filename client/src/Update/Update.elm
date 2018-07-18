@@ -1,6 +1,6 @@
 port module Update exposing (..)
 
-import Model exposing (Model, Msg(..), initialModel)
+import Model exposing (Model, Msg(..), initialModel, initialSnippetFeedback)
 import Debouncer
 import Navigation
 import LoginEmailDecoder
@@ -9,7 +9,7 @@ import LogoutDecoder
 import QueryDecoder
 import AppDataDecoder
 import CountrySelect
-import ActivitySelect exposing (ActivityId)
+import ActivitySelect
 import CategorySelect
 import Helpers.Routing exposing (onUrlChange)
 import Helpers.QueryString exposing (queryString, removeFromQueryString)
@@ -18,7 +18,7 @@ import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
-import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, FeedbackType(..), User, CategoryId)
+import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, CategoryId, FeedbackType(..), User, ActivityId, SnippetFeedback, DialogType(..))
 import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
@@ -101,6 +101,21 @@ setSelectedCountries ids model =
         { model
             | countrySelect = newCountrySelect
         }
+
+
+toggleCategoryFeedbackSelected : CategoryId -> SnippetFeedback -> List CategoryId
+toggleCategoryFeedbackSelected categoryId model =
+    let
+        alreadySelected =
+            List.member categoryId model.categoryIds
+
+        exclude option el =
+            option /= el
+    in
+        if alreadySelected then
+            List.filter (exclude categoryId) model.categoryIds
+        else
+            model.categoryIds ++ [ categoryId ]
 
 
 setFilterText : Maybe String -> Model -> Model
@@ -435,6 +450,64 @@ update msg model =
         Copy copyLink ->
             ( { model | categorySubMenuOpen = Nothing }, copy copyLink )
 
+        DialogToggleClick dialogType snippetData ->
+            let
+                { snippetFeedback } =
+                    model
+
+                newSnippetFeedbackModel =
+                    case dialogType of
+                        NoDialog ->
+                            initialSnippetFeedback
+
+                        _ ->
+                            { snippetFeedback | snippetData = snippetData }
+            in
+                ( { model | dialog = dialogType, snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+
+        ActivityFeedbackClick activityId ->
+            let
+                { snippetFeedback } =
+                    model
+
+                newSnippetFeedbackModel =
+                    { snippetFeedback | activityId = activityId, activityMenuOpen = False }
+            in
+                ( { model | snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+
+        ActivityMenuFeedbackToggleClick ->
+            let
+                { snippetFeedback } =
+                    model
+
+                newSnippetFeedbackModel =
+                    { snippetFeedback | activityMenuOpen = not snippetFeedback.activityMenuOpen, categoryMenuOpen = False }
+            in
+                ( { model | snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+
+        CategoryFeedbackClick categoryId ->
+            let
+                { snippetFeedback } =
+                    model
+
+                newSnippetCategories =
+                    toggleCategoryFeedbackSelected categoryId snippetFeedback
+
+                newSnippetFeedbackModel =
+                    { snippetFeedback | categoryIds = newSnippetCategories, categoryMenuOpen = (List.length newSnippetCategories) < 2 }
+            in
+                ( { model | snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+
+        CategoryMenuFeedbackToggleClick ->
+            let
+                { snippetFeedback } =
+                    model
+
+                newSnippetFeedbackModel =
+                    { snippetFeedback | categoryMenuOpen = not snippetFeedback.categoryMenuOpen, activityMenuOpen = False }
+            in
+                ( { model | snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+
         QueryResultListRemoveClick categoryCountry ->
             let
                 { location, countrySelect } =
@@ -467,29 +540,36 @@ update msg model =
                 , Navigation.modifyUrl ("/#/query?" ++ newQueryString)
                 )
 
-        SnippetRejectClick ( snippetId, categoryCountry ) ->
-            let
-                modifiedQueryResults =
-                    case model.queryResults of
-                        Success queryResults ->
-                            Success <|
-                                DictList.map
-                                    (\categoryCountry_ result ->
-                                        if categoryCountry_ == categoryCountry then
-                                            removeSnippetFromResults snippetId result
-                                        else
-                                            result
-                                    )
-                                    queryResults
+        SnippetRejectClick snippetFeedbackData ->
+            case snippetFeedbackData of
+                Nothing ->
+                    ( model, Cmd.none )
 
-                        _ ->
-                            model.queryResults
-            in
-                ( { model
-                    | queryResults = modifiedQueryResults
-                  }
-                , FeedbackDecoder.requestCmd model (RejectSnippet snippetId)
-                )
+                Just ( snippetId, categoryCountry ) ->
+                    let
+                        modifiedQueryResults =
+                            case model.queryResults of
+                                Success queryResults ->
+                                    Success <|
+                                        DictList.map
+                                            (\categoryCountry_ result ->
+                                                if categoryCountry_ == categoryCountry then
+                                                    removeSnippetFromResults snippetId result
+                                                else
+                                                    result
+                                            )
+                                            queryResults
+
+                                _ ->
+                                    model.queryResults
+                    in
+                        ( { model
+                            | queryResults = modifiedQueryResults
+                            , dialog = NoDialog
+                            , snippetFeedback = initialSnippetFeedback
+                          }
+                        , FeedbackDecoder.requestCmd model (RejectSnippet snippetId)
+                        )
 
         FeedbackRequest feedbackType results ->
             ( model

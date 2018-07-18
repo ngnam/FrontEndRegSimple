@@ -8,7 +8,7 @@ import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 import Set
 import Util exposing (boolStr, viewIf, (!!))
-import DataTypes exposing (QueryResult, AccordionsOpen, CountriesDictList, CountryId, Session, Role(..), CategoryCountry)
+import DataTypes exposing (QueryResult, AccordionsOpen, CountriesDictList, CountryId, Session, Role(..), CategoryCountry, DialogType(..))
 import Helpers.AppData exposing (getCountryName)
 import Helpers.Session exposing (isMinRole)
 
@@ -63,8 +63,8 @@ view viewModel =
                     )
                 ]
             , ul [ class "list f5" ]
-                (List.indexedMap
-                    (\matchIndex match ->
+                (List.map
+                    (\match ->
                         let
                             emptyBody =
                                 { tags = []
@@ -137,9 +137,8 @@ view viewModel =
                                         ]
                                     , viewIf (isMinRole RoleEditor session)
                                         (button
-                                            [ class "icon icon--close-small br-100 bg-white ba absolute top-0 right-0 ma1 h1 w1 ba b--moon-gray"
-                                            , onClick <|
-                                                SnippetRejectClick ( snippet.id, categoryCountry )
+                                            [ class "icon icon--menu-dots icon--menu-dots-grey absolute top-0 right-0 ma1 h1 w1 bg-mid-gray bn"
+                                            , onClick (DialogToggleClick SnippetFeedbackDialog (Just ( snippet.id, categoryCountry )))
                                             ]
                                             []
                                         )

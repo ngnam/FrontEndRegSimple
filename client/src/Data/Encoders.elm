@@ -1,7 +1,7 @@
-module Encoders exposing (user)
+module Encoders exposing (user, snippetFeedback)
 
-import Json.Encode exposing (Value, object, string)
-import DataTypes exposing (User, Role(..))
+import Json.Encode exposing (Value, object, string, list)
+import DataTypes exposing (User, Role(..), SnippetFeedback)
 
 
 user : User -> Value
@@ -26,3 +26,10 @@ roleEncoder role =
             RoleAdmin ->
                 "ROLE_ADMIN"
         )
+
+
+snippetFeedback : SnippetFeedback -> Value
+snippetFeedback model =
+    object
+        [ ( "suggestedCategories", list (List.map string model.categoryIds) )
+        ]
