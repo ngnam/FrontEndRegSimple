@@ -2,7 +2,6 @@ module LogoutDecoder exposing (requestCmd)
 
 import Http
 import RemoteData exposing (RemoteData(..))
-import DataTypes exposing (User)
 import Model exposing (Model, Msg(..))
 
 

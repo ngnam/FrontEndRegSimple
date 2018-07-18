@@ -28,7 +28,8 @@ export default ({ passwordlessService, userService, jwtService }) => async (
 
     const userData = {
       id: user.id,
-      email: user.email
+      email: user.email,
+      role: user.role
     };
 
     const token = await jwtService.encode(userData);

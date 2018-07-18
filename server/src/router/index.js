@@ -1,7 +1,10 @@
 import { Router } from 'express';
 
+import { ROLE_EDITOR } from '../constants/roles';
+
 import validate from '../middleware/validation.middleware';
-import auth from '../middleware/auth.middleware';
+import authenticate from '../middleware/authenticate.middleware';
+import authorise from '../middleware/authorise.middleware';
 
 import querySchema from '../validations/query.validation';
 import loginEmailSchema from '../validations/login-email.validation';
@@ -20,7 +23,7 @@ import analytics from './analytics.route';
 const createRouter = dependencies => {
   const router = Router();
 
-  router.use(auth(dependencies));
+  router.use(authenticate(dependencies));
 
   router.post(
     '/login/email',
@@ -38,6 +41,7 @@ const createRouter = dependencies => {
 
   router.put(
     '/feedback/snippet/:snippetId/:action',
+    authorise({ minRole: ROLE_EDITOR }),
     validate(feedbackSnippetSchema),
     feedbackSnippet(dependencies)
   );

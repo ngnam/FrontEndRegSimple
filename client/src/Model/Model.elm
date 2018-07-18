@@ -11,7 +11,6 @@ import Dict exposing (Dict)
 import Set
 import RemoteData exposing (RemoteData(..), WebData)
 import Json.Decode exposing (Decoder, Value, decodeString, decodeValue, string, bool)
-import Json.Decode.Pipeline exposing (decode, optional)
 import DataTypes
     exposing
         ( QueryResults
@@ -29,6 +28,7 @@ import DataTypes
         , FeedbackResults
         , FeedbackType
         , AnalyticsEvent
+        , Session
         )
 import Decoders
 
@@ -93,7 +93,7 @@ type alias Model =
     , loginEmailResponse : WebData User
     , loginCode : String
     , loginCodeResponse : WebData User
-    , session : Maybe User
+    , session : Session
     }
 
 

@@ -1,0 +1,14 @@
+{
+  "ROLE_USER": {
+    "name": "ROLE_USER",
+    "privilege": 0
+  },
+  "ROLE_EDITOR": {
+    "name": "ROLE_EDITOR",
+    "privilege": 1
+  },
+  "ROLE_ADMIN": {
+    "name": "ROLE_ADMIN",
+    "privilege": 2
+  }
+}
