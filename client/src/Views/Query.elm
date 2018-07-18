@@ -12,7 +12,7 @@ import Helpers.CountrySelect exposing (getSelectedCountry)
 import Helpers.QueryString exposing (queryValidation)
 import Validation exposing (Validation(..))
 import RemoteData exposing (RemoteData(..))
-import Selectors exposing (isAdmin)
+import DataTypes exposing (Role(..))
 
 
 viewValidationText : String -> Html msg
@@ -33,7 +33,7 @@ viewHeader name description =
 view : Model -> Html Msg
 view model =
     let
-        { accordionsOpen, appData, queryResults } =
+        { accordionsOpen, appData, queryResults, session } =
             model
 
         { name, description } =
@@ -72,7 +72,7 @@ view model =
                                                 , isCountryCompare = isCountryCompare
                                                 , countries = appData.countries
                                                 , resultIndex = index
-                                                , isAdmin = isAdmin model
+                                                , session = session
                                                 , countryId =
                                                     Maybe.withDefault
                                                         ""

@@ -3,6 +3,8 @@ module Decoders exposing (user)
 import Json.Decode exposing (Decoder, string, andThen, succeed, fail)
 import Json.Decode.Pipeline exposing (decode, required)
 import DataTypes exposing (User, Role(..))
+import Helpers.Session exposing (roles)
+import DictList
 
 
 user : Decoder User
@@ -18,16 +20,10 @@ role =
     string
         |> andThen
             (\str ->
-                case str of
-                    "ROLE_USER" ->
-                        succeed RoleUser
+                case DictList.get str roles of
+                    Just role ->
+                        succeed role
 
-                    "ROLE_EDITOR" ->
-                        succeed RoleEditor
-
-                    "ROLE_ADMIN" ->
-                        succeed RoleAdmin
-
-                    other ->
-                        fail <| "Unexpected role: " ++ other
+                    Nothing ->
+                        fail <| "Unexpected role: " ++ str
             )

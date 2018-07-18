@@ -1,4 +1,4 @@
-module Util exposing (boolStr, (!!), viewIf, toKeyValuePair, toDict)
+module Util exposing (boolStr, (!!), viewIf, toKeyValuePair, toDict, indexOf)
 
 import Html exposing (Attribute, Html)
 import Dict exposing (Dict)
@@ -16,6 +16,23 @@ import Http
             |> List.head
     else
         Nothing
+
+
+indexOf : a -> List a -> Int
+indexOf el list =
+    let
+        indexOf_ list_ index =
+            case list_ of
+                [] ->
+                    -1
+
+                x :: xs ->
+                    if x == el then
+                        index
+                    else
+                        indexOf_ xs (index + 1)
+    in
+        indexOf_ list 0
 
 
 

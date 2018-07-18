@@ -5,7 +5,7 @@ import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Util exposing (viewIf)
 import Model exposing (Model, Msg(..))
-import Selectors exposing (isLoggedIn)
+import Helpers.Session exposing (isLoggedIn)
 
 
 aboutPath : String
@@ -14,12 +14,12 @@ aboutPath =
 
 
 view : Model -> Html Msg
-view model =
+view { session, location } =
     header [ class "flex ph5 h4 items-center justify-between f6" ]
         [ a [ href aboutPath, class "b ttu no-underline near-black" ]
             [ text "about" ]
-        , viewIf (model.location.hash /= "#/login")
-            (if isLoggedIn model then
+        , viewIf (location.hash /= "#/login")
+            (if isLoggedIn session then
                 logoutButton
              else
                 loginButton

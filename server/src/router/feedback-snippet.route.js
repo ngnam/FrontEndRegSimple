@@ -1,7 +1,5 @@
 import boom from 'boom';
 
-import { ROLE_EDITOR, ROLE_ADMIN } from '../constants/roles';
-
 export default ({ config, searchApiService }) => async (req, res, next) => {
   const { snippetId, action } = req.params;
   const { userId } = req.user || {};

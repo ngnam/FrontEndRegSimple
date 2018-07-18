@@ -1,5 +1,17 @@
-export const admin =
-  'token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA2MTZhNGE2LWYwMWYtNGM2NC05ZGVjLTI5YzJkZjgxN2NiOCIsImVtYWlsIjoibWF0aHNncmVnb3J5QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0FETUlOIiwiaWF0IjoxNTMxODQwNDk4fQ.AiVM5zoV330LKzx8-wO0jGqUfJWBhRDn1z1LxTAe_nQ';
+import jwt from 'jsonwebtoken';
 
-export const user =
-  'token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNlNzNhMmNkLTVkMDAtNDE0Yy1hMGVjLTdiYzBiNTJhMGE4YSIsImVtYWlsIjoiY2hhcmxpZUBkb3VtYXlhbjMzLmNvLmlsIiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTUzMTg0MTM2OH0._s6Pfjuc1Cwr68wZxvy5oEaI5kpkEWjUSDPHFnzNL1o';
+import userFixture from './user';
+import {
+  ROLE_USER,
+  ROLE_EDITOR,
+  ROLE_ADMIN
+} from '../../../src/constants/roles';
+
+const { JWT_SECRET } = process.env;
+
+const token = role => jwt.sign({ ...userFixture, role }, JWT_SECRET);
+const cookie = token => `token=${token}`;
+
+export const user = () => cookie(token(ROLE_USER));
+export const editor = () => cookie(token(ROLE_EDITOR));
+export const admin = () => cookie(token(ROLE_ADMIN));

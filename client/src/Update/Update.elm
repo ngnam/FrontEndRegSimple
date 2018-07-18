@@ -23,11 +23,8 @@ import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
 import Ports exposing (copy)
-import Json.Decode exposing (decodeValue)
 import Json.Encode exposing (encode, null)
-import Decoders
 import Encoders
-import AnalyticsDecoder
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }

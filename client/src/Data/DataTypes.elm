@@ -65,6 +65,10 @@ type alias Email =
     String
 
 
+type alias Session =
+    Maybe User
+
+
 type alias User =
     { id : UserId, email : Email, role : Role }
 

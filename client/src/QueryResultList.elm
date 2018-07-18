@@ -8,8 +8,9 @@ import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 import Set
 import Util exposing (boolStr, viewIf, (!!))
-import DataTypes exposing (QueryResult, AccordionsOpen, CountriesDictList, CountryId)
+import DataTypes exposing (QueryResult, AccordionsOpen, CountriesDictList, CountryId, Session, Role(..))
 import Helpers.AppData exposing (getCountryName)
+import Helpers.Session exposing (isMinRole)
 
 
 type alias ViewModel =
@@ -19,14 +20,14 @@ type alias ViewModel =
     , countries : CountriesDictList
     , resultIndex : Int
     , countryId : CountryId
-    , isAdmin : Bool
+    , session : Session
     }
 
 
 view : ViewModel -> Html Msg
 view viewModel =
     let
-        { queryResult, isCountryCompare, accordionsOpen, countries, resultIndex, countryId, isAdmin } =
+        { queryResult, isCountryCompare, accordionsOpen, countries, resultIndex, countryId, session } =
             viewModel
 
         { matches, totalMatches } =
@@ -134,7 +135,7 @@ view viewModel =
                                             ]
                                             []
                                         ]
-                                    , viewIf isAdmin
+                                    , viewIf (isMinRole RoleEditor session)
                                         (button
                                             [ class "icon icon--close-small br-100 bg-white ba absolute top-0 right-0 ma1 h1 w1 ba b--moon-gray"
                                             , onClick (SnippetRejectClick ( snippet.id, resultIndex ))

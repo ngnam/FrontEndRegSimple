@@ -8,8 +8,6 @@ export default ({ jwtService }) => async (req, res, next) => {
   try {
     const user = await jwtService.decode(token);
 
-    console.log({ user });
-
     req.user = user;
 
     return next();

@@ -16,8 +16,6 @@ export default ({ minRole }) => async (req, res, next) => {
 
   const { role, id, email } = user;
 
-  console.log(role, ROLES.indexOf(role), minRole, ROLES.indexOf(minRole));
-
   if (ROLES.indexOf(role) < ROLES.indexOf(minRole)) {
     console.warn(`Unauthorised request
       User ${id} ${email} made the following unauthorised request:
