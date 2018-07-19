@@ -160,4 +160,12 @@
   /* moon-gray used as a darker border color */
   --moon-gray: #dfe0e6;
   --dark-gray: #959bac;
+
+  --h--banner: 38px;
+  --h--header: 114px;
+  --h--footer: 152px;
+  --h--main-home: calc(
+    100vh - var(--h--banner) - var(--h--header) - var(--h--footer)
+  );
+  --h--query-form: 78px;
 }

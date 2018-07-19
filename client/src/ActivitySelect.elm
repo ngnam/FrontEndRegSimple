@@ -161,8 +161,7 @@ view model { inputAlignment, loadingButtonInner } =
 
         menuClass =
             classList
-                [ ( "list bg-white ttc w30rem top-150 ba b--light-gray shadow-1 pv2 ph0", True )
-                , ( "absolute z-4", menuOpen )
+                [ ( "list bg-white ttc w30rem top-150 ba b--light-gray shadow-1 pv2 ph0 absolute z-4 dropdown-menu", True )
                 , ( "dn", not menuOpen )
                 , ( "translate-center", inputAlignment == Center )
                 ]

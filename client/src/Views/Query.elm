@@ -1,7 +1,7 @@
 module Views.Query exposing (..)
 
 import Model exposing (Model, Msg(..))
-import Html exposing (Html, text, div, p, h1, span, ul, li, header)
+import Html exposing (Html, main_, text, div, p, h1, span, ul, li, header)
 import Html.Attributes exposing (class, tabindex, classList)
 import QueryNavBar
 import QuerySideBar
@@ -53,7 +53,7 @@ view model =
                 , ( "mw7", not isCountryCompare )
                 ]
     in
-        div [ class "flex min-vh-100" ]
+        main_ [ class "main--query flex" ]
             [ QuerySideBar.view model
             , div [ class "flex-1 flex flex-column" ]
                 [ QueryNavBar.view model

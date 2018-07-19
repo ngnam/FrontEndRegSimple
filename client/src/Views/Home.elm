@@ -1,7 +1,7 @@
 module Views.Home exposing (..)
 
 import Model exposing (Model, Msg(..))
-import Html exposing (Html, text, div, section, form, img, input, h1, button, span, a, p)
+import Html exposing (Html, main_, text, div, section, form, img, input, h1, button, span, a, p)
 import Html.Attributes exposing (type_, placeholder, value, src, class, href, tabindex, classList)
 import Html.Attributes.Aria exposing (role)
 import CountrySelect
@@ -17,8 +17,8 @@ import DataTypes exposing (InputAlignment(..))
 
 view : Model -> Html Msg
 view model =
-    div [ class "mb5" ]
-        [ section [ class "mb4 flex justify-center" ]
+    main_ [ class "main--home" ]
+        [ section [ class "h-50 flex justify-center" ]
             [ div [ class "flex justify-center flex-column w-25" ]
                 [ img [ class "w-100 mb2", src "/assets/logos/logo-with-text.png" ] []
                 , h1 [ class "mb2 metro-i" ] [ text "Regulation. Simplified." ]
