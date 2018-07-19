@@ -36,6 +36,22 @@ NB. The heroku deploy api token will expire 06/01/2019
 You only need to do this if you want to manually deploy.
 To build the app ready for deploying to production run `make build` - see `Makefile` for more details.
 
+## Scripts
+
+### set-user-role
+
+`npm run set-user-role -- --email=example@regsimple.io --role=ROLE_ADMIN --pgConnectionString=postgres://pgUser:pgPass@localhost/regsimpledb`
+
+This role will alter the role of the user with the specified email address.
+
+**Args**
+
+- `email`: *(optional)* Specify a single email address whose user role you wish to alter. They must already be signed up, ie have attempted a log in.
+- `role`: *(optional)* Specify a new role for the user of ROLE_USER, ROLE_EDITOR, ROLE_ADMIN.
+- `pgConnectionString`: *(optional)*: Specify the connection string to the database where the users table lives. Defaults to PG_CONNECTION_STRING in either NODE_ENV or in ./dev.env file.
+
+**Important:** If neither email nor role are specified, then the script will read the list of user emails from shared/editors.json, and alter all their roles to be ROLE_EDITOR.
+
 ## CSS - Tachyons & Postcss
 
 We are using [Tachyons](http://tachyons.io/docs/) for styling (a functional CSS library). There is a small learning curve but once learnt it is really good for mobile first/responsive design and in general keeping consistency.
