@@ -4,20 +4,39 @@ export default ({ config, searchApiService }) => async (req, res, next) => {
   const { countries, categories, filterText } = req.query;
 
   try {
-    const requests = countries.map(country =>
-      searchApiService.fetchResults({
-        countries: [country],
-        categories,
-        filterText
+    const categoryRequest = category =>
+      countries.map(country => {
+        return {
+          country: country,
+          category: category,
+          result: searchApiService.fetchResults({
+            countries: [country],
+            categories: [category],
+            filterText
+          })
+        };
+      });
+
+    const queries = categories
+      .map(categoryRequest)
+      .reduce((accum, curr) => accum.concat(curr), []);
+
+    const responses = await Promise.all(
+      queries.map(async query => {
+        const result = await query.result;
+
+        return {
+          ...query,
+          result: result.data
+        };
       })
     );
 
-    const resultsRes = await Promise.all(requests);
+    console.log('sdfds', responses[0]);
 
-    const results = resultsRes.map(result => result.data);
-
-    res.json({ data: { results } });
+    res.json({ data: responses });
   } catch (err) {
+    console.log(err);
     return next(
       boom.forbidden('searchApiService.fetchResults failed', err.details)
     );

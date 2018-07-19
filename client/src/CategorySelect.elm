@@ -3,7 +3,6 @@ module CategorySelect
         ( Model
         , Msg
         , Category
-        , CategoryId
         , emptyCategory
         , initialModel
         , update
@@ -18,15 +17,11 @@ import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Json
 import Util exposing (..)
-import DataTypes exposing (AppDataItem, TaxonomyId, InputAlignment(..))
+import DataTypes exposing (AppDataItem, CategoryId, InputAlignment(..))
 import Dict
 
 
 -- MODEL --
-
-
-type alias CategoryId =
-    TaxonomyId
 
 
 type alias Model =
@@ -315,12 +310,7 @@ toggleCategorySelected categoryId model =
         if alreadySelected then
             { model | selected = List.filter (exclude categoryId) model.selected }
         else
-            { model | selected = [ categoryId ] }
-
-
-
--- remove above line and uncomment below line to enable multiple categories
--- { model | selected = model.selected ++ [ categoryId ] }
+            { model | selected = model.selected ++ [ categoryId ] }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

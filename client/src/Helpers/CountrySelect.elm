@@ -1,8 +1,9 @@
-module Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
+module Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry, getSelectedCountryIds)
 
 import Model exposing (Model)
 import CountrySelect
 import Dict
+import DictList
 import DataTypes exposing (CountryId)
 
 
@@ -21,3 +22,13 @@ getSelectedCountry index model =
     model
         |> getCountrySelect index
         |> .selected
+
+
+getSelectedCountryIds : Model -> List CountryId
+getSelectedCountryIds model =
+    case Dict.get "countries" model.search of
+        Just countries ->
+            countries
+
+        Nothing ->
+            []

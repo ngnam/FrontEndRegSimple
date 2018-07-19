@@ -8,7 +8,7 @@ import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 import Set
 import Util exposing (boolStr, viewIf, (!!))
-import DataTypes exposing (QueryResult, AccordionsOpen, CountriesDictList, CountryId, Session, Role(..))
+import DataTypes exposing (QueryResult, AccordionsOpen, CountriesDictList, CountryId, Session, Role(..), CategoryCountry)
 import Helpers.AppData exposing (getCountryName)
 import Helpers.Session exposing (isMinRole)
 
@@ -18,7 +18,7 @@ type alias ViewModel =
     , queryResult : QueryResult
     , isCountryCompare : Bool
     , countries : CountriesDictList
-    , resultIndex : Int
+    , categoryCountry : CategoryCountry
     , countryId : CountryId
     , session : Session
     }
@@ -27,7 +27,7 @@ type alias ViewModel =
 view : ViewModel -> Html Msg
 view viewModel =
     let
-        { queryResult, isCountryCompare, accordionsOpen, countries, resultIndex, countryId, session } =
+        { queryResult, isCountryCompare, accordionsOpen, countries, categoryCountry, countryId, session } =
             viewModel
 
         { matches, totalMatches } =
@@ -56,7 +56,7 @@ view viewModel =
                 , viewIf isCountryCompare
                     (button
                         [ class "icon icon--close absolute top-1 right-1 h1 w1 b--none bg-transparent"
-                        , onClick (QueryResultListRemoveClick resultIndex)
+                        , onClick (QueryResultListRemoveClick categoryCountry)
                         , ariaLabel ("Remove " ++ countryName ++ " from comparison")
                         ]
                         []
@@ -138,7 +138,8 @@ view viewModel =
                                     , viewIf (isMinRole RoleEditor session)
                                         (button
                                             [ class "icon icon--close-small br-100 bg-white ba absolute top-0 right-0 ma1 h1 w1 ba b--moon-gray"
-                                            , onClick (SnippetRejectClick ( snippet.id, resultIndex ))
+                                            , onClick <|
+                                                SnippetRejectClick ( snippet.id, categoryCountry )
                                             ]
                                             []
                                         )

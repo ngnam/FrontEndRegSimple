@@ -1,7 +1,8 @@
-module Util exposing (boolStr, (!!), viewIf, toKeyValuePair, toDict, indexOf)
+module Util exposing (boolStr, (!!), viewIf, toKeyValuePair, toDict, indexOf, toDictList)
 
 import Html exposing (Attribute, Html)
 import Dict exposing (Dict)
+import DictList
 import Http
 
 
@@ -67,6 +68,10 @@ toDict values =
             Dict.update k (append v) acc
     in
         List.foldr foldF Dict.empty values
+
+
+toDictList values =
+    DictList.fromDict (toDict values)
 
 
 removeBrackets : String -> String

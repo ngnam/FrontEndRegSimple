@@ -2,10 +2,11 @@ module QueryDecoder exposing (requestCmd)
 
 import Http
 import Model exposing (Model, Msg(..))
-import DataTypes exposing (QueryResults, QueryResult, QueryResultMatch, QueryResultMatchBody)
-import Json.Decode exposing (Decoder, list, int, float, string, at, oneOf, null, nullable)
+import DataTypes exposing (QueryResults, QueryResult, QueryResultMatch, QueryResultMatchBody, CategoryCountry, CategoryId, CountryId)
+import Json.Decode exposing (Decoder, andThen, list, int, float, string, at, oneOf, null, nullable, decodeString, field, map2)
 import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
 import RemoteData
+import DictList
 
 
 request : Model -> Http.Request QueryResults
@@ -69,5 +70,13 @@ queryResultDecoder =
 
 decoder : Decoder QueryResults
 decoder =
-    decode QueryResults
-        |> required "results" (list queryResultDecoder)
+    let
+        keyDecoder =
+            map2 (,) (field "category" string) (field "country" string)
+
+        valueDecoder =
+            field "result" queryResultDecoder
+    in
+        DictList.decodeArray2
+            keyDecoder
+            valueDecoder

@@ -65,7 +65,7 @@ queryString model =
                 ++ Maybe.withDefault "" model.activitySelect.selected
 
         categories =
-            List.foldr (\categoryId accum -> accum ++ "&categories[]=" ++ categoryId) "" model.categorySelect.selected
+            List.foldl (\categoryId accum -> accum ++ "&categories[]=" ++ categoryId) "" model.categorySelect.selected
 
         filterText =
             "&filterText=" ++ model.filterText
@@ -73,17 +73,20 @@ queryString model =
         country1 ++ country2 ++ activity ++ categories ++ filterText
 
 
-removeFromSearchParsed : ( String, Int ) -> SearchParsed -> SearchParsed
-removeFromSearchParsed ( key, i ) searchParsed =
+removeFromSearchParsed : ( String, String ) -> SearchParsed -> SearchParsed
+removeFromSearchParsed ( key, val ) searchParsed =
     case Dict.get key searchParsed of
         Just oldParams ->
             Dict.update key
-                (\mv ->
+                (\maybeList ->
                     let
-                        v =
-                            Maybe.withDefault [] mv
+                        list_ =
+                            Maybe.withDefault [] maybeList
                     in
-                        Just ((List.take i v) ++ (List.drop (i + 1) v))
+                        Just <|
+                            List.filter
+                                (\el -> el /= val)
+                                list_
                 )
                 searchParsed
 
@@ -91,11 +94,11 @@ removeFromSearchParsed ( key, i ) searchParsed =
             searchParsed
 
 
-removeFromQueryString : String -> ( String, Int ) -> String
-removeFromQueryString queryString ( key, index ) =
+removeFromQueryString : String -> ( String, String ) -> String
+removeFromQueryString queryString ( key, val ) =
     queryString
         |> parseParams
-        |> removeFromSearchParsed ( key, index )
+        |> removeFromSearchParsed ( key, val )
         |> searchParsedToQueryString
 
 
@@ -105,8 +108,15 @@ searchParsedToQueryString searchParsed =
         getParamList key =
             Maybe.withDefault [] (Dict.get key searchParsed)
 
+        countriesPart =
+            List.foldl
+                (\countryId accum -> accum ++ "&countries[]=" ++ countryId)
+                ""
+                (getParamList "countries")
+                |> String.dropLeft 1
+
         activityPart =
-            "activity[]="
+            "&activity[]="
                 ++ case 0 !! (getParamList "activity") of
                     Just activity ->
                         activity
@@ -114,16 +124,10 @@ searchParsedToQueryString searchParsed =
                     Nothing ->
                         ""
 
-        countriesPart =
-            List.foldr
-                (\categoryId accum -> accum ++ "&countries[]=" ++ categoryId)
-                ""
-                (getParamList "countries")
-
         categoriesPart =
-            List.foldr
+            List.foldl
                 (\categoryId accum -> accum ++ "&categories[]=" ++ categoryId)
                 ""
                 (getParamList "categories")
     in
-        activityPart ++ countriesPart ++ categoriesPart
+        countriesPart ++ activityPart ++ categoriesPart
