@@ -10,7 +10,7 @@ type alias FeedbackResults =
 
 
 type FeedbackType
-    = RejectSnippet SnippetId
+    = SuggestSnippet SnippetId
 
 
 type alias SnippetId =

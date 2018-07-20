@@ -56,7 +56,7 @@ type Msg
     | SetActiveCategory CategoryId
     | FilterTextOnInput String
     | OnQueryUpdate
-    | SnippetRejectClick SnippetFeedbackData
+    | SnippetSuggestClick SnippetFeedbackData
     | FeedbackRequest FeedbackType (WebData FeedbackResults)
     | AnalyticsEventRequest AnalyticsEvent
     | CategoryRemoveClick CategoryId

@@ -13,7 +13,7 @@ import Model
             , ActivityMenuFeedbackToggleClick
             , CategoryMenuFeedbackToggleClick
             , CategoryFeedbackClick
-            , SnippetRejectClick
+            , SnippetSuggestClick
             )
         )
 import RemoteData exposing (RemoteData(..))
@@ -81,7 +81,7 @@ view model =
             , button
                 [ type_ "button"
                 , class baseButtonClass
-                , onClick <| SnippetRejectClick snippetData
+                , onClick <| SnippetSuggestClick snippetData
                 ]
                 [ text "Remove snippet from category" ]
             , p [ class "f5 mb3" ] [ text "OR" ]
@@ -95,7 +95,7 @@ view model =
             , button
                 [ disabled isDisabled
                 , submitButtonClass
-                , onClick <| SnippetRejectClick snippetData
+                , onClick <| SnippetSuggestClick snippetData
                 ]
                 [ text "Submit" ]
             ]

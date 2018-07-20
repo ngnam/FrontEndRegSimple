@@ -540,7 +540,7 @@ update msg model =
                 , Navigation.modifyUrl ("/#/query?" ++ newQueryString)
                 )
 
-        SnippetRejectClick snippetFeedbackData ->
+        SnippetSuggestClick snippetFeedbackData ->
             case snippetFeedbackData of
                 Nothing ->
                     ( model, Cmd.none )
@@ -568,7 +568,7 @@ update msg model =
                             , dialog = NoDialog
                             , snippetFeedback = initialSnippetFeedback
                           }
-                        , FeedbackDecoder.requestCmd model (RejectSnippet snippetId)
+                        , FeedbackDecoder.requestCmd model (SuggestSnippet snippetId)
                         )
 
         FeedbackRequest feedbackType results ->

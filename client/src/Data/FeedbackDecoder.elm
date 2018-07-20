@@ -16,7 +16,7 @@ import Encoders
 feedbackEndpoint : FeedbackType -> String
 feedbackEndpoint feedbackType =
     case feedbackType of
-        RejectSnippet snippetId ->
+        SuggestSnippet snippetId ->
             "/snippet/" ++ snippetId ++ "/suggest/"
 
 
