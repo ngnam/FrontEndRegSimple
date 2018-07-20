@@ -17,7 +17,7 @@ feedbackEndpoint : FeedbackType -> String
 feedbackEndpoint feedbackType =
     case feedbackType of
         RejectSnippet snippetId ->
-            "/snippet/" ++ snippetId ++ "/reject/"
+            "/snippet/" ++ snippetId ++ "/suggest/"
 
 
 request : Model -> FeedbackType -> Http.Request FeedbackResults

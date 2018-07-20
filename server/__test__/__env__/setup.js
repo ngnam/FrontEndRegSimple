@@ -6,7 +6,7 @@ import taxonomyFixture from './fixtures/taxonomy.js';
 import countriesFixture from './fixtures/countries.js';
 import userFixture from './fixtures/user.js';
 import passwordlessFixture from './fixtures/passwordless.js';
-import rejectSnippetFixture from './fixtures/reject-snippet.js';
+import suggestSnippetFixture from './fixtures/suggest-snippet.js';
 
 module.exports = async () => {
   const emailService = { send: () => null };
@@ -16,7 +16,7 @@ module.exports = async () => {
       Promise.resolve({ data: queryResultsFixture }),
     fetchCountries: () => Promise.resolve({ data: countriesFixture }),
     fetchTaxonomy: () => Promise.resolve({ data: taxonomyFixture }),
-    rejectSnippet: () => Promise.resolve({ data: rejectSnippetFixture })
+    feedbackSnippet: () => Promise.resolve({ data: suggestSnippetFixture })
   };
   const userService = {
     getUserByEmail: email =>
