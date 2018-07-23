@@ -32,8 +32,6 @@ export default ({ config, searchApiService }) => async (req, res, next) => {
       })
     );
 
-    console.log('sdfds', responses[0]);
-
     res.json({ data: responses });
   } catch (err) {
     console.log(err);

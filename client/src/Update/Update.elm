@@ -25,7 +25,7 @@ import FeedbackDecoder
 import Ports exposing (copy)
 import Json.Encode exposing (encode, null)
 import Encoders
-import Tuple exposing (second)
+import Tuple
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
@@ -447,7 +447,7 @@ update msg model =
                     getCountrySelect 1 model
 
                 countryId =
-                    second categoryCountry
+                    Tuple.second categoryCountry
 
                 newCountrySelect =
                     if countrySelect1.selected == Just countryId then
