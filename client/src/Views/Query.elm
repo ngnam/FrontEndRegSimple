@@ -7,7 +7,7 @@ import QueryNavBar
 import QuerySideBar
 import SelectedCategories
 import QueryResultList
-import CategorySelect exposing (getCategoryById)
+import Helpers.AppData exposing (getCategoryById)
 import Helpers.CountrySelect exposing (getSelectedCountry, getSelectedCountryIds)
 import Helpers.QueryString exposing (queryValidation)
 import Validation exposing (Validation(..))
@@ -33,7 +33,7 @@ viewHeader name description =
 view : Model -> Html Msg
 view model =
     let
-        { accordionsOpen, appData, queryResults, session } =
+        { accordionsOpen, appData, queryResults, session, snippetFeedback } =
             model
 
         countryIds =
@@ -85,10 +85,11 @@ view model =
                                                             { accordionsOpen = accordionsOpen
                                                             , queryResult = countryCompareResults
                                                             , isCountryCompare = isCountryCompare
-                                                            , countries = appData.countries
                                                             , categoryCountry = categoryCountry
                                                             , session = session
                                                             , countryId = countryId
+                                                            , snippetFeedback = snippetFeedback
+                                                            , appData = appData
                                                             }
 
                                                     _ ->

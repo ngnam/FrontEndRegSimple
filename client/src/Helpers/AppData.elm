@@ -1,11 +1,33 @@
-module Helpers.AppData exposing (getActivities, getCategories, getCountries, getCountriesDict, getCountryName)
+module Helpers.AppData
+    exposing
+        ( getActivities
+        , getCategories
+        , getCountries
+        , getCountriesDict
+        , getCountryName
+        , getActivityName
+        , getCategoryById
+        , getCategoriesFromIds
+        , emptyCategory
+        )
 
-import DataTypes exposing (AppDataItem, Taxonomy, AppDataChildren(..), CountryId, CountryName, CountriesDictList)
-import ActivitySelect exposing (Activity, ActivityId)
 import CountrySelect exposing (Country)
 import Util exposing ((!!))
 import Dict
 import DictList
+import DataTypes
+    exposing
+        ( AppDataItem
+        , Taxonomy
+        , AppDataChildren(..)
+        , CountryId
+        , CountryName
+        , CountriesDictList
+        , Activity
+        , ActivityId
+        , CategoryId
+        , Category
+        )
 
 
 removeChildren : List Taxonomy -> List AppDataItem
@@ -59,6 +81,28 @@ getCategories taxonomy activityId =
         |> removeChildren
 
 
+getCategoryById : List Category -> CategoryId -> Category
+getCategoryById categories id =
+    Maybe.withDefault emptyCategory (Dict.get id (toDict categories))
+
+
+getCategoriesFromIds : List CategoryId -> List Category -> List Category
+getCategoriesFromIds ids categories =
+    List.map (getCategoryById categories) ids
+
+
+emptyCategory : Category
+emptyCategory =
+    { name = "", id = "", enabled = False, description = "" }
+
+
+toDict : List Category -> Dict.Dict String Category
+toDict categories =
+    categories
+        |> List.map (\category -> ( category.id, category ))
+        |> Dict.fromList
+
+
 getCountries : List ( CountryId, List CountryName ) -> List Country
 getCountries countryList =
     countryList
@@ -86,3 +130,21 @@ getCountryName countryId countriesDictList =
     DictList.get countryId countriesDictList
         |> Maybe.andThen List.head
         |> Maybe.withDefault ""
+
+
+getActivityName : Maybe ActivityId -> List Activity -> String
+getActivityName maybeId activities =
+    let
+        defaultButtonText =
+            "Choose an Activity"
+    in
+        case maybeId of
+            Just id ->
+                activities
+                    |> List.filter (\activity -> activity.id == id)
+                    |> List.head
+                    |> Maybe.map .name
+                    |> Maybe.withDefault defaultButtonText
+
+            Nothing ->
+                defaultButtonText

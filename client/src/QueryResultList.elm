@@ -8,39 +8,48 @@ import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 import Set
 import Util exposing (boolStr, viewIf, (!!))
-import DataTypes exposing (QueryResult, AccordionsOpen, CountriesDictList, CountryId, Session, Role(..), CategoryCountry)
+import DataTypes exposing (QueryResult, AccordionsOpen, CountryId, Session, Role(..), CategoryCountry, AppData, SnippetFeedback)
 import Helpers.AppData exposing (getCountryName)
 import Helpers.Session exposing (isMinRole)
+import Dialog.Dialog as Dialog
+import Dialog.SnippetFeedback as SnippetFeedbackDialog
 
 
 type alias ViewModel =
     { accordionsOpen : AccordionsOpen
     , queryResult : QueryResult
     , isCountryCompare : Bool
-    , countries : CountriesDictList
     , categoryCountry : CategoryCountry
     , countryId : CountryId
     , session : Session
+    , appData : AppData
+    , snippetFeedback : SnippetFeedback
     }
 
 
 view : ViewModel -> Html Msg
 view viewModel =
     let
-        { queryResult, isCountryCompare, accordionsOpen, countries, categoryCountry, countryId, session } =
+        { queryResult, isCountryCompare, accordionsOpen, categoryCountry, countryId, session, snippetFeedback, appData } =
             viewModel
+
+        dialogViewModel =
+            { snippetFeedback = snippetFeedback, appData = appData }
 
         { matches, totalMatches } =
             queryResult
 
         countryName =
-            getCountryName countryId countries
+            getCountryName countryId appData.countries
 
         headingText =
             "Showing " ++ toString (List.length matches) ++ " of " ++ toString (totalMatches) ++ " matches"
 
         flagClass =
             "f5 br-100 mr2 w1 h1 flag-icon flag-icon-squared flag-icon-" ++ String.toLower countryId
+
+        snippetFeedbackDialog =
+            SnippetFeedbackDialog.view dialogViewModel
     in
         div [ class "bg-white shadow-2 w-100 ph4 pv3 relative" ]
             [ header []
@@ -63,8 +72,8 @@ view viewModel =
                     )
                 ]
             , ul [ class "list f5" ]
-                (List.indexedMap
-                    (\matchIndex match ->
+                (List.map
+                    (\match ->
                         let
                             emptyBody =
                                 { tags = []
@@ -137,12 +146,12 @@ view viewModel =
                                         ]
                                     , viewIf (isMinRole RoleEditor session)
                                         (button
-                                            [ class "icon icon--close-small br-100 bg-white ba absolute top-0 right-0 ma1 h1 w1 ba b--moon-gray"
-                                            , onClick <|
-                                                SnippetRejectClick ( snippet.id, categoryCountry )
+                                            [ class "icon icon--menu-dots icon--menu-dots-grey absolute top-0 right-0 ma1 h1 w1 bg-mid-gray bn"
+                                            , onClick (SnippetFeedbackDialogOpenClick (Just ( snippet.id, categoryCountry )))
                                             ]
                                             []
                                         )
+                                    , viewIf snippetFeedback.dialogOpen (Dialog.view snippetFeedbackDialog)
                                     ]
                                 ]
                     )

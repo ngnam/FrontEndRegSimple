@@ -1,4 +1,4 @@
-module Model exposing (Msg(..), Model, Flags, init, initialModel)
+module Model exposing (Msg(..), Model, Flags, init, initialModel, initialSnippetFeedback)
 
 import Navigation
 import Debouncer
@@ -8,7 +8,6 @@ import ActivitySelect
 import CategorySelect
 import Helpers.Routing exposing (parseLocation)
 import Dict exposing (Dict)
-import DictList exposing (DictList)
 import Set
 import RemoteData exposing (RemoteData(..), WebData)
 import Json.Decode exposing (Decoder, Value, decodeString, decodeValue, string, bool)
@@ -30,8 +29,11 @@ import DataTypes
         , FeedbackType
         , AnalyticsEvent
         , Session
+        , ActivityId
         , CategoryId
         , CategoryCountry
+        , SnippetFeedback
+        , SnippetFeedbackData
         )
 import Decoders
 
@@ -53,13 +55,19 @@ type Msg
     | SetActiveCategory CategoryId
     | FilterTextOnInput String
     | OnQueryUpdate
-    | SnippetRejectClick ( SnippetId, CategoryCountry )
+    | SnippetSuggestClick SnippetFeedbackData
     | FeedbackRequest FeedbackType (WebData FeedbackResults)
     | AnalyticsEventRequest AnalyticsEvent
     | CategoryRemoveClick CategoryId
     | CategorySubMenuClick CategoryId
     | AccordionToggleClick SnippetId
     | QueryResultListRemoveClick CategoryCountry
+    | SnippetFeedbackDialogOpenClick SnippetFeedbackData
+    | SnippetFeedbackDialogCloseClick
+    | ActivityFeedbackClick ActivityId
+    | ActivityMenuFeedbackToggleClick
+    | CategoryFeedbackClick CategoryId
+    | CategoryMenuFeedbackToggleClick
     | Copy String
     | LogoutClick
     | LogoutOnResponse (WebData String)
@@ -97,6 +105,18 @@ type alias Model =
     , loginCode : String
     , loginCodeResponse : WebData User
     , session : Session
+    , snippetFeedback : SnippetFeedback
+    }
+
+
+initialSnippetFeedback : SnippetFeedback
+initialSnippetFeedback =
+    { activityId = ""
+    , activityMenuOpen = False
+    , categoryIds = []
+    , categoryMenuOpen = False
+    , snippetData = Nothing
+    , dialogOpen = False
     }
 
 
@@ -135,6 +155,7 @@ initialModel =
         }
     , config = { apiBaseUrl = "", clientBaseUrl = "" }
     , session = Nothing
+    , snippetFeedback = initialSnippetFeedback
     }
 
 

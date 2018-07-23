@@ -10,7 +10,7 @@ type alias FeedbackResults =
 
 
 type FeedbackType
-    = RejectSnippet SnippetId
+    = SuggestSnippet SnippetId
 
 
 type alias SnippetId =
@@ -21,6 +21,60 @@ type InputAlignment
     = Left
     | Right
     | Center
+
+
+type alias ActivityId =
+    TaxonomyId
+
+
+type alias CategoryId =
+    TaxonomyId
+
+
+type alias Index =
+    Int
+
+
+type alias Activity =
+    AppDataItem
+
+
+type alias Category =
+    AppDataItem
+
+
+type alias SnippetFeedbackData =
+    Maybe ( SnippetId, CategoryCountry )
+
+
+type alias SnippetFeedback =
+    { activityId : ActivityId
+    , activityMenuOpen : Bool
+    , categoryIds : List CategoryId
+    , categoryMenuOpen : Bool
+    , snippetData : SnippetFeedbackData
+    , dialogOpen : Bool
+    }
+
+
+type alias SnippetDialogModel =
+    { appData : AppData
+    , snippetFeedback : SnippetFeedback
+    }
+
+
+type alias ActivityMenuFeedbackModel =
+    { options : List Activity
+    , selected : ActivityId
+    , activityMenuOpen : Bool
+    }
+
+
+type alias CategoryMenuFeedbackModel =
+    { options : List Category
+    , selected : List CategoryId
+    , categoryMenuOpen : Bool
+    }
 
 
 type alias AccordionsOpen =
@@ -67,10 +121,6 @@ type alias Session =
 
 type alias User =
     { id : UserId, email : Email, role : Role }
-
-
-type alias CategoryId =
-    TaxonomyId
 
 
 type alias CategoryCountry =

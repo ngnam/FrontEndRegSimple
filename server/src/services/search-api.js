@@ -32,16 +32,17 @@ const createSearchApiService = ({ config }) => {
     });
   };
 
-  const rejectSnippet = async ({
+  const feedbackSnippet = async ({
     snippetId,
     userId,
     categories,
-    countries
+    countries,
+    suggestedCategories
   }) => {
     return axios({
       method: 'PUT',
-      url: `${REGSIMPLE_SEARCH_API}/reject/${snippetId}`,
-      data: { user_id: userId, categories, countries },
+      url: `${REGSIMPLE_SEARCH_API}/feedback/${snippetId}`,
+      data: { user_id: userId, categories, countries, suggestedCategories },
       headers: { 'Content-Type': 'application/json' },
       auth: {
         username: SEARCH_API_USERNAME,
@@ -54,7 +55,7 @@ const createSearchApiService = ({ config }) => {
     fetchResults,
     fetchCountries,
     fetchTaxonomy,
-    rejectSnippet
+    feedbackSnippet
   };
 };
 

@@ -1,1 +1,1 @@
-export const FEEDBACK_REJECT = 'reject';
+export const FEEDBACK_SUGGEST = 'suggest';

@@ -2,13 +2,9 @@ module CategorySelect
     exposing
         ( Model
         , Msg
-        , Category
-        , emptyCategory
         , initialModel
         , update
         , view
-        , getCategoriesFromIds
-        , getCategoryById
         )
 
 import Html exposing (..)
@@ -17,8 +13,8 @@ import Html.Attributes.Aria exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Json
 import Util exposing (..)
-import DataTypes exposing (AppDataItem, CategoryId, InputAlignment(..))
-import Dict
+import DataTypes exposing (AppDataItem, InputAlignment(..), Category, CategoryId)
+import Helpers.AppData exposing (emptyCategory, getCategoryById)
 
 
 -- MODEL --
@@ -47,32 +43,6 @@ initialModel =
 
 type alias Config =
     { inputAlignment : InputAlignment, loadingButtonInner : Maybe (Html Msg) }
-
-
-type alias Category =
-    AppDataItem
-
-
-emptyCategory : Category
-emptyCategory =
-    { name = "", id = "", enabled = False, description = "" }
-
-
-toDict : List Category -> Dict.Dict String Category
-toDict categories =
-    categories
-        |> List.map (\category -> ( category.id, category ))
-        |> Dict.fromList
-
-
-getCategoryById : List Category -> CategoryId -> Category
-getCategoryById categories id =
-    Maybe.withDefault emptyCategory (Dict.get id (toDict categories))
-
-
-getCategoriesFromIds : List CategoryId -> List Category -> List Category
-getCategoriesFromIds ids categories =
-    List.map (getCategoryById categories) ids
 
 
 onKeyDown : Model -> Attribute Msg
