@@ -54,11 +54,7 @@ type alias AppData =
 
 
 type alias SearchParsed =
-    Dict.Dict String (List String)
-
-
-type alias QueryResults =
-    { results : List QueryResult }
+    Dict String (List String)
 
 
 type alias Email =
@@ -71,6 +67,18 @@ type alias Session =
 
 type alias User =
     { id : UserId, email : Email, role : Role }
+
+
+type alias CategoryId =
+    TaxonomyId
+
+
+type alias CategoryCountry =
+    ( CategoryId, CountryId )
+
+
+type alias QueryResults =
+    DictList CategoryCountry QueryResult
 
 
 type alias QueryResult =

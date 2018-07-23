@@ -8,11 +8,11 @@ import QuerySideBar
 import SelectedCategories
 import QueryResultList
 import CategorySelect exposing (getCategoryById)
-import Helpers.CountrySelect exposing (getSelectedCountry)
+import Helpers.CountrySelect exposing (getSelectedCountry, getSelectedCountryIds)
 import Helpers.QueryString exposing (queryValidation)
 import Validation exposing (Validation(..))
 import RemoteData exposing (RemoteData(..))
-import DataTypes exposing (Role(..))
+import DictList
 
 
 viewValidationText : String -> Html msg
@@ -36,16 +36,22 @@ view model =
         { accordionsOpen, appData, queryResults, session } =
             model
 
+        countryIds =
+            getSelectedCountryIds model
+
+        categoryId =
+            Maybe.withDefault "" model.activeCategory
+
         { name, description } =
-            getCategoryById model.categorySelect.options (Maybe.withDefault "" model.activeCategory)
+            getCategoryById model.categorySelect.options categoryId
+
+        countryCompareList =
+            List.map
+                (\countryId -> ( categoryId, countryId ))
+                countryIds
 
         isCountryCompare =
-            case queryResults of
-                Success query ->
-                    List.length query.results > 1
-
-                _ ->
-                    False
+            List.length countryIds > 1
 
         resultsContainerClass =
             classList
@@ -62,24 +68,33 @@ view model =
                     , div [ resultsContainerClass ]
                         [ viewHeader name description
                         , case ( queryValidation model, queryResults, appData ) of
-                            ( Valid, Success queryResults, Success appData ) ->
+                            ( Valid, Success results, Success appData ) ->
                                 (div [ class "flex flex-row" ]
-                                    (List.indexedMap
-                                        (\index queryResult ->
-                                            QueryResultList.view
-                                                { accordionsOpen = accordionsOpen
-                                                , queryResult = queryResult
-                                                , isCountryCompare = isCountryCompare
-                                                , countries = appData.countries
-                                                , resultIndex = index
-                                                , session = session
-                                                , countryId =
-                                                    Maybe.withDefault
-                                                        ""
-                                                        (getSelectedCountry index model)
-                                                }
+                                    (List.map
+                                        (\categoryCountry ->
+                                            let
+                                                countryCompareResults =
+                                                    DictList.get categoryCountry results
+
+                                                countryId =
+                                                    Tuple.second categoryCountry
+                                            in
+                                                case countryCompareResults of
+                                                    Just countryCompareResults ->
+                                                        QueryResultList.view
+                                                            { accordionsOpen = accordionsOpen
+                                                            , queryResult = countryCompareResults
+                                                            , isCountryCompare = isCountryCompare
+                                                            , countries = appData.countries
+                                                            , categoryCountry = categoryCountry
+                                                            , session = session
+                                                            , countryId = countryId
+                                                            }
+
+                                                    _ ->
+                                                        text "Well this is embarrassing! We can't seem to find your search results"
                                         )
-                                        queryResults.results
+                                        countryCompareList
                                     )
                                 )
 

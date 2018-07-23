@@ -57,6 +57,7 @@
     "postcss-import": "^11.1.0",
     "pre-commit": "^1.2.2",
     "prettier": "1.12.1",
+    "qs": "^6.5.2",
     "supertest": "^3.1.0",
     "tachyons-custom": "^4.9.4",
     "yargs": "^12.0.1"

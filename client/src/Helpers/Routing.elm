@@ -1,15 +1,18 @@
 module Helpers.Routing exposing (parseLocation, parseParams, onUrlChange)
 
 import Navigation exposing (Location)
-import Util exposing (toKeyValuePair, toDict, (!!))
-import Dict exposing (Dict)
+import Util exposing (toKeyValuePair, toDict, (!!), toDictList)
+import DataTypes exposing (SearchParsed)
+import Dict
 
 
 onPageLoad model =
     case model.location.hash of
         "#/query" ->
             { model
-                | activeCategory = 0 !! model.categorySelect.selected
+                | activeCategory =
+                    Dict.get "categories" model.search
+                        |> Maybe.andThen ((!!) 0)
             }
 
         _ ->
@@ -31,7 +34,7 @@ onUrlChange location model =
         onPageLoad modelWithParsedLocation
 
 
-parseParams : String -> Dict String (List String)
+parseParams : String -> SearchParsed
 parseParams queryString =
     queryString
         |> String.dropLeft 1

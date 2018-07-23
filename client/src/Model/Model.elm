@@ -5,9 +5,10 @@ import Debouncer
 import Time
 import CountrySelect exposing (Country)
 import ActivitySelect
-import CategorySelect exposing (CategoryId)
+import CategorySelect
 import Helpers.Routing exposing (parseLocation)
 import Dict exposing (Dict)
+import DictList exposing (DictList)
 import Set
 import RemoteData exposing (RemoteData(..), WebData)
 import Json.Decode exposing (Decoder, Value, decodeString, decodeValue, string, bool)
@@ -29,6 +30,8 @@ import DataTypes
         , FeedbackType
         , AnalyticsEvent
         , Session
+        , CategoryId
+        , CategoryCountry
         )
 import Decoders
 
@@ -50,13 +53,13 @@ type Msg
     | SetActiveCategory CategoryId
     | FilterTextOnInput String
     | OnQueryUpdate
-    | SnippetRejectClick ( SnippetId, Int )
+    | SnippetRejectClick ( SnippetId, CategoryCountry )
     | FeedbackRequest FeedbackType (WebData FeedbackResults)
     | AnalyticsEventRequest AnalyticsEvent
     | CategoryRemoveClick CategoryId
     | CategorySubMenuClick CategoryId
     | AccordionToggleClick SnippetId
-    | QueryResultListRemoveClick Int
+    | QueryResultListRemoveClick CategoryCountry
     | Copy String
     | LogoutClick
     | LogoutOnResponse (WebData String)

@@ -10,7 +10,7 @@ import QueryDecoder
 import AppDataDecoder
 import CountrySelect
 import ActivitySelect exposing (ActivityId)
-import CategorySelect exposing (CategoryId)
+import CategorySelect
 import Helpers.Routing exposing (onUrlChange)
 import Helpers.QueryString exposing (queryString, removeFromQueryString)
 import Helpers.AppData exposing (getActivities, getCategories, getCountries, getCountriesDict)
@@ -18,13 +18,14 @@ import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
-import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, FeedbackType(..), User)
+import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, FeedbackType(..), User, CategoryId)
 import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
 import Ports exposing (copy)
 import Json.Encode exposing (encode, null)
 import Encoders
+import Tuple
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
@@ -434,7 +435,7 @@ update msg model =
         Copy copyLink ->
             ( { model | categorySubMenuOpen = Nothing }, copy copyLink )
 
-        QueryResultListRemoveClick index ->
+        QueryResultListRemoveClick categoryCountry ->
             let
                 { location, countrySelect } =
                     model
@@ -445,22 +446,20 @@ update msg model =
                 countrySelect2 =
                     getCountrySelect 1 model
 
+                countryId =
+                    Tuple.second categoryCountry
+
                 newCountrySelect =
-                    case index of
-                        0 ->
-                            countrySelect
-                                |> Dict.insert 0 { countrySelect1 | query = countrySelect2.query }
-                                |> Dict.insert 1 { countrySelect2 | query = "" }
-
-                        1 ->
-                            countrySelect
-                                |> Dict.insert 1 { countrySelect2 | query = "" }
-
-                        _ ->
-                            countrySelect
+                    if countrySelect1.selected == Just countryId then
+                        countrySelect
+                            |> Dict.insert 0 { countrySelect1 | query = countrySelect2.query }
+                            |> Dict.insert 1 { countrySelect2 | query = "" }
+                    else
+                        countrySelect
+                            |> Dict.insert 1 { countrySelect2 | query = "" }
 
                 newQueryString =
-                    removeFromQueryString location.search ( "countries", index )
+                    removeFromQueryString location.search ( "countries", countryId )
             in
                 ( { model
                     | countrySelect = newCountrySelect
@@ -468,23 +467,29 @@ update msg model =
                 , Navigation.modifyUrl ("/#/query?" ++ newQueryString)
                 )
 
-        SnippetRejectClick ( snippetId, resultIndex ) ->
+        SnippetRejectClick ( snippetId, categoryCountry ) ->
             let
                 modifiedQueryResults =
                     case model.queryResults of
                         Success queryResults ->
-                            Success
-                                { results =
-                                    (List.map
-                                        (removeSnippetFromResults snippetId)
-                                        queryResults.results
+                            Success <|
+                                DictList.map
+                                    (\categoryCountry_ result ->
+                                        if categoryCountry_ == categoryCountry then
+                                            removeSnippetFromResults snippetId result
+                                        else
+                                            result
                                     )
-                                }
+                                    queryResults
 
                         _ ->
                             model.queryResults
             in
-                ( { model | queryResults = modifiedQueryResults }, FeedbackDecoder.requestCmd model (RejectSnippet snippetId) )
+                ( { model
+                    | queryResults = modifiedQueryResults
+                  }
+                , FeedbackDecoder.requestCmd model (RejectSnippet snippetId)
+                )
 
         FeedbackRequest feedbackType results ->
             ( model
