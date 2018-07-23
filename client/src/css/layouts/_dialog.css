@@ -1,0 +1,6 @@
+.dialog--snippet-feedback .dropdown-menu {
+  max-height: calc(
+    var(--h--main-home) / 2 + var(--h--footer) - var(--h--query-form)
+  );
+  overflow-y: scroll;
+}

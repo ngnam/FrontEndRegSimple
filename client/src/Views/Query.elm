@@ -33,7 +33,7 @@ viewHeader name description =
 view : Model -> Html Msg
 view model =
     let
-        { accordionsOpen, appData, queryResults, session } =
+        { accordionsOpen, appData, queryResults, session, snippetFeedback } =
             model
 
         countryIds =
@@ -85,10 +85,11 @@ view model =
                                                             { accordionsOpen = accordionsOpen
                                                             , queryResult = countryCompareResults
                                                             , isCountryCompare = isCountryCompare
-                                                            , countries = appData.countries
                                                             , categoryCountry = categoryCountry
                                                             , session = session
                                                             , countryId = countryId
+                                                            , snippetFeedback = snippetFeedback
+                                                            , appData = appData
                                                             }
 
                                                     _ ->

@@ -104,4 +104,14 @@ describe('GET /feedback/snippet/:snippetId/:feedbackType', () => {
       .expect(400)
       .end(done);
   });
+  test('200 if empty array suggestedCategories passed', done => {
+    return request(app)
+      .put(
+        '/api/feedback/snippet/id123/suggest?countries[]=GB&categories[]=aml-authority'
+      )
+      .set('Cookie', [adminCookie])
+      .send({ suggestedCategories: [] })
+      .expect(200)
+      .end(done);
+  });
 });

@@ -33,7 +33,7 @@ isMinRole minRole session =
     in
         case session of
             Just user ->
-                indexOf minRole rolesList < indexOf user.role rolesList
+                indexOf minRole rolesList <= indexOf user.role rolesList
 
             Nothing ->
                 False

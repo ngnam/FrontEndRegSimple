@@ -23,11 +23,6 @@ type InputAlignment
     | Center
 
 
-type DialogType
-    = SnippetFeedbackDialog
-    | NoDialog
-
-
 type alias ActivityId =
     TaxonomyId
 
@@ -58,6 +53,13 @@ type alias SnippetFeedback =
     , categoryIds : List CategoryId
     , categoryMenuOpen : Bool
     , snippetData : SnippetFeedbackData
+    , dialogOpen : Bool
+    }
+
+
+type alias SnippetDialogModel =
+    { appData : AppData
+    , snippetFeedback : SnippetFeedback
     }
 
 

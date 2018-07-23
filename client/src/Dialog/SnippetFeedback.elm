@@ -16,12 +16,11 @@ import Model
             , SnippetSuggestClick
             )
         )
-import RemoteData exposing (RemoteData(..))
-import DataTypes exposing (ActivityMenuFeedbackModel, CategoryMenuFeedbackModel)
+import DataTypes exposing (ActivityMenuFeedbackModel, CategoryMenuFeedbackModel, SnippetDialogModel)
 import Util exposing (viewIf, boolStr)
 
 
-view : Model -> Html Msg
+view : SnippetDialogModel -> Html Msg
 view model =
     let
         { activityId, activityMenuOpen, categoryIds, categoryMenuOpen, snippetData } =
@@ -31,24 +30,14 @@ view model =
             model.appData
 
         activityOptions =
-            case data of
-                Success data_ ->
-                    data_
-                        |> .taxonomy
-                        |> getActivities
-
-                _ ->
-                    []
+            data
+                |> .taxonomy
+                |> getActivities
 
         categoryOptions =
-            case data of
-                Success data_ ->
-                    data_
-                        |> .taxonomy
-                        |> \taxonomy -> getCategories taxonomy activityId
-
-                _ ->
-                    []
+            data
+                |> .taxonomy
+                |> \taxonomy -> getCategories taxonomy activityId
 
         activityMenuFeedbackModel =
             { selected = activityId
@@ -76,7 +65,8 @@ view model =
                 , ( "disabled o-30", isDisabled )
                 ]
     in
-        section [ class "flex justify-center items-center flex-column mt3" ]
+        section
+            [ class "flex justify-center items-center flex-column mt3 dialog--snippet-feedback" ]
             [ h1 [ class "f5 w-90 pt1 pb2 mh1 bb b--black-20 mb1" ] [ text "Re-Train RegSimple" ]
             , button
                 [ type_ "button"
@@ -198,7 +188,7 @@ activitySelect model =
 
         menuClass =
             classList
-                [ ( "list bg-white ttc w30rem top-150 ba b--light-gray shadow-1 pv2 ph0 translate-center", True )
+                [ ( "list bg-white ttc w30rem top-150 ba b--light-gray shadow-1 pv2 ph0 translate-center dropdown-menu", True )
                 , ( "absolute z-4", activityMenuOpen )
                 , ( "dn", not activityMenuOpen )
                 ]
@@ -245,7 +235,7 @@ categorySelect { categoryMenuOpen, selected, options } =
 
         menuClass =
             classList
-                [ ( "list bg-white absolute z-4 ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem left-0", categoryMenuOpen )
+                [ ( "list bg-white absolute z-4 ma0 ph0 pv2 list tl bg-white shadow-1 top-150 b--solid b--light-gray ba w30rem left-0 dropdown-menu", categoryMenuOpen )
                 , ( "dn", not categoryMenuOpen )
                 ]
 

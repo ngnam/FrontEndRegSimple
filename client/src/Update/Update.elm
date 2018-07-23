@@ -18,7 +18,7 @@ import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
-import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, CategoryId, FeedbackType(..), User, ActivityId, SnippetFeedback, DialogType(..))
+import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, CategoryId, FeedbackType(..), User, ActivityId, SnippetFeedback)
 import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
@@ -450,20 +450,25 @@ update msg model =
         Copy copyLink ->
             ( { model | categorySubMenuOpen = Nothing }, copy copyLink )
 
-        DialogToggleClick dialogType snippetData ->
+        SnippetFeedbackDialogOpenClick snippetData ->
             let
                 { snippetFeedback } =
                     model
 
                 newSnippetFeedbackModel =
-                    case dialogType of
-                        NoDialog ->
-                            initialSnippetFeedback
-
-                        _ ->
-                            { snippetFeedback | snippetData = snippetData }
+                    { snippetFeedback | dialogOpen = True, snippetData = snippetData }
             in
-                ( { model | dialog = dialogType, snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+                ( { model | snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+
+        SnippetFeedbackDialogCloseClick ->
+            let
+                { snippetFeedback } =
+                    model
+
+                newSnippetFeedbackModel =
+                    { snippetFeedback | dialogOpen = False, snippetData = Nothing }
+            in
+                ( { model | snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
 
         ActivityFeedbackClick activityId ->
             let
@@ -565,7 +570,6 @@ update msg model =
                     in
                         ( { model
                             | queryResults = modifiedQueryResults
-                            , dialog = NoDialog
                             , snippetFeedback = initialSnippetFeedback
                           }
                         , FeedbackDecoder.requestCmd model (SuggestSnippet snippetId)

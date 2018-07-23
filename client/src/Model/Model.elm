@@ -32,7 +32,6 @@ import DataTypes
         , ActivityId
         , CategoryId
         , CategoryCountry
-        , DialogType(..)
         , SnippetFeedback
         , SnippetFeedbackData
         )
@@ -63,7 +62,8 @@ type Msg
     | CategorySubMenuClick CategoryId
     | AccordionToggleClick SnippetId
     | QueryResultListRemoveClick CategoryCountry
-    | DialogToggleClick DialogType SnippetFeedbackData
+    | SnippetFeedbackDialogOpenClick SnippetFeedbackData
+    | SnippetFeedbackDialogCloseClick
     | ActivityFeedbackClick ActivityId
     | ActivityMenuFeedbackToggleClick
     | CategoryFeedbackClick CategoryId
@@ -105,7 +105,6 @@ type alias Model =
     , loginCode : String
     , loginCodeResponse : WebData User
     , session : Session
-    , dialog : DialogType
     , snippetFeedback : SnippetFeedback
     }
 
@@ -117,6 +116,7 @@ initialSnippetFeedback =
     , categoryIds = []
     , categoryMenuOpen = False
     , snippetData = Nothing
+    , dialogOpen = False
     }
 
 
@@ -155,7 +155,6 @@ initialModel =
         }
     , config = { apiBaseUrl = "", clientBaseUrl = "" }
     , session = Nothing
-    , dialog = NoDialog
     , snippetFeedback = initialSnippetFeedback
     }
 

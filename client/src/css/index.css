@@ -63,3 +63,4 @@
 @import './_flags';
 @import './_spinner';
 @import './layouts/_main';
+@import './layouts/_dialog';
