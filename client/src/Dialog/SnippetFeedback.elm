@@ -284,7 +284,7 @@ categorySelect { categoryMenuOpen, selected, options } =
                                 (\index category ->
                                     let
                                         isDisabled =
-                                            not category.enabled || (numberSelected == 2 && not isSelected)
+                                            (numberSelected == 2 && not isSelected)
 
                                         isSelected =
                                             List.member category.id selected
