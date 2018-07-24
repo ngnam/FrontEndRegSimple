@@ -148,10 +148,11 @@ view viewModel =
                                         (button
                                             [ class "icon icon--menu-dots icon--menu-dots-grey absolute top-0 right-0 ma1 h1 w1 bg-mid-gray bn"
                                             , onClick (SnippetFeedbackDialogOpenClick (Just ( snippet.id, categoryCountry )))
+                                            , ariaControls "snippet-feedback-dialog"
                                             ]
                                             []
                                         )
-                                    , viewIf snippetFeedback.dialogOpen (Dialog.view snippetFeedbackDialog)
+                                    , viewIf snippetFeedback.dialogOpen (Dialog.view snippetFeedbackDialog snippetFeedback.dialogOpen)
                                     ]
                                 ]
                     )
