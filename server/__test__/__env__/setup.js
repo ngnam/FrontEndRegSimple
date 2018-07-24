@@ -8,6 +8,7 @@ import countriesFixture from './fixtures/countries.js';
 import userFixture from './fixtures/user.js';
 import passwordlessFixture from './fixtures/passwordless.js';
 import suggestSnippetFixture from './fixtures/suggest-snippet.js';
+import snippetBookmarkFixture from './fixtures/snippet-bookmark.js';
 
 module.exports = async () => {
   const emailService = { send: () => null };
@@ -40,6 +41,10 @@ module.exports = async () => {
   };
   const pdfService = {
     create: () => Buffer.from('<html></html>')
+  }
+  const bookmarksService = {
+    addBookmark: () => snippetBookmarkFixture,
+    removeBookmark: () => snippetBookmarkFixture
   };
   const app = await createApp({
     config,
@@ -49,7 +54,8 @@ module.exports = async () => {
     passwordlessService,
     userService,
     analyticsService,
-    pdfService
+    pdfService,
+    bookmarksService
   });
 
   process.app = app;

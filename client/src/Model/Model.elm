@@ -8,6 +8,7 @@ import ActivitySelect
 import CategorySelect
 import Helpers.Routing exposing (parseLocation)
 import Dict exposing (Dict)
+import DictList exposing (DictList)
 import Set
 import RemoteData exposing (RemoteData(..), WebData)
 import Json.Decode exposing (Decoder, Value, decodeString, decodeValue, string, bool)
@@ -34,6 +35,9 @@ import DataTypes
         , CategoryCountry
         , SnippetFeedback
         , SnippetFeedbackData
+        , SnippetBookmarkKey
+        , SnippetBookmarkMetadata
+        , SnippetBookmarks
         )
 import Decoders
 
@@ -65,6 +69,9 @@ type Msg
     | SnippetFeedbackDialogOpenClick SnippetFeedbackData
     | SnippetFeedbackDialogCloseClick
     | SnippetOptionsMenuSetFocus (Maybe SnippetId)
+    | SnippetBookmarkClick SnippetBookmarkKey Bool
+    | SnippetBookmarkAdd SnippetBookmarkKey SnippetBookmarkMetadata
+    | SnippetBookmarkRemove SnippetBookmarkKey
     | ActivityFeedbackClick ActivityId
     | ActivityMenuFeedbackToggleClick
     | CategoryFeedbackClick CategoryId
@@ -110,6 +117,7 @@ type alias Model =
     , loginCodeResponse : WebData User
     , session : Session
     , snippetFeedback : SnippetFeedback
+    , snippetBookmarks : SnippetBookmarks
     }
 
 
@@ -161,6 +169,7 @@ initialModel =
     , config = { apiBaseUrl = "", clientBaseUrl = "" }
     , session = Nothing
     , snippetFeedback = initialSnippetFeedback
+    , snippetBookmarks = DictList.empty
     }
 
 

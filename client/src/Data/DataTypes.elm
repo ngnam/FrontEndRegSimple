@@ -59,6 +59,19 @@ type alias SnippetFeedback =
     }
 
 
+type alias SnippetBookmarks =
+    DictList SnippetBookmarkKey SnippetBookmarkMetadata
+
+
+type alias SnippetBookmarkKey =
+    ( SnippetId, CategoryId )
+
+
+type alias SnippetBookmarkMetadata =
+    { createdAt : String
+    }
+
+
 type alias SnippetDialogModel =
     { appData : AppData
     , snippetFeedback : SnippetFeedback

@@ -1,8 +1,8 @@
-module Decoders exposing (user)
+module Decoders exposing (user, bookmark)
 
 import Json.Decode exposing (Decoder, string, andThen, succeed, fail)
 import Json.Decode.Pipeline exposing (decode, required)
-import DataTypes exposing (User, Role(..))
+import DataTypes exposing (User, Role(..), SnippetBookmarkMetadata)
 import Helpers.Session exposing (roles)
 import DictList
 
@@ -27,3 +27,9 @@ role =
                     Nothing ->
                         fail <| "Unexpected role: " ++ str
             )
+
+
+bookmark : Decoder SnippetBookmarkMetadata
+bookmark =
+    decode SnippetBookmarkMetadata
+        |> required "createdAt" string

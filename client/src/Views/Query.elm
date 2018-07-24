@@ -33,7 +33,7 @@ viewHeader name description =
 view : Model -> Html Msg
 view model =
     let
-        { accordionsOpen, appData, queryResults, session, snippetFeedback, snippetOptionsMenuOpen } =
+        { accordionsOpen, appData, queryResults, session, snippetFeedback, snippetOptionsMenuOpen, snippetBookmarks } =
             model
 
         countryIds =
@@ -91,6 +91,7 @@ view model =
                                                             , snippetFeedback = snippetFeedback
                                                             , appData = appData
                                                             , snippetOptionsMenuOpen = snippetOptionsMenuOpen
+                                                            , snippetBookmarks = snippetBookmarks
                                                             }
 
                                                     _ ->

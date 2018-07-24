@@ -22,6 +22,7 @@ import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, CategoryId, Feedb
 import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
+import BookmarksDecoder
 import Ports exposing (copy)
 import Json.Encode exposing (encode, null)
 import Encoders
@@ -510,6 +511,28 @@ update msg model =
                     { snippetFeedback | categoryMenuOpen = not snippetFeedback.categoryMenuOpen, activityMenuOpen = False }
             in
                 ( { model | snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+
+        SnippetBookmarkClick snippetBookmarkKey isBookmarked ->
+            case isBookmarked of
+                True ->
+                    ( model, BookmarksDecoder.deleteRequestCmd model snippetBookmarkKey )
+
+                False ->
+                    ( model, BookmarksDecoder.postRequestCmd model snippetBookmarkKey )
+
+        SnippetBookmarkAdd snippetBookmarkKey snippetBookmarkMetadata ->
+            let
+                snippetBookmarks =
+                    DictList.cons snippetBookmarkKey snippetBookmarkMetadata model.snippetBookmarks
+            in
+                ( { model | snippetBookmarks = snippetBookmarks }, Cmd.none )
+
+        SnippetBookmarkRemove snippetBookmarkKey ->
+            let
+                snippetBookmarks =
+                    DictList.remove snippetBookmarkKey model.snippetBookmarks
+            in
+                ( { model | snippetBookmarks = snippetBookmarks }, Cmd.none )
 
         QueryResultListRemoveClick categoryCountry ->
             let

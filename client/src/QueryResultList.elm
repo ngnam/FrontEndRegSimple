@@ -7,13 +7,27 @@ import Html.Attributes.Aria exposing (ariaExpanded, ariaHidden, ariaControls, ar
 import Html.Events exposing (onClick, onBlur)
 import Model exposing (Model, Msg(..))
 import Set
+import DictList
 import Util exposing (boolStr, viewIf, (!!))
-import DataTypes exposing (QueryResult, AccordionsOpen, CountryId, Session, Role(..), CategoryCountry, AppData, SnippetFeedback, SnippetId)
 import Helpers.AppData exposing (getCountryName)
 import Helpers.Session exposing (isMinRole)
 import Dialog.Dialog as Dialog
 import Dialog.SnippetFeedback as SnippetFeedbackDialog
 import OptionsMenu exposing (optionsMenu)
+import DataTypes
+    exposing
+        ( QueryResult
+        , AccordionsOpen
+        , CountryId
+        , Session
+        , Role(..)
+        , CategoryCountry
+        , AppData
+        , SnippetFeedback
+        , SnippetId
+        , SnippetBookmarks
+        , SnippetBookmarkKey
+        )
 
 
 type alias ViewModel =
@@ -26,6 +40,7 @@ type alias ViewModel =
     , appData : AppData
     , snippetFeedback : SnippetFeedback
     , snippetOptionsMenuOpen : Maybe SnippetId
+    , snippetBookmarks : SnippetBookmarks
     }
 
 
@@ -89,10 +104,33 @@ snippetOptionsMenu { snippetOptionsMenuOpen, snippet, categoryCountry, snippetFe
             ]
 
 
+bookmarkIcon : SnippetBookmarkKey -> Bool -> Html Msg
+bookmarkIcon snippetBookmarkKey isBookmarked =
+    let
+        bookmarkToggleClass =
+            classList
+                [ ( "button-reset bg-mid-gray b--none near-black f6 absolute right-0 bottom-0 icon "
+                  , True
+                  )
+                , ( "icon--bookmark-outline"
+                  , not isBookmarked
+                  )
+                , ( "icon--bookmark-fill"
+                  , isBookmarked
+                  )
+                ]
+    in
+        button
+            [ bookmarkToggleClass
+            , onClick <| SnippetBookmarkClick snippetBookmarkKey isBookmarked
+            ]
+            []
+
+
 view : ViewModel -> Html Msg
 view viewModel =
     let
-        { queryResult, isCountryCompare, accordionsOpen, categoryCountry, countryId, session, snippetFeedback, appData, snippetOptionsMenuOpen } =
+        { queryResult, isCountryCompare, accordionsOpen, categoryCountry, countryId, session, snippetFeedback, snippetBookmarks, appData, snippetOptionsMenuOpen } =
             viewModel
 
         dialogViewModel =
@@ -103,6 +141,9 @@ view viewModel =
 
         countryName =
             getCountryName countryId appData.countries
+
+        ( category, _ ) =
+            categoryCountry
 
         headingText =
             "Showing " ++ toString (List.length matches) ++ " of " ++ toString (totalMatches) ++ " matches"
@@ -156,6 +197,12 @@ view viewModel =
                             accordionIsOpen =
                                 Set.member snippet.id accordionsOpen
 
+                            snippetBookmarkKey =
+                                ( snippet.id, category )
+
+                            isBookmarked =
+                                DictList.member snippetBookmarkKey snippetBookmarks
+
                             accordionClass =
                                 classList
                                     [ ( "f7 bg-mid-gray mt1 mb2 br2 b--moon-gray ba pa3 lh-copy relative", True )
@@ -170,13 +217,21 @@ view viewModel =
                                     , ( "icon--bullet-arrow-expanded", accordionIsOpen )
                                     ]
 
+                            resultListItemClass =
+                                classList
+                                    [ ( "near-black mw6 body-text relative"
+                                      , True
+                                      )
+                                    , ( " icon icon--bookmark-fill--list", isBookmarked )
+                                    ]
+
                             accordionHeadingId =
                                 "heading" ++ snippet.id
 
                             accordionId =
                                 "section" ++ snippet.id
                         in
-                            li [ class "near-black mw6 body-text" ]
+                            li [ resultListItemClass ]
                                 [ button
                                     [ accordionToggleClass
                                     , ariaControls accordionId
@@ -222,6 +277,7 @@ view viewModel =
                                         , snippetFeedback = snippetFeedback
                                         , snippetFeedbackDialog = snippetFeedbackDialog
                                         }
+                                    , bookmarkIcon snippetBookmarkKey isBookmarked
                                     ]
                                 ]
                     )
