@@ -82,7 +82,7 @@ setSelectedCountries ids model =
                     Nothing
 
                 Just id ->
-                    Just id
+                    Just (String.toUpper id)
 
                 Nothing ->
                     Nothing
@@ -378,13 +378,8 @@ update msg model =
                 , Cmd.batch [ Cmd.map CategorySelectMsg categorySelectCmd, queryCmd ]
                 )
 
-        CategorySubMenuClick categoryId ->
-            case Just categoryId == model.categorySubMenuOpen of
-                True ->
-                    ( { model | categorySubMenuOpen = Nothing }, Cmd.none )
-
-                _ ->
-                    ( { model | categorySubMenuOpen = Just categoryId }, Cmd.none )
+        SetCategorySubMenuFocus maybeCategoryId ->
+            ( { model | categorySubMenuOpen = maybeCategoryId }, Cmd.none )
 
         CategoryRemoveClick categoryId ->
             let

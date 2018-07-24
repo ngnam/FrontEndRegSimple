@@ -59,7 +59,7 @@ type Msg
     | FeedbackRequest FeedbackType (WebData FeedbackResults)
     | AnalyticsEventRequest AnalyticsEvent
     | CategoryRemoveClick CategoryId
-    | CategorySubMenuClick CategoryId
+    | SetCategorySubMenuFocus (Maybe CategoryId)
     | AccordionToggleClick SnippetId
     | QueryResultListRemoveClick CategoryCountry
     | SnippetFeedbackDialogOpenClick SnippetFeedbackData
@@ -97,7 +97,7 @@ type alias Model =
     , filterText : String
     , categorySubMenuOpen : Maybe CategoryId
     , accordionsOpen : AccordionsOpen
-    , config : { apiBaseUrl : String }
+    , config : Config
     , navCount : Int
     , config : Config
     , loginEmail : Email

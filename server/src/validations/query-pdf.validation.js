@@ -13,8 +13,14 @@ const querySchema = {
       .array()
       .items(joi.string())
       .min(1)
+      .max(1)
       .required(),
-    activity: joi.array().items(joi.string()),
+    activity: joi
+      .array()
+      .items(joi.string())
+      .min(1)
+      .max(2)
+      .required(),
     filterText: joi.string().allow('')
   })
 };

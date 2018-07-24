@@ -1,10 +1,10 @@
-module Helpers.QueryString exposing (queryString, removeFromQueryString, queryValidation)
+module Helpers.QueryString exposing (queryString, removeFromQueryString, queryValidation, queryStringFromRecord)
 
 import Model exposing (Model)
 import Helpers.Routing exposing (parseParams)
-import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
+import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry, getSelectedCountryIds)
 import Dict
-import DataTypes exposing (SearchParsed)
+import DataTypes exposing (SearchParsed, CountryId, CategoryId, ActivityId)
 import Util exposing ((!!))
 import Validation exposing (Validation(..))
 
@@ -45,32 +45,19 @@ queryValidation model =
 queryString : Model -> String
 queryString model =
     let
-        country1 =
-            "countries[]="
-                ++ Maybe.withDefault "" (.selected (getCountrySelect 0 model))
-
-        country2 =
-            case .selected (getCountrySelect 1 model) of
-                Nothing ->
-                    ""
-
-                Just "" ->
-                    ""
-
-                Just a ->
-                    "&countries[]=" ++ a
-
-        activity =
-            "&activity[]="
-                ++ Maybe.withDefault "" model.activitySelect.selected
-
-        categories =
-            List.foldl (\categoryId accum -> accum ++ "&categories[]=" ++ categoryId) "" model.categorySelect.selected
-
-        filterText =
-            "&filterText=" ++ model.filterText
+        countries =
+            List.filterMap
+                identity
+                [ .selected (getCountrySelect 0 model)
+                , .selected (getCountrySelect 1 model)
+                ]
     in
-        country1 ++ country2 ++ activity ++ categories ++ filterText
+        queryStringFromRecord
+            { countries = countries
+            , categories = model.categorySelect.selected
+            , activity = [ Maybe.withDefault "" model.activitySelect.selected ]
+            , filterText = model.filterText
+            }
 
 
 removeFromSearchParsed : ( String, String ) -> SearchParsed -> SearchParsed
@@ -107,27 +94,35 @@ searchParsedToQueryString searchParsed =
     let
         getParamList key =
             Maybe.withDefault [] (Dict.get key searchParsed)
-
-        countriesPart =
-            List.foldl
-                (\countryId accum -> accum ++ "&countries[]=" ++ countryId)
-                ""
-                (getParamList "countries")
-                |> String.dropLeft 1
-
-        activityPart =
-            "&activity[]="
-                ++ case 0 !! (getParamList "activity") of
-                    Just activity ->
-                        activity
-
-                    Nothing ->
-                        ""
-
-        categoriesPart =
-            List.foldl
-                (\categoryId accum -> accum ++ "&categories[]=" ++ categoryId)
-                ""
-                (getParamList "categories")
     in
-        countriesPart ++ activityPart ++ categoriesPart
+        queryStringFromRecord
+            { countries = getParamList "countries"
+            , activity = getParamList "activity"
+            , categories = getParamList "categories"
+            , filterText = ""
+            }
+
+
+queryStringFromRecord :
+    { countries : List CountryId
+    , categories : List CategoryId
+    , activity : List ActivityId
+    , filterText : String
+    }
+    -> String
+queryStringFromRecord { countries, categories, activity, filterText } =
+    let
+        makePart key list =
+            List.foldl (\id accum -> accum ++ key ++ "[]=" ++ id ++ "&") "" list
+
+        filterTextPart =
+            if filterText == "" then
+                ""
+            else
+                "filterText=" ++ filterText ++ "&"
+    in
+        makePart "countries" countries
+            ++ makePart "activity" activity
+            ++ makePart "categories" categories
+            ++ filterTextPart
+            |> String.dropRight 1

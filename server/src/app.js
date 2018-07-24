@@ -1,8 +1,9 @@
-import path from 'path';
 import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+
+import { PRODUCTION } from './constants/environments';
 
 import createEmailService from './services/email';
 import createSearchApiService from './services/search-api';
@@ -11,7 +12,7 @@ import createPasswordlessService from './services/passwordless';
 import createUserService from './services/user';
 import createJwtService from './services/jwt';
 import createAnalyticsService from './services/analytics';
-import { PRODUCTION } from './constants/environments';
+import createPdfService from './services/pdf';
 
 import cors from './middleware/cors.middleware';
 import errorHandler from './middleware/error-handling.middleware';
@@ -26,7 +27,8 @@ const createApp = async function({
   passwordlessService,
   dbClient,
   jwtService,
-  analyticsService
+  analyticsService,
+  pdfService
 }) {
   try {
     emailService = emailService || (await createEmailService({ config }));
@@ -41,17 +43,14 @@ const createApp = async function({
     jwtService = jwtService || createJwtService({ config });
     analyticsService =
       analyticsService || createAnalyticsService({ config })(dbClient);
+    pdfService = pdfService || createPdfService({ config });
 
     const app = express();
 
-    const { SESSION_SECRET } = config;
-    const publicDir =
-      process.env.NODE_ENV === PRODUCTION
-        ? path.join(__dirname, '..', 'client')
-        : path.join(__dirname, '..', '..', 'client', 'public');
+    const { SESSION_SECRET, PUBLIC_DIR_PATH } = config;
 
     app.use(morgan('tiny'));
-    app.use(express.static(publicDir));
+    app.use(express.static(PUBLIC_DIR_PATH));
     app.use(cookieParser());
     app.use(bodyParser.json());
     app.use(cors());
@@ -63,7 +62,8 @@ const createApp = async function({
         searchApiService,
         userService,
         jwtService,
-        analyticsService
+        analyticsService,
+        pdfService
       })
     );
     app.use(errorHandler());

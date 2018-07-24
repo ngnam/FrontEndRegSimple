@@ -1,11 +1,12 @@
 module SelectedCategories exposing (..)
 
 import Html exposing (Html, section, div, a, button, input, header, img, text, ul, li, p, span)
-import Html.Attributes exposing (id, class, tabindex, value, disabled, classList)
-import Html.Events exposing (onClick)
-import Model exposing (Model, Msg(Copy, CategorySubMenuClick, CategoryRemoveClick))
+import Html.Attributes exposing (id, class, tabindex, value, disabled, classList, href, target)
+import Html.Events exposing (onClick, onFocus, onBlur)
+import Model exposing (Model, Msg(Copy, SetCategorySubMenuFocus, CategoryRemoveClick))
 import Helpers.AppData exposing (emptyCategory, getCategoriesFromIds)
-import Helpers.CountrySelect exposing (getCountrySelect)
+import Helpers.CountrySelect exposing (getSelectedCountryIds)
+import Helpers.QueryString exposing (queryStringFromRecord)
 import RemoteData exposing (RemoteData(..))
 import DataTypes exposing (Category)
 
@@ -26,31 +27,41 @@ subMenu ( model, category ) =
         isDisabled =
             ((List.length (model.categorySelect.selected)) == 1)
 
-        countries =
-            Maybe.withDefault "" (.selected (getCountrySelect 0 model))
-
-        activity =
+        activityId =
             Maybe.withDefault "" model.activitySelect.selected
+
+        queryString =
+            "?"
+                ++ queryStringFromRecord
+                    { countries = getSelectedCountryIds model
+                    , categories = [ category.id ]
+                    , activity = [ activityId ]
+                    , filterText = ""
+                    }
 
         copyLink =
             model.config.clientBaseUrl
-                ++ "/#/query?"
-                ++ "countries[]="
-                ++ countries
-                ++ "&activity[]="
-                ++ activity
-                ++ "&categories[]="
-                ++ category.id
+                ++ "/#/query"
+                ++ queryString
+
+        downloadLink =
+            model.config.apiBaseUrl ++ "/export/query-results.pdf" ++ queryString
 
         submenuButtonClass =
-            "icon icon--category-submenu-btn relative bn tl f7 pv1 pl3 mb1 bg-white w-100"
+            "icon icon--category-submenu-btn relative bn tl f7 pv1 pl3 mb1 bg-white w-100 db near-black no-underline"
     in
-        div [ menuClass ]
+        div
+            [ menuClass
+            , tabindex 0
+            , onFocus (SetCategorySubMenuFocus (Just category.id))
+            , onBlur (SetCategorySubMenuFocus Nothing)
+            ]
             [ header [ class "ttc f7 h1 mv1 flex justify-center items-center dark-gray" ]
                 [ text "Category actions"
                 , button
                     [ class "icon icon--close-small absolute top-0 right-0 w1 h1 ma1 bn bg-white"
-                    , onClick (CategorySubMenuClick category.id)
+                    , onClick (SetCategorySubMenuFocus Nothing)
+                    , onFocus (SetCategorySubMenuFocus (Just category.id))
                     ]
                     []
                 ]
@@ -62,8 +73,23 @@ subMenu ( model, category ) =
                             , ( "icon--copy", True )
                             ]
                         , onClick (Copy copyLink)
+                        , onFocus (SetCategorySubMenuFocus (Just category.id))
+                        , onBlur (SetCategorySubMenuFocus Nothing)
                         ]
-                        [ text "Copy url..." ]
+                        [ text "Copy URL..." ]
+                    ]
+                , li []
+                    [ a
+                        [ classList
+                            [ ( submenuButtonClass, True )
+                            , ( "icon--download", True )
+                            ]
+                        , href downloadLink
+                        , target "_blank"
+                        , onFocus (SetCategorySubMenuFocus (Just category.id))
+                        , onBlur (SetCategorySubMenuFocus Nothing)
+                        ]
+                        [ text "Download as PDF.." ]
                     ]
                 , li []
                     [ button
@@ -73,6 +99,8 @@ subMenu ( model, category ) =
                             ]
                         , disabled isDisabled
                         , onClick (CategoryRemoveClick category.id)
+                        , onFocus (SetCategorySubMenuFocus (Just category.id))
+                        , onBlur (SetCategorySubMenuFocus Nothing)
                         ]
                         [ text "Remove from selected..." ]
                     ]
@@ -109,9 +137,17 @@ categoriesMenu model =
                 in
                     li [ class "relative" ]
                         [ button
-                            [ categoryClass, onClick (Model.SetActiveCategory category.id), tabindex 0 ]
+                            [ categoryClass
+                            , onClick (Model.SetActiveCategory category.id)
+                            , tabindex 0
+                            ]
                             [ buttonInner ]
-                        , button [ categoryMenuDotsClass, onClick (CategorySubMenuClick category.id) ] []
+                        , button
+                            [ categoryMenuDotsClass
+                            , onClick (SetCategorySubMenuFocus (Just category.id))
+                            , onBlur (SetCategorySubMenuFocus Nothing)
+                            ]
+                            []
                         , subMenu ( model, category )
                         ]
             )

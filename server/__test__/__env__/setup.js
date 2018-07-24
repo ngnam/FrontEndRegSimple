@@ -1,5 +1,6 @@
 import config from '../../src/config';
 import createApp from '../../src/app';
+import { multiCategoryCountrySearch } from '../../src/services/search-api';
 
 import queryResultsFixture from './fixtures/query-results.js';
 import taxonomyFixture from './fixtures/taxonomy.js';
@@ -14,6 +15,9 @@ module.exports = async () => {
   const searchApiService = {
     fetchResults: ({ countries }) =>
       Promise.resolve({ data: queryResultsFixture }),
+    multiCategoryCountrySearch: multiCategoryCountrySearch(
+      async ({ countries, categories }) => ({ data: queryResultsFixture })
+    ),
     fetchCountries: () => Promise.resolve({ data: countriesFixture }),
     fetchTaxonomy: () => Promise.resolve({ data: taxonomyFixture }),
     feedbackSnippet: () => Promise.resolve({ data: suggestSnippetFixture })

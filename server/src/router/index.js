@@ -7,6 +7,7 @@ import authenticate from '../middleware/authenticate.middleware';
 import authorise from '../middleware/authorise.middleware';
 
 import querySchema from '../validations/query.validation';
+import queryPdfValidationSchema from '../validations/query-pdf.validation';
 import loginEmailSchema from '../validations/login-email.validation';
 import loginCodeSchema from '../validations/login-code.validation';
 import feedbackSnippetSchema from '../validations/feedback-snippet.validation';
@@ -19,6 +20,7 @@ import query from './query.route';
 import appData from './app-data.route';
 import feedbackSnippet from './feedback-snippet.route';
 import analytics from './analytics.route';
+import queryPdf from './query-pdf.route';
 
 const createRouter = dependencies => {
   const router = Router();
@@ -44,6 +46,12 @@ const createRouter = dependencies => {
     authorise({ minRole: ROLE_EDITOR }),
     validate(feedbackSnippetSchema),
     feedbackSnippet(dependencies)
+  );
+
+  router.get(
+    '/export/query-results.pdf',
+    validate(queryPdfValidationSchema),
+    queryPdf(dependencies)
   );
 
   router.get('/app-data', appData(dependencies));
