@@ -19,8 +19,10 @@ Follow these steps to run the app locally:
   CLIENT_APP_BASE_URL=*******
   REGSIMPLE_SEARCH_API=*******
 ```
-1. To create the necessary database run `psql .......`
-1. To create the necessary table run `psql -U your_username -d regsimpledb -a -f './server/sql/passwordless.sql'`
+1. If you don't have it already download `psql` - https://www.postgresql.org/download/
+1. To create the necessary database run `psql` and then enter `create database regsimpledb;`
+1. Exit the psql shell
+1. To create the necessary tables run `psql -U your_username -d regsimpledb -a -f './server/sql/create-tables.sql'`
 1. To start the node server: `npm run server-dev`
 1. To start elm app: `npm run client-dev`
 1. To compile the css: `npm run css-dev`
@@ -61,3 +63,7 @@ In `./client/src/css/_variables.css` you'll find that we override the default st
 Any custom css goes in `_custom.css`.
 
 Using the script `npm run css-build`, the compiled css is output `style.min.css` to the `./client/public` folder. Then its linked to the `./client/public/index.html` file in the `<head>`
+
+## Logs & Monitoring - https://papertrailapp.com/systems/reg-simple/events
+
+We've connected our heroku app to Papertrail for logging. Any errors that get thrown up are posted to the `app` slack channel every hour.
