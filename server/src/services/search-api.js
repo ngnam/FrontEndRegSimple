@@ -34,11 +34,13 @@ const createSearchApiService = ({ config }) => {
 
   const feedbackSnippet = async ({
     snippetId,
-    userId,
+    user,
     categories,
     countries,
     suggestedCategories
   }) => {
+    const userId = user.isDeveloper ? null : user.id;
+
     return axios({
       method: 'PUT',
       url: `${REGSIMPLE_SEARCH_API}/feedback/${snippetId}`,
