@@ -1,4 +1,4 @@
-module Dialog.SnippetFeedback exposing (..)
+module Dialog.SnippetFeedback exposing (snippetFeedbackDialog)
 
 import Html exposing (Html, Attribute, div, p, h1, section, form, input, text, legend, label, fieldset, button, span)
 import Html.Attributes exposing (id, class, classList, tabindex, for, type_, name, disabled, required, checked)
@@ -12,12 +12,18 @@ import Model
             ( ActivityFeedbackClick
             , ActivityMenuFeedbackToggleClick
             , CategoryMenuFeedbackToggleClick
+            , SnippetFeedbackDialogCloseClick
             , CategoryFeedbackClick
             , SnippetSuggestClick
             )
         )
 import DataTypes exposing (ActivityMenuFeedbackModel, CategoryMenuFeedbackModel, SnippetDialogModel)
 import Util exposing (viewIf, boolStr)
+import Dialog.Dialog exposing (dialog)
+
+
+snippetFeedbackDialog model isOpen =
+    dialog (view model) SnippetFeedbackDialogCloseClick isOpen
 
 
 view : SnippetDialogModel -> Html Msg

@@ -11,8 +11,7 @@ import DictList
 import Util exposing (boolStr, viewIf, (!!))
 import Helpers.AppData exposing (getCountryName)
 import Helpers.Session exposing (isMinRole, isLoggedIn)
-import Dialog.Dialog as Dialog
-import Dialog.SnippetFeedback as SnippetFeedbackDialog
+import Dialog.SnippetFeedback exposing (snippetFeedbackDialog)
 import OptionsMenu exposing (optionsMenu)
 import DataTypes
     exposing
@@ -45,13 +44,16 @@ type alias ViewModel =
     }
 
 
-snippetOptionsMenu { snippetOptionsMenuOpen, snippet, categoryCountry, snippetFeedback, snippetFeedbackDialog } =
+snippetOptionsMenu { snippetOptionsMenuOpen, snippet, categoryCountry, snippetFeedback, appData } =
     let
         isOpen =
             snippetOptionsMenuOpen == Just snippet.id
 
         categoryId =
             Tuple.first categoryCountry
+
+        dialogId =
+            "snippet-" ++ snippet.id ++ "-feedback-dialog"
     in
         optionsMenu
             "Snippet actions"
@@ -81,16 +83,20 @@ snippetOptionsMenu { snippetOptionsMenuOpen, snippet, categoryCountry, snippetFe
                     [ ( OptionsMenu.buttonClass, True )
                     , ( "icon--copy", True )
                     ]
-                , onClick <| SnippetFeedbackDialogOpenClick (Just ( snippet.id, categoryCountry ))
+                , onClick <|
+                    SnippetFeedbackDialogOpenClick
+                        dialogId
+                        (Just ( snippet.id, categoryCountry ))
                 , ariaControls "snippet-feedback-dialog"
                 ]
               , [ text "Reassign snippet" ]
               )
             , ( span
               , []
-              , [ viewIf
+              , [ snippetFeedbackDialog
+                    { snippetFeedback = snippetFeedback, appData = appData }
+                    dialogId
                     snippetFeedback.dialogOpen
-                    (Dialog.view snippetFeedbackDialog snippetFeedback.dialogOpen)
                 ]
               )
             , ( button
@@ -134,9 +140,6 @@ view viewModel =
         { queryResult, isCountryCompare, accordionsOpen, categoryCountry, countryId, user, snippetFeedback, snippetBookmarks, appData, snippetOptionsMenuOpen } =
             viewModel
 
-        dialogViewModel =
-            { snippetFeedback = snippetFeedback, appData = appData }
-
         { matches, totalMatches } =
             queryResult
 
@@ -151,9 +154,6 @@ view viewModel =
 
         flagClass =
             "f5 br-100 mr2 w1 h1 flag-icon flag-icon-squared flag-icon-" ++ String.toLower countryId
-
-        snippetFeedbackDialog =
-            SnippetFeedbackDialog.view dialogViewModel
     in
         div [ class "bg-white shadow-2 w-100 ph4 pv3 relative" ]
             [ header []
@@ -276,7 +276,7 @@ view viewModel =
                                         , snippet = snippet
                                         , categoryCountry = categoryCountry
                                         , snippetFeedback = snippetFeedback
-                                        , snippetFeedbackDialog = snippetFeedbackDialog
+                                        , appData = appData
                                         }
                                     , viewIf (isLoggedIn user) (bookmarkIcon snippetBookmarkKey isBookmarked)
                                     ]

@@ -40,6 +40,7 @@ import DataTypes
         , SnippetBookmarks
         )
 import Decoders
+import Dom
 
 
 type Msg
@@ -66,7 +67,7 @@ type Msg
     | CategoryOptionsMenuSetFocus (Maybe CategoryId)
     | AccordionToggleClick SnippetId
     | QueryResultListRemoveClick CategoryCountry
-    | SnippetFeedbackDialogOpenClick SnippetFeedbackData
+    | SnippetFeedbackDialogOpenClick String SnippetFeedbackData
     | SnippetFeedbackDialogCloseClick
     | SnippetOptionsMenuSetFocus (Maybe SnippetId)
     | SnippetBookmarkClick SnippetBookmarkKey Bool
@@ -82,6 +83,7 @@ type Msg
     | LogoutOnResponse (WebData String)
     | SnippetVoteUpClick ( SnippetId, CategoryId )
     | SnippetVoteDownClick ( SnippetId, CategoryId )
+    | FocusResult (Result Dom.Error ())
     | NoOp
 
 
