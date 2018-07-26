@@ -1,18 +1,15 @@
 import joi from 'joi';
 
-import { FEEDBACK_SUGGEST } from '../constants/feedbackTypes';
-
 import querySchema from './query.validation';
 
-const feedbackSnippetSchema = {
+const feedbackSnippetSuggestSchema = {
   query: querySchema.query,
   params: joi.object().keys({
-    snippetId: joi.string().required(),
-    action: joi.string().only([FEEDBACK_SUGGEST])
+    snippetId: joi.string().required()
   }),
   body: joi.object().keys({
     suggestedCategories: joi.array().items(joi.string())
   })
 };
 
-export default feedbackSnippetSchema;
+export default feedbackSnippetSuggestSchema;

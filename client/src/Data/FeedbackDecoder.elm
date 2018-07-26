@@ -16,8 +16,30 @@ import Encoders
 feedbackEndpoint : FeedbackType -> String
 feedbackEndpoint feedbackType =
     case feedbackType of
-        SuggestSnippet snippetId ->
+        SnippetSuggest ( snippetId, _ ) ->
             "/snippet/" ++ snippetId ++ "/suggest/"
+
+        SnippetVoteUp ( snippetId, _ ) ->
+            "/snippet/" ++ snippetId ++ "/vote/up"
+
+        SnippetVoteDown ( snippetId, _ ) ->
+            "/snippet/" ++ snippetId ++ "/vote/down"
+
+
+
+-- feedbackBody : FeedbackType
+
+
+feedbackBody feedbackType =
+    case feedbackType of
+        SnippetSuggest ( snippetId, categoryIds ) ->
+            Encoders.snippetSuggest categoryIds
+
+        SnippetVoteUp ( snippetId, categoryId ) ->
+            Encoders.snippetVote categoryId
+
+        SnippetVoteDown ( snippetId, categoryId ) ->
+            Encoders.snippetVote categoryId
 
 
 request : Model -> FeedbackType -> Http.Request FeedbackResults
@@ -26,7 +48,7 @@ request model feedbackType =
         { method = "PUT"
         , headers = []
         , url = model.config.apiBaseUrl ++ "/feedback" ++ (feedbackEndpoint feedbackType) ++ model.location.search
-        , body = Http.jsonBody (Encoders.snippetFeedback model.snippetFeedback)
+        , body = Http.jsonBody <| feedbackBody feedbackType
         , expect = Http.expectJson (at [ "data" ] decoder)
         , timeout = Nothing
         , withCredentials = True
