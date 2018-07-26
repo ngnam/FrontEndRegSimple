@@ -93,3 +93,9 @@
 .icon--trash::after {
   background-image: url('../assets/icons/trash.svg');
 }
+.icon--thumbs-up::after {
+  background-image: url('../assets/icons/thumbs-up.svg');
+}
+.icon--thumbs-down::after {
+  background-image: url('../assets/icons/thumbs-down.svg');
+}

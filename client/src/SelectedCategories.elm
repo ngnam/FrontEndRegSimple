@@ -3,26 +3,20 @@ module SelectedCategories exposing (..)
 import Html exposing (Html, section, div, a, button, input, header, img, text, ul, li, p, span)
 import Html.Attributes exposing (id, class, tabindex, value, disabled, classList, href, target)
 import Html.Events exposing (onClick, onFocus, onBlur)
-import Model exposing (Model, Msg(Copy, SetCategorySubMenuFocus, CategoryRemoveClick))
+import Model exposing (Model, Msg(Copy, CategoryOptionsMenuSetFocus, CategoryRemoveClick))
 import Helpers.AppData exposing (emptyCategory, getCategoriesFromIds)
 import Helpers.CountrySelect exposing (getSelectedCountryIds)
 import Helpers.QueryString exposing (queryStringFromRecord)
 import RemoteData exposing (RemoteData(..))
 import DataTypes exposing (Category)
+import OptionsMenu exposing (optionsMenu)
 
 
-subMenu : ( Model, Category ) -> Html Msg
-subMenu ( model, category ) =
+categoryOptionsMenu : ( Model, Category ) -> Html Msg
+categoryOptionsMenu ( model, category ) =
     let
-        subMenuOpen =
+        menuOpen =
             model.categorySubMenuOpen == Just category.id
-
-        menuClass =
-            classList
-                [ ( "shadow-2 absolute top-1 right--3 ba br1 b--moon-gray bg-white z-1 dark-grey", True )
-                , ( "dn", not subMenuOpen )
-                , ( "flex flex-column", subMenuOpen )
-                ]
 
         isDisabled =
             ((List.length (model.categorySelect.selected)) == 1)
@@ -47,64 +41,43 @@ subMenu ( model, category ) =
         downloadLink =
             model.config.apiBaseUrl ++ "/query/pdf" ++ queryString
 
-        submenuButtonClass =
-            "icon icon--category-submenu-btn relative bn tl f7 pv1 pl3 mb1 bg-white w-100 db near-black no-underline"
+        menuButtonClass =
+            OptionsMenu.buttonClass
     in
-        div
-            [ menuClass
-            , tabindex 0
-            , onFocus (SetCategorySubMenuFocus (Just category.id))
-            , onBlur (SetCategorySubMenuFocus Nothing)
-            ]
-            [ header [ class "ttc f7 h1 mv1 flex justify-center items-center dark-gray" ]
-                [ text "Category actions"
-                , button
-                    [ class "icon icon--close-small absolute top-0 right-0 w1 h1 ma1 bn bg-white"
-                    , onClick (SetCategorySubMenuFocus Nothing)
-                    , onFocus (SetCategorySubMenuFocus (Just category.id))
+        optionsMenu
+            "Category actions"
+            menuOpen
+            (CategoryOptionsMenuSetFocus (Just category.id))
+            (CategoryOptionsMenuSetFocus Nothing)
+            [ ( button
+              , [ classList
+                    [ ( menuButtonClass, True )
+                    , ( "icon--copy", True )
                     ]
-                    []
+                , onClick (Copy copyLink)
                 ]
-            , ul [ class "pv1 mh1 bt bb b--black-20 mb1 list tl" ]
-                [ li []
-                    [ button
-                        [ classList
-                            [ ( submenuButtonClass, True )
-                            , ( "icon--copy", True )
-                            ]
-                        , onClick (Copy copyLink)
-                        , onFocus (SetCategorySubMenuFocus (Just category.id))
-                        , onBlur (SetCategorySubMenuFocus Nothing)
-                        ]
-                        [ text "Copy URL..." ]
+              , [ text "Copy URL..." ]
+              )
+            , ( a
+              , [ classList
+                    [ ( menuButtonClass, True )
+                    , ( "icon--download", True )
                     ]
-                , li []
-                    [ a
-                        [ classList
-                            [ ( submenuButtonClass, True )
-                            , ( "icon--download", True )
-                            ]
-                        , href downloadLink
-                        , target "_blank"
-                        , onFocus (SetCategorySubMenuFocus (Just category.id))
-                        , onBlur (SetCategorySubMenuFocus Nothing)
-                        ]
-                        [ text "Download as PDF.." ]
-                    ]
-                , li []
-                    [ button
-                        [ classList
-                            [ ( submenuButtonClass, True )
-                            , ( "icon--trash", True )
-                            ]
-                        , disabled isDisabled
-                        , onClick (CategoryRemoveClick category.id)
-                        , onFocus (SetCategorySubMenuFocus (Just category.id))
-                        , onBlur (SetCategorySubMenuFocus Nothing)
-                        ]
-                        [ text "Remove from selected..." ]
-                    ]
+                , href downloadLink
+                , target "_blank"
                 ]
+              , [ text "Download as PDF..." ]
+              )
+            , ( button
+              , [ classList
+                    [ ( menuButtonClass, True )
+                    , ( "icon--trash", True )
+                    ]
+                , disabled isDisabled
+                , onClick (CategoryRemoveClick category.id)
+                ]
+              , [ text "Remove from selection..." ]
+              )
             ]
 
 
@@ -144,11 +117,11 @@ categoriesMenu model =
                             [ buttonInner ]
                         , button
                             [ categoryMenuDotsClass
-                            , onClick (SetCategorySubMenuFocus (Just category.id))
-                            , onBlur (SetCategorySubMenuFocus Nothing)
+                            , onClick (CategoryOptionsMenuSetFocus (Just category.id))
+                            , onBlur (CategoryOptionsMenuSetFocus Nothing)
                             ]
                             []
-                        , subMenu ( model, category )
+                        , categoryOptionsMenu ( model, category )
                         ]
             )
             (getCategoriesFromIds model.categorySelect.selected model.categorySelect.options)

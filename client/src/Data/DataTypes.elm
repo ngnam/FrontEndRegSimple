@@ -10,7 +10,9 @@ type alias FeedbackResults =
 
 
 type FeedbackType
-    = SuggestSnippet SnippetId
+    = SnippetSuggest ( SnippetId, List CategoryId )
+    | SnippetVoteDown ( SnippetId, CategoryId )
+    | SnippetVoteUp ( SnippetId, CategoryId )
 
 
 type alias SnippetId =

@@ -4,15 +4,15 @@ import Html exposing (Html, text, div, header, h2, h3, span, ul, li, button, p, 
 import Html.Attributes exposing (class, id, href, target, classList)
 import Html.Attributes.Extra exposing (innerHtml)
 import Html.Attributes.Aria exposing (ariaExpanded, ariaHidden, ariaControls, ariaLabelledby, ariaLabel)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onBlur)
 import Model exposing (Model, Msg(..))
 import Set
 import Util exposing (boolStr, viewIf, (!!))
-import DataTypes exposing (QueryResult, AccordionsOpen, CountryId, Session, Role(..), CategoryCountry, AppData, SnippetFeedback)
+import DataTypes exposing (QueryResult, AccordionsOpen, CountryId, Session, Role(..), CategoryCountry, AppData, SnippetFeedback, SnippetId)
 import Helpers.AppData exposing (getCountryName)
 import Helpers.Session exposing (isMinRole)
-import Dialog.Dialog as Dialog
-import Dialog.SnippetFeedback as SnippetFeedbackDialog
+import Dialog.SnippetFeedback exposing (snippetFeedbackDialog)
+import OptionsMenu exposing (optionsMenu)
 
 
 type alias ViewModel =
@@ -24,17 +24,82 @@ type alias ViewModel =
     , session : Session
     , appData : AppData
     , snippetFeedback : SnippetFeedback
+    , snippetOptionsMenuOpen : Maybe SnippetId
     }
+
+
+snippetOptionsMenu { snippetOptionsMenuOpen, snippet, categoryCountry, snippetFeedback, appData } =
+    let
+        isOpen =
+            snippetOptionsMenuOpen == Just snippet.id
+
+        categoryId =
+            Tuple.first categoryCountry
+
+        dialogId =
+            "snippet-" ++ snippet.id ++ "-feedback-dialog"
+    in
+        optionsMenu
+            "Snippet actions"
+            isOpen
+            (SnippetOptionsMenuSetFocus (Just snippet.id))
+            (SnippetOptionsMenuSetFocus Nothing)
+            [ ( button
+              , [ classList
+                    [ ( OptionsMenu.buttonClass, True )
+                    , ( "icon--thumbs-up", True )
+                    ]
+                , onClick <| SnippetVoteUpClick ( snippet.id, categoryId )
+                ]
+              , [ text "Vote up" ]
+              )
+            , ( button
+              , [ classList
+                    [ ( OptionsMenu.buttonClass, True )
+                    , ( "icon--thumbs-down", True )
+                    ]
+                , onClick <| SnippetVoteDownClick ( snippet.id, categoryId )
+                ]
+              , [ text "Vote down" ]
+              )
+            , ( button
+              , [ classList
+                    [ ( OptionsMenu.buttonClass, True )
+                    , ( "icon--copy", True )
+                    ]
+                , onClick <|
+                    SnippetFeedbackDialogOpenClick
+                        dialogId
+                        (Just ( snippet.id, categoryCountry ))
+                , ariaControls "snippet-feedback-dialog"
+                ]
+              , [ text "Reassign snippet" ]
+              )
+            , ( span
+              , []
+              , [ snippetFeedbackDialog
+                    { snippetFeedback = snippetFeedback, appData = appData }
+                    dialogId
+                    snippetFeedback.dialogOpen
+                ]
+              )
+            , ( button
+              , [ classList
+                    [ ( OptionsMenu.buttonClass, True )
+                    , ( "icon--trash", True )
+                    ]
+                , onClick <| SnippetSuggestClick <| Just ( snippet.id, categoryCountry )
+                ]
+              , [ text "Reject snippet" ]
+              )
+            ]
 
 
 view : ViewModel -> Html Msg
 view viewModel =
     let
-        { queryResult, isCountryCompare, accordionsOpen, categoryCountry, countryId, session, snippetFeedback, appData } =
+        { queryResult, isCountryCompare, accordionsOpen, categoryCountry, countryId, session, snippetFeedback, appData, snippetOptionsMenuOpen } =
             viewModel
-
-        dialogViewModel =
-            { snippetFeedback = snippetFeedback, appData = appData }
 
         { matches, totalMatches } =
             queryResult
@@ -47,9 +112,6 @@ view viewModel =
 
         flagClass =
             "f5 br-100 mr2 w1 h1 flag-icon flag-icon-squared flag-icon-" ++ String.toLower countryId
-
-        snippetFeedbackDialog =
-            SnippetFeedbackDialog.view dialogViewModel
     in
         div [ class "bg-white shadow-2 w-100 ph4 pv3 relative" ]
             [ header []
@@ -147,12 +209,19 @@ view viewModel =
                                     , viewIf (isMinRole RoleEditor session)
                                         (button
                                             [ class "icon icon--menu-dots icon--menu-dots-grey absolute top-0 right-0 ma1 h1 w1 bg-mid-gray bn"
-                                            , onClick (SnippetFeedbackDialogOpenClick (Just ( snippet.id, categoryCountry )))
+                                            , onClick (SnippetOptionsMenuSetFocus (Just snippet.id))
+                                            , onBlur (SnippetOptionsMenuSetFocus Nothing)
                                             , ariaControls "snippet-feedback-dialog"
                                             ]
                                             []
                                         )
-                                    , viewIf snippetFeedback.dialogOpen (Dialog.view snippetFeedbackDialog snippetFeedback.dialogOpen)
+                                    , snippetOptionsMenu
+                                        { snippetOptionsMenuOpen = snippetOptionsMenuOpen
+                                        , snippet = snippet
+                                        , categoryCountry = categoryCountry
+                                        , snippetFeedback = snippetFeedback
+                                        , appData = appData
+                                        }
                                     ]
                                 ]
                     )

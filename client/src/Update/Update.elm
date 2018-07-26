@@ -26,6 +26,8 @@ import Ports exposing (copy)
 import Json.Encode exposing (encode, null)
 import Encoders
 import Tuple
+import Dom
+import Task
 
 
 getFromListById : String -> List { a | id : String } -> Maybe { a | id : String }
@@ -378,8 +380,11 @@ update msg model =
                 , Cmd.batch [ Cmd.map CategorySelectMsg categorySelectCmd, queryCmd ]
                 )
 
-        SetCategorySubMenuFocus maybeCategoryId ->
+        CategoryOptionsMenuSetFocus maybeCategoryId ->
             ( { model | categorySubMenuOpen = maybeCategoryId }, Cmd.none )
+
+        SnippetOptionsMenuSetFocus maybeSnippetId ->
+            ( { model | snippetOptionsMenuOpen = maybeSnippetId }, Cmd.none )
 
         CategoryRemoveClick categoryId ->
             let
@@ -445,7 +450,7 @@ update msg model =
         Copy copyLink ->
             ( { model | categorySubMenuOpen = Nothing }, copy copyLink )
 
-        SnippetFeedbackDialogOpenClick snippetData ->
+        SnippetFeedbackDialogOpenClick dialogId snippetData ->
             let
                 { snippetFeedback } =
                     model
@@ -453,7 +458,9 @@ update msg model =
                 newSnippetFeedbackModel =
                     { snippetFeedback | dialogOpen = True, snippetData = snippetData }
             in
-                ( { model | snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+                ( { model | snippetFeedback = newSnippetFeedbackModel }
+                , Dom.focus dialogId |> Task.attempt FocusResult
+                )
 
         SnippetFeedbackDialogCloseClick ->
             let
@@ -567,8 +574,16 @@ update msg model =
                             | queryResults = modifiedQueryResults
                             , snippetFeedback = initialSnippetFeedback
                           }
-                        , FeedbackDecoder.requestCmd model (SuggestSnippet snippetId)
+                        , FeedbackDecoder.requestCmd
+                            model
+                            (SnippetSuggest ( snippetId, model.snippetFeedback.categoryIds ))
                         )
+
+        SnippetVoteUpClick snippetCategory ->
+            ( model, FeedbackDecoder.requestCmd model <| SnippetVoteUp snippetCategory )
+
+        SnippetVoteDownClick snippetCategory ->
+            ( model, FeedbackDecoder.requestCmd model <| SnippetVoteDown snippetCategory )
 
         FeedbackRequest feedbackType results ->
             ( model
@@ -585,6 +600,14 @@ update msg model =
               }
             , Cmd.batch [ removeSession, Navigation.modifyUrl "/#/" ]
             )
+
+        FocusResult result ->
+            case result of
+                Err (Dom.NotFound id) ->
+                    ( model, Cmd.none )
+
+                Ok () ->
+                    ( model, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
