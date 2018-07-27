@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title RegSimple
+    title #{title}
     style.
       @font-face {
         font-family: Metropolis;
@@ -11,7 +11,7 @@ html
       include style.css
 
   body
-    header.header
+    header
       img.logo(src=CLIENT_APP_BASE_URL + '/assets/logos/logo-with-text.png')
     main
       ul
@@ -35,11 +35,9 @@ html
               each match in result.result.matches
                 - var body = match.body[0];
                 li.snippet
-                  div.snippet__text !{body.text}
+                  div !{body.text}
                   footer
-                    span.snippet__page p#{body.page}.
-                    a.snippet__link(href='#{body.url}') #{match.title}
+                    span p#{body.page}.
+                    a(href='#{body.url}') #{match.title}
               else
                 li No results found
-    footer#footer
-      p © RegSimple

@@ -40,18 +40,17 @@ const createRouter = dependencies => {
   router.post('/logout', logout());
 
   router.get('/query', validate(querySchema), query(dependencies));
+  router.get(
+    '/query/pdf',
+    validate(queryPdfValidationSchema),
+    queryPdf(dependencies)
+  );
 
   router.put(
     '/feedback/snippet/:snippetId/:action',
     authorise({ minRole: ROLE_EDITOR }),
     validate(feedbackSnippetSchema),
     feedbackSnippet(dependencies)
-  );
-
-  router.get(
-    '/export/query-results.pdf',
-    validate(queryPdfValidationSchema),
-    queryPdf(dependencies)
   );
 
   router.get('/app-data', appData(dependencies));

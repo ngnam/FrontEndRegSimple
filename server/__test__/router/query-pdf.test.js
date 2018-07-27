@@ -10,7 +10,7 @@ const searchResultsFormat = {
   matches: expect.any(Array)
 };
 const endpoint = ({ countries, categories, activity, filterText }) =>
-  '/api/export/query-results.pdf?' +
+  '/api/query/pdf?' +
   qs.stringify(
     { countries, categories, activity: [activity], filterText },
     { arrayFormat: 'brackets' }
@@ -21,7 +21,7 @@ const categories = ['aml-authority'];
 const activity = 'aml';
 const filterText = 'hello';
 
-describe('GET /exporty/query-results.pdf', () => {
+describe('GET /query/pdf', () => {
   test('200 and correct results if correct query params passed', done => {
     return request(app)
       .get(endpoint({ countries, categories, activity }))

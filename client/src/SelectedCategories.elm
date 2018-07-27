@@ -45,7 +45,7 @@ subMenu ( model, category ) =
                 ++ queryString
 
         downloadLink =
-            model.config.apiBaseUrl ++ "/export/query-results.pdf" ++ queryString
+            model.config.apiBaseUrl ++ "/query/pdf" ++ queryString
 
         submenuButtonClass =
             "icon icon--category-submenu-btn relative bn tl f7 pv1 pl3 mb1 bg-white w-100 db near-black no-underline"

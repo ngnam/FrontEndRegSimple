@@ -1,9 +1,5 @@
 import puppeteer from 'puppeteer';
 import path from 'path';
-import os from 'os';
-import fs from 'fs';
-
-const { sep } = path;
 
 const createPdfService = ({ config }) => {
   const create = async ({ html }) => {
@@ -15,7 +11,12 @@ const createPdfService = ({ config }) => {
 
     const pdf = await page.pdf({
       format: 'A4',
-      margin: { left: '1.5cm', top: '1cm', right: '1.5cm', bottom: '2cm' }
+      margin: { left: '1.5cm', top: '2cm', right: '1.5cm', bottom: '2cm' },
+      displayHeaderFooter: true,
+      headerTemplate:
+        '<header style="margin: 0 20px; font-size: 12px; font-family: sans-serif;"><span class="date"></span></header>',
+      footerTemplate:
+        '<footer style="margin: 0 20px; width: 100%; font-size: 12px; font-family: sans-serif; display: flex; justify-content: space-between;"><span><span class="pageNumber"></span>/<span class="totalPages"></span></span><span>&copy; RegSimple</span></footer>'
     });
     await browser.close();
 

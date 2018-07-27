@@ -3,14 +3,8 @@ import path from 'path';
 import pug from 'pug';
 import fs from 'fs';
 
-// Compile the source code
-const templatePath = path.join(
-  __dirname,
-  '..',
-  'html-templates',
-  'query-pdf.pug'
-);
-const createHtml = pug.compileFile(templatePath);
+const htmlPath = path.join(__dirname, '..', 'html-templates', 'query-pdf.pug');
+const createHtml = pug.compileFile(htmlPath);
 
 export default ({ pdfService, searchApiService, config }) => async (
   req,
@@ -54,15 +48,23 @@ export default ({ pdfService, searchApiService, config }) => async (
       return accum;
     }, {});
 
+    const title = `RegSimple--${countries.reduce(
+      (str, id) => `${str}${id}-`,
+      ''
+    )}-${categories[0]}`;
+
     const html = createHtml({
       CLIENT_APP_BASE_URL: config.CLIENT_APP_BASE_URL,
       countryLabels,
       taxonomyDict,
       activityId,
-      results
+      results,
+      title
     });
 
     const pdf = await pdfService.create({ html });
+
+    res.setHeader('Content-Disposition', `attachment; filename=${title}.pdf`);
 
     return res.send(pdf);
   } catch (err) {
