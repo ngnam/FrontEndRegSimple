@@ -84,6 +84,10 @@ button {
   width: 18%;
 }
 
+.w12rem {
+  width: 12rem;
+}
+
 .w15rem {
   width: 15rem;
 }
@@ -107,17 +111,17 @@ button {
   top: 150%;
 }
 
+.justify-evenly {
+  justify-content: space-evenly;
+}
 .translate-center {
   transform: translateX(-50%);
   left: 50%;
 }
 
-
-
 .disabled {
   cursor: not-allowed;
 }
-
 
 .flex-1 {
   flex: 1;
