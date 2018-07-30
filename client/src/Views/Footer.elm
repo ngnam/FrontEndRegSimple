@@ -9,5 +9,5 @@ view : Model -> Html Msg
 view model =
     footer [ class "h5 pt4" ]
         [ a [ href "/#/" ] [ img [ src "/assets/icons/twitter.svg" ] [] ]
-        , div [] [ a [ class "f6", href "/#/" ] [ text "Terms of Use" ] ]
+        , div [] [ a [ class "f6", href "/#/about" ] [ text "About" ] ]
         ]
