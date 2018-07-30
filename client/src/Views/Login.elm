@@ -11,34 +11,25 @@ import DataTypes exposing (User)
 
 view : Model -> Html Msg
 view { session, loginEmail, loginCode, loginEmailResponse, loginCodeResponse } =
-    let
-        showCodeForm =
-            case loginEmailResponse of
-                Success _ ->
-                    True
-
-                _ ->
-                    False
-    in
-        main_ [ class "main--login" ]
-            [ section [ class "h-50 flex justify-center" ]
-                [ div [ class "flex justify-center flex-column w-25" ]
-                    [ img [ class "w-100 mb2", src "/assets/logos/logo-with-text.png" ] []
-                    , h1 [ class "mb2 metro-i" ] [ text "Regulation. Simplified." ]
-                    ]
-                ]
-            , section [ class "flex justify-center relative" ]
-                [ case ( session, loginEmailResponse ) of
-                    ( Just user, _ ) ->
-                        logoutForm user
-
-                    ( _, Success _ ) ->
-                        loginCodeForm ( loginCode, loginCodeResponse )
-
-                    ( _, _ ) ->
-                        loginEmailForm ( loginEmail, loginEmailResponse )
+    main_ [ class "main--login" ]
+        [ section [ class "h-50 flex justify-center" ]
+            [ div [ class "flex justify-center flex-column w-25" ]
+                [ img [ class "w-100 mb2", src "/assets/logos/logo-with-text.png" ] []
+                , h1 [ class "mb2 metro-i" ] [ text "Regulation. Simplified." ]
                 ]
             ]
+        , section [ class "flex justify-center relative" ]
+            [ case ( session, loginEmailResponse ) of
+                ( Just user, _ ) ->
+                    logoutForm user
+
+                ( _, Success _ ) ->
+                    loginCodeForm ( loginCode, loginCodeResponse )
+
+                ( _, _ ) ->
+                    loginEmailForm ( loginEmail, loginEmailResponse )
+            ]
+        ]
 
 
 loadingSpinner : Html msg
