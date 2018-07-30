@@ -83,7 +83,9 @@
   /* 93% height seems to be right for icon size, and the relative text position */
   height: 93%;
 }
-
+.icon--download::after {
+  background-image: url('../assets/icons/download.svg');
+}
 .icon--copy::after {
   background-image: url('../assets/icons/copy.svg');
 }

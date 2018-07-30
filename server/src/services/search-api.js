@@ -1,5 +1,35 @@
 import axios from 'axios';
 
+export const multiCategoryCountrySearch = fetchResultsFn => ({
+  categories,
+  countries,
+  filterText
+}) => {
+  const request = category => country => {
+    return {
+      country: country,
+      category: category,
+      result: fetchResultsFn({
+        countries: [country],
+        categories: [category],
+        filterText
+      })
+    };
+  };
+
+  return categories
+    .map(category => countries.map(request(category)))
+    .reduce((accum, curr) => accum.concat(curr), [])
+    .map(async query => {
+      const result = await query.result;
+
+      return {
+        ...query,
+        result: result.data
+      };
+    });
+};
+
 const createSearchApiService = ({ config }) => {
   const {
     REGSIMPLE_SEARCH_API,
@@ -57,7 +87,8 @@ const createSearchApiService = ({ config }) => {
     fetchResults,
     fetchCountries,
     fetchTaxonomy,
-    feedbackSnippet
+    feedbackSnippet,
+    multiCategoryCountrySearch: multiCategoryCountrySearch(fetchResults)
   };
 };
 

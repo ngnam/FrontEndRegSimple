@@ -1,21 +1,21 @@
 @font-face {
-    font-family: Metropolis;
-    src: url(/assets/fonts/Metropolis/WOFF/Metropolis-Regular.woff);
+  font-family: Metropolis;
+  src: url(/assets/fonts/Metropolis/WOFF/Metropolis-Regular.woff);
 }
 
 @font-face {
-    font-family: MetropolisBold;
-    src: url(/assets/fonts/Metropolis/WOFF/Metropolis-Bold.woff);
+  font-family: MetropolisBold;
+  src: url(/assets/fonts/Metropolis/WOFF/Metropolis-Bold.woff);
 }
 @font-face {
-    font-family: MetropolisBoldItalic;
-    src: url(/assets/fonts/Metropolis/WOFF/Metropolis-BoldItalic.woff);
+  font-family: MetropolisBoldItalic;
+  src: url(/assets/fonts/Metropolis/WOFF/Metropolis-BoldItalic.woff);
 }
 @font-face {
-    font-family: MetropolisItalic;
-    src: url(/assets/fonts/Metropolis/WOFF/Metropolis-RegularItalic.woff);
+  font-family: MetropolisItalic;
+  src: url(/assets/fonts/Metropolis/WOFF/Metropolis-RegularItalic.woff);
 }
 @font-face {
-    font-family: MetropolisSemiBold;
-    src: url(/assets/fonts/Metropolis/WOFF/Metropolis-SemiBold.woff);
+  font-family: MetropolisSemiBold;
+  src: url(/assets/fonts/Metropolis/WOFF/Metropolis-SemiBold.woff);
 }

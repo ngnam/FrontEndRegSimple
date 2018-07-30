@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { PRODUCTION } from '../constants/environments';
 
 if (process.env.NODE_ENV !== PRODUCTION) {
@@ -28,6 +30,11 @@ export default envVarNames.reduce((config, varName) => {
   }
 
   config[varName] = process.env[varName];
+
+  config.PUBLIC_DIR_PATH =
+    process.env.NODE_ENV === PRODUCTION
+      ? path.join(__dirname, '..', 'client')
+      : path.join(__dirname, '..', '..', 'client', 'public');
 
   return config;
 }, {});

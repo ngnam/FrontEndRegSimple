@@ -1,0 +1,43 @@
+doctype html
+html
+  head
+    title #{title}
+    style.
+      @font-face {
+        font-family: Metropolis;
+        src: url(#{CLIENT_APP_BASE_URL}/assets/fonts/Metropolis/WOFF/Metropolis-Regular.woff);
+      }
+    style
+      include style.css
+
+  body
+    header
+      img.logo(src=CLIENT_APP_BASE_URL + '/assets/logos/logo-with-text.png')
+    main
+      ul
+        each result in results
+          - var category = taxonomyDict[result.category];
+          - var activity = taxonomyDict[activityId];
+          - var countryId = result.country;
+          - var countryName = countryLabels[countryId][0];
+          article.result-set
+            header
+              div.activity-country
+                div.activity
+                  h1.activity__name #{activity.name}
+                div.country
+                  img.country__flag(src=CLIENT_APP_BASE_URL + '/assets/flags/1x1/' + countryId.toLowerCase() + '.svg')
+                  h2.country__name #{countryName}
+              div.category
+                h3.category__name #{category.name}
+                p.category__description #{category.description}
+            ul
+              each match in result.result.matches
+                - var body = match.body[0];
+                li.snippet
+                  div !{body.text}
+                  footer
+                    span p#{body.page}.
+                    a(href='#{body.url}') #{match.title}
+              else
+                li No results found
