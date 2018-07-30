@@ -1,9 +1,11 @@
 import puppeteer from 'puppeteer';
 import path from 'path';
+import { TEST } from '../constants/environments';
 
 const createPdfService = ({ config }) => {
   const create = async ({ html }) => {
-    const browser = await puppeteer.launch();
+    const args = process.env === TEST ? ['--no-sandbox'] : [];
+    const browser = await puppeteer.launch({ args });
     const page = await browser.newPage();
     await page.goto(`data:text/html;charset=UTF-8,${html}`, {
       waitUntil: 'networkidle2'
