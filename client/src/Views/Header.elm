@@ -16,8 +16,12 @@ aboutPath =
 view : Model -> Html Msg
 view { session, location } =
     header [ class "flex ph5 h4 items-center justify-between f6" ]
-        [ a [ href aboutPath, class "b ttu no-underline near-black" ]
-            [ text "about" ]
+        [ if location.hash == "#/about" then
+            a [ href "/#/", class "b ttu no-underline near-black" ]
+                [ text "Home" ]
+          else
+            a [ href aboutPath, class "b ttu no-underline near-black" ]
+                [ text "About" ]
         , viewIf (location.hash /= "#/login")
             (if isLoggedIn session then
                 logoutButton
