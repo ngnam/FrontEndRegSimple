@@ -38,6 +38,9 @@ module.exports = async () => {
   const analyticsService = {
     logEvent: () => null
   };
+  const pdfService = {
+    create: () => Buffer.from("<html></html>")    
+  };
   const app = await createApp({
     config,
     emailService,
@@ -45,7 +48,8 @@ module.exports = async () => {
     dbClient,
     passwordlessService,
     userService,
-    analyticsService
+    analyticsService,
+    pdfService
   });
 
   process.app = app;
