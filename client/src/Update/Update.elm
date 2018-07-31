@@ -234,7 +234,7 @@ update msg model =
         LoginCodeFormOnResponse response ->
             ( { model
                 | loginCodeResponse = response
-                , session =
+                , user =
                     case response of
                         Success user ->
                             Just user

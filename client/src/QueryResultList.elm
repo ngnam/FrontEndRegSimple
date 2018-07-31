@@ -19,7 +19,8 @@ import DataTypes
         ( QueryResult
         , AccordionsOpen
         , CountryId
-        , Session
+        , CategoryId
+        , User
         , Role(..)
         , CategoryCountry
         , AppData
@@ -36,7 +37,7 @@ type alias ViewModel =
     , isCountryCompare : Bool
     , categoryCountry : CategoryCountry
     , countryId : CountryId
-    , session : Session
+    , user : Maybe User
     , appData : AppData
     , snippetFeedback : SnippetFeedback
     , snippetOptionsMenuOpen : Maybe SnippetId
@@ -130,7 +131,7 @@ bookmarkIcon snippetBookmarkKey isBookmarked =
 view : ViewModel -> Html Msg
 view viewModel =
     let
-        { queryResult, isCountryCompare, accordionsOpen, categoryCountry, countryId, session, snippetFeedback, snippetBookmarks, appData, snippetOptionsMenuOpen } =
+        { queryResult, isCountryCompare, accordionsOpen, categoryCountry, countryId, user, snippetFeedback, snippetBookmarks, appData, snippetOptionsMenuOpen } =
             viewModel
 
         dialogViewModel =
@@ -261,7 +262,7 @@ view viewModel =
                                             ]
                                             []
                                         ]
-                                    , viewIf (isMinRole RoleEditor session)
+                                    , viewIf (isMinRole RoleEditor user)
                                         (button
                                             [ class "icon icon--menu-dots icon--menu-dots-grey absolute top-0 right-0 ma1 h1 w1 bg-mid-gray bn"
                                             , onClick (SnippetOptionsMenuSetFocus (Just snippet.id))

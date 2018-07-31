@@ -5,11 +5,11 @@ import DataTypes exposing (User, Role(..), SnippetFeedback, CategoryId)
 
 
 user : User -> Value
-user { email, id, role } =
+user user =
     object
-        [ ( "email", string email )
-        , ( "id", string id )
-        , ( "role", roleEncoder role )
+        [ ( "email", string user.email )
+        , ( "id", string user.id )
+        , ( "role", roleEncoder user.role )
         ]
 
 

@@ -115,7 +115,7 @@ type alias Model =
     , loginEmailResponse : WebData User
     , loginCode : String
     , loginCodeResponse : WebData User
-    , session : Session
+    , user : Maybe User
     , snippetFeedback : SnippetFeedback
     , snippetBookmarks : SnippetBookmarks
     }
@@ -167,7 +167,7 @@ initialModel =
         , password = ""
         }
     , config = { apiBaseUrl = "", clientBaseUrl = "" }
-    , session = Nothing
+    , user = Nothing
     , snippetFeedback = initialSnippetFeedback
     , snippetBookmarks = DictList.empty
     }
@@ -178,16 +178,17 @@ init flags location =
     ( { initialModel
         | location = parseLocation location
         , config = flags.config
-        , session =
-            let
-                decodeUserFromJson : Value -> Maybe User
-                decodeUserFromJson json =
-                    json
-                        |> decodeValue string
-                        |> Result.toMaybe
-                        |> Maybe.andThen (decodeString Decoders.user >> Result.toMaybe)
-            in
-                decodeUserFromJson flags.session
+
+        -- , user =
+        --     let
+        --         decodeUserFromJson : Value -> Maybe User
+        --         decodeUserFromJson json =
+        --             json
+        --                 |> decodeValue string
+        --                 |> Result.toMaybe
+        --                 |> Maybe.andThen (decodeString Decoders.user >> Result.toMaybe)
+        --     in
+        --         decodeUserFromJson flags.session
       }
     , redirectIfRoot location
     )

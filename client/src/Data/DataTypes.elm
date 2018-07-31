@@ -131,7 +131,13 @@ type alias Email =
 
 
 type alias Session =
-    Maybe User
+    Maybe LocalStorageSession
+
+
+type alias LocalStorageSession =
+    { user : User
+    , snippetBookmarks : SnippetBookmarks
+    }
 
 
 type alias User =

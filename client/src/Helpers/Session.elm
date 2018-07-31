@@ -1,7 +1,7 @@
 module Helpers.Session exposing (isLoggedIn, isMinRole, roles)
 
 import Util exposing (indexOf)
-import DataTypes exposing (Role(..), Session)
+import DataTypes exposing (Role(..), User)
 import DictList exposing (DictList)
 
 
@@ -14,9 +14,9 @@ roles =
         ]
 
 
-isLoggedIn : Session -> Bool
-isLoggedIn session =
-    case session of
+isLoggedIn : Maybe User -> Bool
+isLoggedIn user =
+    case user of
         Just _ ->
             True
 
@@ -24,14 +24,14 @@ isLoggedIn session =
             False
 
 
-isMinRole : Role -> Session -> Bool
-isMinRole minRole session =
+isMinRole : Role -> Maybe User -> Bool
+isMinRole minRole user =
     let
         rolesList =
             DictList.toList roles
                 |> List.map (\( _, el ) -> el)
     in
-        case session of
+        case user of
             Just user ->
                 indexOf minRole rolesList <= indexOf user.role rolesList
 
