@@ -42,25 +42,25 @@ snippetOptionsMenu { snippetOptionsMenuOpen, snippet, categoryCountry, snippetFe
             isOpen
             (SnippetOptionsMenuSetFocus (Just snippet.id))
             (SnippetOptionsMenuSetFocus Nothing)
-            [ ( button
-              , [ classList
-                    [ ( OptionsMenu.buttonClass, True )
-                    , ( "icon--thumbs-up", True )
-                    ]
-                , onClick <| SnippetVoteUpClick ( snippet.id, categoryId )
-                ]
-              , [ text "Vote up" ]
-              )
-            , ( button
-              , [ classList
-                    [ ( OptionsMenu.buttonClass, True )
-                    , ( "icon--thumbs-down", True )
-                    ]
-                , onClick <| SnippetVoteDownClick ( snippet.id, categoryId )
-                ]
-              , [ text "Vote down" ]
-              )
-            , ( button
+            [ -- ( button
+              --   , [ classList
+              --         [ ( OptionsMenu.buttonClass, True )
+              --         , ( "icon--thumbs-up", True )
+              --         ]
+              --     , onClick <| SnippetVoteUpClick ( snippet.id, categoryId )
+              --     ]
+              --   , [ text "Vote up" ]
+              --   )
+              -- , ( button
+              --   , [ classList
+              --         [ ( OptionsMenu.buttonClass, True )
+              --         , ( "icon--thumbs-down", True )
+              --         ]
+              --     , onClick <| SnippetVoteDownClick ( snippet.id, categoryId )
+              --     ]
+              --   , [ text "Vote down" ]
+              --   )
+              ( button
               , [ classList
                     [ ( OptionsMenu.buttonClass, True )
                     , ( "icon--copy", True )
