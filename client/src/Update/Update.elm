@@ -18,7 +18,7 @@ import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
-import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, CategoryId, FeedbackType(..), User, ActivityId, SnippetFeedback)
+import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, CategoryId, FeedbackType(..), User, ActivityId, SnippetFeedback, Session)
 import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
@@ -148,12 +148,21 @@ removeSnippetFromResults snippetId queryResult =
     }
 
 
-storeSession : User -> Cmd msg
-storeSession user =
-    Encoders.user user
-        |> encode 0
-        |> Just
-        |> Ports.storeSession
+storeSession : Model -> Cmd msg
+storeSession model =
+    let
+        { user, snippetBookmarks } =
+            model
+
+        session =
+            { user = user
+            , snippetBookmarks = snippetBookmarks
+            }
+    in
+        Encoders.session session
+            |> encode 0
+            |> Just
+            |> Ports.storeSession
 
 
 removeSession : Cmd msg
@@ -244,7 +253,7 @@ update msg model =
               }
             , case response of
                 Success user ->
-                    Cmd.batch [ storeSession user, Navigation.modifyUrl "/#/" ]
+                    Cmd.batch [ Navigation.modifyUrl "/#/", storeSession ({ model | user = Just user }) ]
 
                 _ ->
                     Cmd.none
