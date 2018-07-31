@@ -5,7 +5,7 @@ import { admin, editor, user } from '../__env__/fixtures/cookies';
 
 const app = process.app;
 
-describe('GET /feedback/snippet/:snippetId/:feedbackType', () => {
+describe('GET /feedback/snippet/:snippetId/suggest', () => {
   const userCookie = user();
   const editorCookie = editor();
   const adminCookie = admin();
@@ -75,15 +75,6 @@ describe('GET /feedback/snippet/:snippetId/:feedbackType', () => {
       .expect(400)
       .end(done);
   });
-  test('400 from invalid feedback action', done => {
-    return request(app)
-      .put('/api/feedback/snippet/id123/foo')
-      .set('Cookie', [adminCookie])
-      .send()
-      .expect(400)
-      .end(done);
-  });
-
   test('200 if valid suggestedCategories passed', done => {
     return request(app)
       .put(

@@ -59,11 +59,12 @@ type Msg
     | FeedbackRequest FeedbackType (WebData FeedbackResults)
     | AnalyticsEventRequest AnalyticsEvent
     | CategoryRemoveClick CategoryId
-    | SetCategorySubMenuFocus (Maybe CategoryId)
+    | CategoryOptionsMenuSetFocus (Maybe CategoryId)
     | AccordionToggleClick SnippetId
     | QueryResultListRemoveClick CategoryCountry
     | SnippetFeedbackDialogOpenClick SnippetFeedbackData
     | SnippetFeedbackDialogCloseClick
+    | SnippetOptionsMenuSetFocus (Maybe SnippetId)
     | ActivityFeedbackClick ActivityId
     | ActivityMenuFeedbackToggleClick
     | CategoryFeedbackClick CategoryId
@@ -71,6 +72,8 @@ type Msg
     | Copy String
     | LogoutClick
     | LogoutOnResponse (WebData String)
+    | SnippetVoteUpClick ( SnippetId, CategoryId )
+    | SnippetVoteDownClick ( SnippetId, CategoryId )
     | NoOp
 
 
@@ -96,6 +99,7 @@ type alias Model =
     , activeCategory : Maybe CategoryId
     , filterText : String
     , categorySubMenuOpen : Maybe CategoryId
+    , snippetOptionsMenuOpen : Maybe SnippetId
     , accordionsOpen : AccordionsOpen
     , config : Config
     , navCount : Int
@@ -136,6 +140,7 @@ initialModel =
     , activeCategory = Nothing
     , filterText = ""
     , categorySubMenuOpen = Nothing
+    , snippetOptionsMenuOpen = Nothing
     , accordionsOpen = Set.empty
     , navCount = 0
     , loginCodeResponse = NotAsked

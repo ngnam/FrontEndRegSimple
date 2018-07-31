@@ -1,7 +1,7 @@
-module Encoders exposing (user, snippetFeedback)
+module Encoders exposing (user, snippetSuggest, snippetVote)
 
 import Json.Encode exposing (Value, object, string, list)
-import DataTypes exposing (User, Role(..), SnippetFeedback)
+import DataTypes exposing (User, Role(..), SnippetFeedback, CategoryId)
 
 
 user : User -> Value
@@ -28,8 +28,15 @@ roleEncoder role =
         )
 
 
-snippetFeedback : SnippetFeedback -> Value
-snippetFeedback model =
+snippetSuggest : List CategoryId -> Value
+snippetSuggest categoryIds =
     object
-        [ ( "suggestedCategories", list (List.map string model.categoryIds) )
+        [ ( "suggestedCategories", list (List.map string categoryIds) )
+        ]
+
+
+snippetVote : CategoryId -> Value
+snippetVote categoryId =
+    object
+        [ ( "categoryId", string categoryId )
         ]

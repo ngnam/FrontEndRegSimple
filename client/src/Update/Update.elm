@@ -378,8 +378,11 @@ update msg model =
                 , Cmd.batch [ Cmd.map CategorySelectMsg categorySelectCmd, queryCmd ]
                 )
 
-        SetCategorySubMenuFocus maybeCategoryId ->
+        CategoryOptionsMenuSetFocus maybeCategoryId ->
             ( { model | categorySubMenuOpen = maybeCategoryId }, Cmd.none )
+
+        SnippetOptionsMenuSetFocus maybeSnippetId ->
+            ( { model | snippetOptionsMenuOpen = maybeSnippetId }, Cmd.none )
 
         CategoryRemoveClick categoryId ->
             let
@@ -567,8 +570,16 @@ update msg model =
                             | queryResults = modifiedQueryResults
                             , snippetFeedback = initialSnippetFeedback
                           }
-                        , FeedbackDecoder.requestCmd model (SuggestSnippet snippetId)
+                        , FeedbackDecoder.requestCmd
+                            model
+                            (SnippetSuggest ( snippetId, model.snippetFeedback.categoryIds ))
                         )
+
+        SnippetVoteUpClick snippetCategory ->
+            ( model, FeedbackDecoder.requestCmd model <| SnippetVoteUp snippetCategory )
+
+        SnippetVoteDownClick snippetCategory ->
+            ( model, FeedbackDecoder.requestCmd model <| SnippetVoteDown snippetCategory )
 
         FeedbackRequest feedbackType results ->
             ( model
