@@ -10,7 +10,7 @@ import Set
 import DictList
 import Util exposing (boolStr, viewIf, (!!))
 import Helpers.AppData exposing (getCountryName)
-import Helpers.Session exposing (isMinRole)
+import Helpers.Session exposing (isMinRole, isLoggedIn)
 import Dialog.Dialog as Dialog
 import Dialog.SnippetFeedback as SnippetFeedbackDialog
 import OptionsMenu exposing (optionsMenu)
@@ -278,7 +278,7 @@ view viewModel =
                                         , snippetFeedback = snippetFeedback
                                         , snippetFeedbackDialog = snippetFeedbackDialog
                                         }
-                                    , bookmarkIcon snippetBookmarkKey isBookmarked
+                                    , viewIf (isLoggedIn user) (bookmarkIcon snippetBookmarkKey isBookmarked)
                                     ]
                                 ]
                     )
