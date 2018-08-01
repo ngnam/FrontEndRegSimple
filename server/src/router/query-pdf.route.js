@@ -55,16 +55,19 @@ export default ({ pdfService, searchApiService, config }) => async (
       ''
     )}-${categories[0]}`;
 
-    console.log('inside', { htmlPath });
+    console.log('inside', { htmlPath, config });
 
-    const html = createHtml({
-      CLIENT_APP_BASE_URL: config.CLIENT_APP_BASE_URL,
-      countryLabels,
-      taxonomyDict,
-      activityId,
-      results,
-      title
-    });
+    const html = createHtml(
+      {
+        CLIENT_APP_BASE_URL: config.CLIENT_APP_BASE_URL,
+        countryLabels,
+        taxonomyDict,
+        activityId,
+        results,
+        title
+      },
+      { compileDebug: true }
+    );
 
     console.log('html', { html });
 

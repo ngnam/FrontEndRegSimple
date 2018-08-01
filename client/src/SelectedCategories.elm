@@ -1,7 +1,7 @@
 module SelectedCategories exposing (..)
 
 import Html exposing (Html, section, div, a, button, input, header, img, text, ul, li, p, span)
-import Html.Attributes exposing (id, class, tabindex, value, disabled, classList, href, target)
+import Html.Attributes exposing (id, class, tabindex, value, disabled, classList, href, download)
 import Html.Events exposing (onClick, onFocus, onBlur)
 import Model exposing (Model, Msg(Copy, CategoryOptionsMenuSetFocus, CategoryRemoveClick))
 import Helpers.AppData exposing (emptyCategory, getCategoriesFromIds)
@@ -64,7 +64,7 @@ categoryOptionsMenu ( model, category ) =
                     , ( "icon--download", True )
                     ]
                 , href downloadLink
-                , target "_blank"
+                , download True
                 ]
               , [ text "Download as PDF..." ]
               )

@@ -39,7 +39,7 @@ module.exports = async () => {
     logEvent: () => null
   };
   const pdfService = {
-    create: () => Buffer.from("<html></html>")    
+    create: () => Buffer.from('<html></html>')
   };
   const app = await createApp({
     config,
