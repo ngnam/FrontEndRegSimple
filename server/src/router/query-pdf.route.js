@@ -6,6 +6,8 @@ import fs from 'fs';
 const htmlPath = path.join(__dirname, '..', 'html-templates', 'query-pdf.pug');
 const createHtml = pug.compileFile(htmlPath);
 
+console.log('outside', { htmlPath });
+
 export default ({ pdfService, searchApiService, config }) => async (
   req,
   res,
@@ -53,6 +55,8 @@ export default ({ pdfService, searchApiService, config }) => async (
       ''
     )}-${categories[0]}`;
 
+    console.log('inside', { htmlPath });
+
     const html = createHtml({
       CLIENT_APP_BASE_URL: config.CLIENT_APP_BASE_URL,
       countryLabels,
@@ -61,6 +65,8 @@ export default ({ pdfService, searchApiService, config }) => async (
       results,
       title
     });
+
+    console.log('html', { html });
 
     const pdf = await pdfService.create({ html });
 
