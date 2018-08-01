@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 import { PRODUCTION } from './constants/environments';
 
@@ -47,7 +48,11 @@ const createApp = async function({
 
     const app = express();
 
-    const { SESSION_SECRET, PUBLIC_DIR_PATH } = config;
+    const { SESSION_SECRET } = config;
+    const PUBLIC_DIR_PATH =
+      process.env.NODE_ENV === PRODUCTION
+        ? path.join(__dirname, '..', 'client')
+        : path.join(__dirname, '..', '..', 'client', 'public');
 
     app.use(morgan('tiny'));
     app.use(express.static(PUBLIC_DIR_PATH));
