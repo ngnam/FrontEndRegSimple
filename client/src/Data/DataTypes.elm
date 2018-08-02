@@ -3,7 +3,6 @@ module DataTypes exposing (..)
 import Dict exposing (Dict)
 import DictList exposing (DictList)
 import Set exposing (Set)
-import Date exposing (Date)
 
 
 type alias FeedbackResults =
@@ -136,6 +135,7 @@ type alias Email =
 type alias LocalStorageSession =
     { user : Maybe User
     , snippetBookmarks : SnippetBookmarks
+    , activeCategory : Maybe CategoryId
     }
 
 

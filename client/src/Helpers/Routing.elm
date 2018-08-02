@@ -11,8 +11,13 @@ onPageLoad model =
         "#/query" ->
             { model
                 | activeCategory =
-                    Dict.get "categories" model.search
-                        |> Maybe.andThen ((!!) 0)
+                    case model.activeCategory of
+                        Nothing ->
+                            Dict.get "categories" model.search
+                                |> Maybe.andThen ((!!) 0)
+
+                        _ ->
+                            model.activeCategory
             }
 
         _ ->

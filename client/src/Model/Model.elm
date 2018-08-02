@@ -184,6 +184,10 @@ init flags location =
             session
                 |> Maybe.andThen .user
 
+        activeCategory =
+            session
+                |> Maybe.andThen .activeCategory
+
         snippetBookmarks =
             case session of
                 Just session ->
@@ -197,6 +201,7 @@ init flags location =
             , config = flags.config
             , user = user
             , snippetBookmarks = snippetBookmarks
+            , activeCategory = activeCategory
           }
         , redirectIfRoot location
         )
