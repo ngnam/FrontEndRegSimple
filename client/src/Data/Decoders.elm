@@ -1,8 +1,8 @@
-module Decoders exposing (user, bookmark)
+module Decoders exposing (user, snippetBookmarkMetadata, snippetBookmarks, session)
 
-import Json.Decode exposing (Decoder, string, andThen, succeed, fail)
-import Json.Decode.Pipeline exposing (decode, required)
-import DataTypes exposing (User, Role(..), SnippetBookmarkMetadata)
+import Json.Decode exposing (Decoder, string, list, dict, andThen, succeed, at, fail, map, map2, map3, field)
+import Json.Decode.Pipeline exposing (decode, required, optional)
+import DataTypes exposing (User, Role(..), SnippetBookmarkMetadata, SnippetBookmarks, LocalStorageSession)
 import Helpers.Session exposing (roles)
 import DictList
 
@@ -29,7 +29,33 @@ role =
             )
 
 
-bookmark : Decoder SnippetBookmarkMetadata
-bookmark =
+snippetBookmarkMetadata : Decoder SnippetBookmarkMetadata
+snippetBookmarkMetadata =
     decode SnippetBookmarkMetadata
         |> required "createdAt" string
+        |> required "snippetId" string
+        |> required "categoryId" string
+
+
+snippetBookmarks : Decoder SnippetBookmarks
+snippetBookmarks =
+    let
+        keyDecoder =
+            map2 (,) (field "snippetId" string) (field "categoryId" string)
+
+        valueDecoder =
+            map3 SnippetBookmarkMetadata
+                (at [ "createdAt" ] string)
+                (at [ "snippetId" ] string)
+                (at [ "categoryId" ] string)
+    in
+        DictList.decodeArray2
+            keyDecoder
+            valueDecoder
+
+
+session : Decoder LocalStorageSession
+session =
+    decode LocalStorageSession
+        |> optional "user" (map Just user) Nothing
+        |> optional "snippetBookmarks" snippetBookmarks DictList.empty

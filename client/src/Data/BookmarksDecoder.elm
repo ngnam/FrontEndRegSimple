@@ -1,12 +1,13 @@
-module BookmarksDecoder exposing (postRequestCmd, deleteRequestCmd)
+module BookmarksDecoder exposing (postRequestCmd, deleteRequestCmd, getRequestCmd)
 
 import Http
 import RemoteData exposing (RemoteData(..))
-import DataTypes exposing (SnippetBookmarkKey, SnippetBookmarkMetadata)
+import DataTypes exposing (SnippetBookmarkKey, SnippetBookmarkMetadata, SnippetBookmarks)
 import Model exposing (Model, Msg(..))
 import Json.Encode as Encode
 import Json.Decode exposing (at)
 import Decoders
+import DictList
 
 
 encoder : SnippetBookmarkKey -> Encode.Value
@@ -30,7 +31,7 @@ request model snippetBookmarkKey requestMethod =
             , headers = []
             , url = model.config.apiBaseUrl ++ "/bookmarks"
             , body = body
-            , expect = Http.expectJson (at [ "data" ] Decoders.bookmark)
+            , expect = Http.expectJson (at [ "data" ] Decoders.snippetBookmarkMetadata)
             , timeout = Nothing
             , withCredentials = True
             }
@@ -64,3 +65,31 @@ deleteRequestCmd model snippetBookmarkKey =
                     _ ->
                         NoOp
             )
+
+
+getRequestCmd : Model -> Cmd Msg
+getRequestCmd model =
+    getRequest model
+        |> RemoteData.sendRequest
+        |> Cmd.map
+            (\snippetBookmarksResponse ->
+                case snippetBookmarksResponse of
+                    Success snippetBookmarksResponse ->
+                        SnippetBookmarksHydrate snippetBookmarksResponse
+
+                    _ ->
+                        NoOp
+            )
+
+
+getRequest : Model -> Http.Request SnippetBookmarks
+getRequest model =
+    Http.request
+        { method = "GET"
+        , headers = []
+        , url = model.config.apiBaseUrl ++ "/bookmarks"
+        , body = Http.emptyBody
+        , expect = Http.expectJson (at [ "data" ] Decoders.snippetBookmarks)
+        , timeout = Nothing
+        , withCredentials = True
+        }

@@ -1,13 +1,13 @@
 const createBookmarksService = () => dbClient => {
   const getBookmarksByUserId = async ({ userId }) => {
     const query = {
-      text: 'SELECT * from users WHERE user_id=$1',
+      text: 'SELECT * from bookmarks WHERE user_id=$1 ORDER BY created_at ASC',
       values: [userId]
     };
 
     const res = await dbClient.query(query);
 
-    return res.rows[0];
+    return res.rows;
   };
 
   const addBookmark = async ({ userId, snippetId, categoryId }) => {

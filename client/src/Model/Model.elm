@@ -29,7 +29,7 @@ import DataTypes
         , FeedbackResults
         , FeedbackType
         , AnalyticsEvent
-        , Session
+        , LocalStorageSession
         , ActivityId
         , CategoryId
         , CategoryCountry
@@ -72,6 +72,7 @@ type Msg
     | SnippetBookmarkClick SnippetBookmarkKey Bool
     | SnippetBookmarkAdd SnippetBookmarkKey SnippetBookmarkMetadata
     | SnippetBookmarkRemove SnippetBookmarkKey
+    | SnippetBookmarksHydrate SnippetBookmarks
     | ActivityFeedbackClick ActivityId
     | ActivityMenuFeedbackToggleClick
     | CategoryFeedbackClick CategoryId
@@ -175,23 +176,38 @@ initialModel =
 
 init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
 init flags location =
-    ( { initialModel
-        | location = parseLocation location
-        , config = flags.config
+    let
+        decodeSessionFromJson : Value -> Maybe LocalStorageSession
+        decodeSessionFromJson json =
+            json
+                |> decodeValue string
+                |> Result.toMaybe
+                |> Debug.log ("t")
+                |> Maybe.andThen (decodeString Decoders.session >> Result.toMaybe)
 
-        -- , user =
-        --     let
-        --         decodeUserFromJson : Value -> Maybe User
-        --         decodeUserFromJson json =
-        --             json
-        --                 |> decodeValue string
-        --                 |> Result.toMaybe
-        --                 |> Maybe.andThen (decodeString Decoders.user >> Result.toMaybe)
-        --     in
-        --         decodeUserFromJson flags.session
-      }
-    , redirectIfRoot location
-    )
+        session =
+            decodeSessionFromJson flags.session
+
+        user =
+            session
+                |> Maybe.andThen .user
+
+        snippetBookmarks =
+            case session of
+                Just session ->
+                    session.snippetBookmarks
+
+                Nothing ->
+                    DictList.empty
+    in
+        ( { initialModel
+            | location = parseLocation location
+            , config = flags.config
+            , user = user
+            , snippetBookmarks = snippetBookmarks
+          }
+        , redirectIfRoot location
+        )
 
 
 redirectIfRoot : Navigation.Location -> Cmd msg

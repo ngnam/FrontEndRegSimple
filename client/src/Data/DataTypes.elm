@@ -69,6 +69,8 @@ type alias SnippetBookmarkKey =
 
 type alias SnippetBookmarkMetadata =
     { createdAt : String
+    , snippetId : SnippetId
+    , categoryId : CategoryId
     }
 
 
@@ -128,10 +130,6 @@ type alias SearchParsed =
 
 type alias Email =
     String
-
-
-type alias Session =
-    LocalStorageSession
 
 
 type alias LocalStorageSession =

@@ -82,8 +82,12 @@ const createRouter = dependencies => {
     '/bookmarks',
     authorise({ minRole: ROLE_USER }),
     validate(bookmarksSchema),
-    (req, res, next) =>
-      console.log(req.body) || bookmarksHandler(req, res, next).removeBookmark()
+    (req, res, next) => bookmarksHandler(req, res, next).removeBookmark()
+  );
+  router.get(
+    '/bookmarks',
+    authorise({ minRole: ROLE_USER }),
+    (req, res, next) => bookmarksHandler(req, res, next).getBookmarks()
   );
 
   return router;

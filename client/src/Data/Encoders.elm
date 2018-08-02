@@ -1,7 +1,7 @@
 module Encoders exposing (user, snippetVote, snippetSuggest, session)
 
 import Json.Encode exposing (Value, object, string, list, null)
-import DataTypes exposing (User, Role(..), SnippetFeedback, CategoryId, LocalStorageSession, SnippetBookmarks)
+import DataTypes exposing (User, Role(..), SnippetFeedback, LocalStorageSession, SnippetBookmarks, SnippetBookmarkMetadata, CategoryId)
 import DictList
 
 
@@ -48,23 +48,28 @@ snippetVote categoryId =
         ]
 
 
+snippetBookmarks : SnippetBookmarks -> Value
+snippetBookmarks snippetBookmarks =
+    list
+        (List.map (\( _, bookmarkValue ) -> snippetBookmarkMetadata bookmarkValue)
+            (DictList.toList
+                snippetBookmarks
+            )
+        )
 
--- snippetBookmarks : SnippetBookmarks -> Value
--- snippetBookmarks snippetBookmarks =
---     list
---         [ ( "snippetBookmarks", DictList.map (string, tuple2Encoder snippetBookmarks )
---         ]
+
+snippetBookmarkMetadata : SnippetBookmarkMetadata -> Value
+snippetBookmarkMetadata snippetBookmark =
+    object
+        [ ( "createdAt", string snippetBookmark.createdAt )
+        , ( "snippetId", string snippetBookmark.snippetId )
+        , ( "categoryId", string snippetBookmark.categoryId )
+        ]
 
 
 session : LocalStorageSession -> Value
 session session =
     object
         [ ( "user", user session.user )
-
-        -- , ( "snippetBookmarks", snippetBookmarks session.snippetBookmarks )
+        , ( "snippetBookmarks", snippetBookmarks session.snippetBookmarks )
         ]
-
-
-tuple2Encoder : (a -> Value) -> (b -> Value) -> ( a, b ) -> Value
-tuple2Encoder enc1 enc2 ( val1, val2 ) =
-    list [ enc1 val1, enc2 val2 ]

@@ -18,7 +18,7 @@ import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
 import Set
 import Dict
 import Util exposing ((!!))
-import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, CategoryId, FeedbackType(..), User, ActivityId, SnippetFeedback, Session)
+import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, CategoryId, FeedbackType(..), User, ActivityId, SnippetFeedback)
 import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
@@ -198,7 +198,11 @@ update msg model =
 
                 appDataCmd =
                     if model.navCount == 0 then
-                        AppDataDecoder.requestCmd newModel
+                        Cmd.batch
+                            [ AppDataDecoder.requestCmd newModel
+                            , BookmarksDecoder.getRequestCmd
+                                newModel
+                            ]
                     else
                         Cmd.none
 
@@ -253,7 +257,7 @@ update msg model =
               }
             , case response of
                 Success user ->
-                    Cmd.batch [ Navigation.modifyUrl "/#/", storeSession ({ model | user = Just user }) ]
+                    Cmd.batch [ Navigation.modifyUrl "/#/", storeSession ({ model | user = Just user }), BookmarksDecoder.getRequestCmd model ]
 
                 _ ->
                     Cmd.none
@@ -533,15 +537,24 @@ update msg model =
             let
                 snippetBookmarks =
                     DictList.cons snippetBookmarkKey snippetBookmarkMetadata model.snippetBookmarks
+
+                newModel =
+                    { model | snippetBookmarks = snippetBookmarks }
             in
-                ( { model | snippetBookmarks = snippetBookmarks }, Cmd.none )
+                ( { model | snippetBookmarks = snippetBookmarks }, storeSession newModel )
 
         SnippetBookmarkRemove snippetBookmarkKey ->
             let
                 snippetBookmarks =
                     DictList.remove snippetBookmarkKey model.snippetBookmarks
+
+                newModel =
+                    { model | snippetBookmarks = snippetBookmarks }
             in
-                ( { model | snippetBookmarks = snippetBookmarks }, Cmd.none )
+                ( { model | snippetBookmarks = snippetBookmarks }, storeSession newModel )
+
+        SnippetBookmarksHydrate snippetBookmarks ->
+            ( { model | snippetBookmarks = snippetBookmarks }, Cmd.none )
 
         QueryResultListRemoveClick categoryCountry ->
             let
