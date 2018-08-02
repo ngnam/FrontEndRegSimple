@@ -1,4 +1,10 @@
-export default ({ searchApiService }) => async (req, res, next) => {
+import boom from 'boom';
+
+export default ({ searchApiService, userService, jwtService }) => async (
+  req,
+  res,
+  next
+) => {
   const { fetchTaxonomy, fetchCountries } = searchApiService;
 
   try {
@@ -10,10 +16,10 @@ export default ({ searchApiService }) => async (req, res, next) => {
       data: { taxonomy, countries }
     });
   } catch (err) {
+    console.error(err);
     return next(
       boom.forbidden(
-        'searchApiService failure in either fetchTaxonomy or fetchCountries',
-        err.details
+        'searchApiService failure in either fetchTaxonomy or fetchCountries'
       )
     );
   }

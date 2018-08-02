@@ -12,8 +12,7 @@ import Decoders
 encoder : Model -> Encode.Value
 encoder model =
     Encode.object
-        [ ( "email", Encode.string model.loginEmail )
-        ]
+        [ ( "email", Encode.string model.loginEmail ) ]
 
 
 request : Model -> Http.Request User

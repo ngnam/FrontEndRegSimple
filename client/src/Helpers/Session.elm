@@ -8,17 +8,21 @@ import DictList exposing (DictList)
 roles : DictList String Role
 roles =
     DictList.fromList
-        [ ( "ROLE_USER", RoleUser )
+        [ ( "ROLE_UNAUTHENTICATED", RoleUnauthenticated )
+        , ( "ROLE_USER", RoleUser )
         , ( "ROLE_EDITOR", RoleEditor )
         , ( "ROLE_ADMIN", RoleAdmin )
         ]
 
 
 isLoggedIn : Maybe User -> Bool
-isLoggedIn user =
-    case user of
-        Just _ ->
-            True
+isLoggedIn maybeUser =
+    case maybeUser of
+        Just user ->
+            if user.role == RoleUnauthenticated then
+                False
+            else
+                True
 
         Nothing ->
             False

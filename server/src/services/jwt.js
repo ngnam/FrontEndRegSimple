@@ -5,7 +5,9 @@ const createJwtService = ({ config }) => {
 
   const encode = data => {
     return new Promise((resolve, reject) => {
-      jwt.sign(data, JWT_SECRET, { expiresIn: '30 days' }, (err, token) => {
+      const opts = data.email ? { expiresIn: '30 days' } : {};
+
+      jwt.sign(data, JWT_SECRET, opts, (err, token) => {
         if (err) {
           return reject(err);
         }

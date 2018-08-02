@@ -8,6 +8,7 @@ import LoginCodeDecoder
 import LogoutDecoder
 import QueryDecoder
 import AppDataDecoder
+import UserEditsDecoder
 import CountrySelect
 import ActivitySelect
 import CategorySelect
@@ -23,6 +24,7 @@ import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
 import BookmarksDecoder
+import UserSelfDecoder
 import Ports exposing (copy)
 import Json.Encode exposing (encode, null)
 import Encoders
@@ -131,6 +133,18 @@ setFilterText maybeFilterText model =
             { model | filterText = "" }
 
 
+setUserTypeDialogIsOpen : Bool -> Model -> Model
+setUserTypeDialogIsOpen isOpen model =
+    let
+        { userTypeForm } =
+            model
+
+        newUserTypeForm =
+            { userTypeForm | isOpen = isOpen }
+    in
+        { model | userTypeForm = newUserTypeForm }
+
+
 removeSnippetFromResults snippetId queryResult =
     { queryResult
         | matches =
@@ -203,8 +217,8 @@ update msg model =
                     if model.navCount == 0 then
                         Cmd.batch
                             [ AppDataDecoder.requestCmd newModel
-                            , BookmarksDecoder.getRequestCmd
-                                newModel
+                            , BookmarksDecoder.getRequestCmd newModel
+                            , UserSelfDecoder.requestCmd model.config.apiBaseUrl
                             ]
                     else
                         Cmd.none
@@ -662,6 +676,63 @@ update msg model =
 
                 Ok () ->
                     ( model, Cmd.none )
+
+        UserTypeDialogOpen ->
+            ( setUserTypeDialogIsOpen True model
+            , Dom.focus "user-type-dialog" |> Task.attempt FocusResult
+            )
+
+        UserTypeDialogClose ->
+            ( setUserTypeDialogIsOpen False model, Cmd.none )
+
+        UserTypeSelect userType ->
+            let
+                { userTypeForm } =
+                    model
+
+                newUserTypeForm =
+                    { userTypeForm | selected = Just userType }
+            in
+                ( { model | userTypeForm = newUserTypeForm }, Cmd.none )
+
+        UserTypeFreeTextOnInput str ->
+            let
+                { userTypeForm } =
+                    model
+
+                newUserTypeForm =
+                    { userTypeForm | freeText = str }
+            in
+                ( { model | userTypeForm = newUserTypeForm }, Cmd.none )
+
+        UserTypeFormSubmit ->
+            case model.userTypeForm.selected of
+                Just userType ->
+                    ( setUserTypeDialogIsOpen False model
+                    , UserEditsDecoder.requestCmd model.config.apiBaseUrl
+                        { userType =
+                            if userType == "Other" then
+                                model.userTypeForm.freeText
+                            else
+                                userType
+                        }
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        UserSelfOnResponse response ->
+            ( { model
+                | user =
+                    case response of
+                        Success user ->
+                            Just user
+
+                        _ ->
+                            Nothing
+              }
+            , Cmd.none
+            )
 
         _ ->
             ( model, Cmd.none )

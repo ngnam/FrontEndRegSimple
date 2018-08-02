@@ -11,7 +11,7 @@ user : Decoder User
 user =
     decode User
         |> required "id" string
-        |> required "email" string
+        |> optional "email" (map Just string) Nothing
         |> required "role" role
 
 

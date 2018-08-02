@@ -50,7 +50,7 @@ const createEmailservice = ({ config }) =>
         console.log(data);
         transporter.sendMail(mailOptions, (err, info) => {
           if (err) {
-            console.log(err);
+            console.error(err);
 
             reject(err);
           } else {

@@ -38,9 +38,12 @@ import DataTypes
         , SnippetBookmarkKey
         , SnippetBookmarkMetadata
         , SnippetBookmarks
+        , UserTypeForm
+        , UserType
         )
 import Decoders
 import Dom
+import Helpers.CmdMsg exposing (delay, redirectIfRoot)
 
 
 type Msg
@@ -84,6 +87,13 @@ type Msg
     | SnippetVoteUpClick ( SnippetId, CategoryId )
     | SnippetVoteDownClick ( SnippetId, CategoryId )
     | FocusResult (Result Dom.Error ())
+    | UserTypeDialogClose
+    | UserTypeDialogOpen
+    | UserTypeFormSubmit
+    | UserTypeSelect UserType
+    | UserTypeFreeTextOnInput String
+    | Defer ( Msg, Int )
+    | UserSelfOnResponse (WebData User)
     | NoOp
 
 
@@ -121,6 +131,7 @@ type alias Model =
     , user : Maybe User
     , snippetFeedback : SnippetFeedback
     , snippetBookmarks : SnippetBookmarks
+    , userTypeForm : UserTypeForm
     }
 
 
@@ -173,6 +184,7 @@ initialModel =
     , user = Nothing
     , snippetFeedback = initialSnippetFeedback
     , snippetBookmarks = DictList.empty
+    , userTypeForm = { isOpen = False, selected = Nothing, freeText = "" }
     }
 
 
@@ -205,7 +217,7 @@ init flags location =
             , snippetBookmarks = snippetBookmarks
             , activeCategory = activeCategory
           }
-        , redirectIfRoot location
+        , Cmd.batch [ redirectIfRoot location, delay (Time.second * 1) <| UserTypeDialogOpen ]
         )
 
 

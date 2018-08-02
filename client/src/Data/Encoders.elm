@@ -5,12 +5,22 @@ import DataTypes exposing (User, Role(..), SnippetFeedback, LocalStorageSession,
 import DictList
 
 
+maybeString : Maybe String -> Value
+maybeString maybeStr =
+    case maybeStr of
+        Just str ->
+            string str
+
+        Nothing ->
+            null
+
+
 user : Maybe User -> Value
 user maybeUser =
     case maybeUser of
         Just user ->
             object
-                [ ( "email", string user.email )
+                [ ( "email", maybeString user.email )
                 , ( "id", string user.id )
                 , ( "role", roleEncoder user.role )
                 ]
@@ -33,6 +43,9 @@ roleEncoder : Role -> Value
 roleEncoder role =
     string
         (case role of
+            RoleUnauthenticated ->
+                "ROLE_UNAUTHENTICATED"
+
             RoleUser ->
                 "ROLE_USER"
 

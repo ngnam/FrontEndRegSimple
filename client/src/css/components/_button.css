@@ -1,0 +1,14 @@
+.button {
+  position: relative;
+}
+.button:focus::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 100%;
+  margin-top: 0.5rem;
+  left: 0;
+  right: 0;
+  width: 100%;
+  border-bottom: 2px solid var(--blue);
+}

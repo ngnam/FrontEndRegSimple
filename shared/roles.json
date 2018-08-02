@@ -1,14 +1,18 @@
 {
+  "ROLE_UNAUTHENTICATED": {
+    "name": "ROLE_UNAUTHENTICATED",
+    "privilege": 0
+  },
   "ROLE_USER": {
     "name": "ROLE_USER",
-    "privilege": 0
+    "privilege": 1
   },
   "ROLE_EDITOR": {
     "name": "ROLE_EDITOR",
-    "privilege": 1
+    "privilege": 2
   },
   "ROLE_ADMIN": {
     "name": "ROLE_ADMIN",
-    "privilege": 2
+    "privilege": 3
   }
 }

@@ -1,6 +1,10 @@
 import { Router } from 'express';
 
-import { ROLE_EDITOR, ROLE_USER } from '../constants/roles';
+import {
+  ROLE_EDITOR,
+  ROLE_USER,
+  ROLE_UNAUTHENTICATED
+} from '../constants/roles';
 
 import validate from '../middleware/validation.middleware';
 import authenticate from '../middleware/authenticate.middleware';
@@ -14,6 +18,7 @@ import feedbackSnippetSuggestSchema from '../validations/feedback-snippet-sugges
 import feedbackSnippetVoteSchema from '../validations/feedback-snippet-vote.validation';
 import analyticsSchema from '../validations/analytics.validation';
 import bookmarksSchema from '../validations/bookmarks.validation';
+import userEditSchema from '../validations/user-edit.validation';
 
 import loginEmail from './login-email.route';
 import loginCode from './login-code.route';
@@ -28,6 +33,8 @@ import queryPdf from './query-pdf.route';
 import getBookmarks from './bookmark-get.route';
 import addBookmark from './bookmark-post.route';
 import removeBookmark from './bookmark-delete.route';
+import userEdit from './user-edit.route';
+import userSelf from './user-self.route';
 
 const createRouter = dependencies => {
   const router = Router();
@@ -90,6 +97,13 @@ const createRouter = dependencies => {
     authorise({ minRole: ROLE_USER }),
     getBookmarks(dependencies)
   );
+  router.post(
+    '/user',
+    authorise({ minRole: ROLE_UNAUTHENTICATED }),
+    validate(userEditSchema),
+    userEdit(dependencies)
+  );
+  router.get('/user/self', userSelf(dependencies));
 
   return router;
 };

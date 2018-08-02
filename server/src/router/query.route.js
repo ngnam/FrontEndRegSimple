@@ -14,7 +14,7 @@ export default ({ config, searchApiService }) => async (req, res, next) => {
 
     res.json({ data: responses });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return next(
       boom.forbidden('searchApiService.fetchResults failed', err.details)
     );

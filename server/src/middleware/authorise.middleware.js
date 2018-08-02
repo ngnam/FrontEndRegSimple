@@ -4,6 +4,7 @@ import { ROLES } from '../constants/roles';
 
 export default ({ minRole }) => async (req, res, next) => {
   const { user } = req;
+
   if (!user) {
     console.warn(`Unauthorised request
       An unauthenticated user made the following unauthorised request:

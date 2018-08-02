@@ -8,6 +8,7 @@ import Model exposing (Model, Msg(..))
 import Views.Header as Header
 import Views.Footer as Footer
 import ContactBanner
+import Dialog.UserType exposing (userTypeDialog)
 
 
 view : Model -> Html Msg
@@ -19,5 +20,6 @@ view model =
             , viewIf (not (model.location.hash == "#/query")) (Header.view model)
             , matchView model
             , Footer.view model
+            , userTypeDialog model.userTypeForm
             ]
         ]

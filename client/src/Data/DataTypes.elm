@@ -5,6 +5,13 @@ import DictList exposing (DictList)
 import Set exposing (Set)
 
 
+type alias UserTypeForm =
+    { selected : Maybe String
+    , freeText : String
+    , isOpen : Bool
+    }
+
+
 type alias FeedbackResults =
     { id : SnippetId }
 
@@ -110,6 +117,7 @@ type Role
     = RoleUser
     | RoleEditor
     | RoleAdmin
+    | RoleUnauthenticated
 
 
 type alias UserId =
@@ -139,8 +147,12 @@ type alias LocalStorageSession =
     }
 
 
+type alias UserType =
+    String
+
+
 type alias User =
-    { id : UserId, email : Email, role : Role }
+    { id : UserId, email : Maybe Email, role : Role }
 
 
 type alias CategoryCountry =

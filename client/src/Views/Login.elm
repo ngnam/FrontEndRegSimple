@@ -42,7 +42,12 @@ logoutForm { email } =
     loginForm
         { onInputMsg = (\_ -> NoOp)
         , onSubmitMsg = LogoutClick
-        , replaceInputWith = Just ("You're already logged in as " ++ email ++ ", want to log out?")
+        , replaceInputWith =
+            Just
+                ("You're already logged in as "
+                    ++ Maybe.withDefault "NO_EMAIL" email
+                    ++ ", want to log out?"
+                )
         , inputPlaceholder = ""
         , inputType = ""
         , buttonText = "Log out"
