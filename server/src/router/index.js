@@ -25,12 +25,13 @@ import feedbackSnippetVoteUp from './feedback-snippet-vote-up.route';
 import feedbackSnippetVoteDown from './feedback-snippet-vote-down.route';
 import analytics from './analytics.route';
 import queryPdf from './query-pdf.route';
-import bookmarks from './bookmarks.handler';
+import getBookmarks from './bookmark-get.route';
+import addBookmark from './bookmark-post.route';
+import removeBookmark from './bookmark-delete.route';
 
 const createRouter = dependencies => {
   const router = Router();
   router.use(authenticate(dependencies));
-  const bookmarksHandler = bookmarks(dependencies);
 
   router.post(
     '/login/email',
@@ -73,21 +74,21 @@ const createRouter = dependencies => {
   router.get('/app-data', appData(dependencies));
   router.post('/analytics', validate(analyticsSchema), analytics(dependencies));
   router.post(
-    '/bookmarks',
+    '/bookmark',
     authorise({ minRole: ROLE_USER }),
     validate(bookmarksSchema),
-    (req, res, next) => bookmarksHandler(req, res, next).addBookmark()
+    addBookmark(dependencies)
   );
   router.delete(
-    '/bookmarks',
+    '/bookmark',
     authorise({ minRole: ROLE_USER }),
     validate(bookmarksSchema),
-    (req, res, next) => bookmarksHandler(req, res, next).removeBookmark()
+    removeBookmark(dependencies)
   );
   router.get(
-    '/bookmarks',
+    '/bookmark',
     authorise({ minRole: ROLE_USER }),
-    (req, res, next) => bookmarksHandler(req, res, next).getBookmarks()
+    getBookmarks(dependencies)
   );
 
   return router;

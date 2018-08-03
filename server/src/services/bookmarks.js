@@ -1,7 +1,7 @@
 const createBookmarksService = () => dbClient => {
   const getBookmarksByUserId = async ({ userId }) => {
     const query = {
-      text: 'SELECT * from bookmarks WHERE user_id=$1 ORDER BY created_at ASC',
+      text: 'SELECT * from bookmarks WHERE user_id=$1 ORDER BY created_at DESC',
       values: [userId]
     };
 
@@ -22,7 +22,6 @@ const createBookmarksService = () => dbClient => {
   };
 
   const removeBookmark = async ({ userId, snippetId, categoryId }) => {
-    console.log('3');
     const query = {
       text:
         'DELETE FROM bookmarks WHERE user_id=$1 AND snippet_id=$2 AND category_id=$3 RETURNING *',

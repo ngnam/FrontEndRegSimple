@@ -29,7 +29,7 @@ request model snippetBookmarkKey requestMethod =
         Http.request
             { method = requestMethod
             , headers = []
-            , url = model.config.apiBaseUrl ++ "/bookmarks"
+            , url = model.config.apiBaseUrl ++ "/bookmark"
             , body = body
             , expect = Http.expectJson (at [ "data" ] Decoders.snippetBookmarkMetadata)
             , timeout = Nothing
@@ -87,7 +87,7 @@ getRequest model =
     Http.request
         { method = "GET"
         , headers = []
-        , url = model.config.apiBaseUrl ++ "/bookmarks"
+        , url = model.config.apiBaseUrl ++ "/bookmark"
         , body = Http.emptyBody
         , expect = Http.expectJson (at [ "data" ] Decoders.snippetBookmarks)
         , timeout = Nothing

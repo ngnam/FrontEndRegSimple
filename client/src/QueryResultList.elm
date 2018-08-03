@@ -108,9 +108,9 @@ snippetOptionsMenu { snippetOptionsMenuOpen, snippet, categoryCountry, snippetFe
 bookmarkIcon : SnippetBookmarkKey -> Bool -> Html Msg
 bookmarkIcon snippetBookmarkKey isBookmarked =
     let
-        bookmarkToggleClass =
+        bookmarkIconClass =
             classList
-                [ ( "button-reset bg-mid-gray b--none near-black f6 absolute right-0 bottom-0 icon "
+                [ ( "button-reset bg-mid-gray b--none near-black f6 absolute right-0 bottom-0 w1 h1 pa0 ma1 icon "
                   , True
                   )
                 , ( "icon--bookmark-outline"
@@ -122,7 +122,7 @@ bookmarkIcon snippetBookmarkKey isBookmarked =
                 ]
     in
         button
-            [ bookmarkToggleClass
+            [ bookmarkIconClass
             , onClick <| SnippetBookmarkClick snippetBookmarkKey isBookmarked
             ]
             []
@@ -143,7 +143,7 @@ view viewModel =
         countryName =
             getCountryName countryId appData.countries
 
-        ( category, _ ) =
+        ( categoryId, _ ) =
             categoryCountry
 
         headingText =
@@ -199,7 +199,7 @@ view viewModel =
                                 Set.member snippet.id accordionsOpen
 
                             snippetBookmarkKey =
-                                ( snippet.id, category )
+                                ( snippet.id, categoryId )
 
                             isBookmarked =
                                 DictList.member snippetBookmarkKey snippetBookmarks

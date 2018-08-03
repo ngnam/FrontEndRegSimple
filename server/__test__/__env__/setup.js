@@ -41,10 +41,11 @@ module.exports = async () => {
   };
   const pdfService = {
     create: () => Buffer.from('<html></html>')
-  }
+  };
   const bookmarksService = {
     addBookmark: () => snippetBookmarkFixture,
-    removeBookmark: () => snippetBookmarkFixture
+    removeBookmark: () => snippetBookmarkFixture,
+    getBookmarksByUserId: () => [snippetBookmarkFixture, snippetBookmarkFixture]
   };
   const app = await createApp({
     config,

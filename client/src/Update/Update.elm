@@ -554,7 +554,11 @@ update msg model =
                 ( { model | snippetBookmarks = snippetBookmarks }, storeSession newModel )
 
         SnippetBookmarksHydrate snippetBookmarks ->
-            ( { model | snippetBookmarks = snippetBookmarks }, Cmd.none )
+            let
+                newModel =
+                    { model | snippetBookmarks = snippetBookmarks }
+            in
+                ( newModel, storeSession newModel )
 
         QueryResultListRemoveClick categoryCountry ->
             let

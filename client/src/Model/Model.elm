@@ -11,7 +11,7 @@ import Dict exposing (Dict)
 import DictList exposing (DictList)
 import Set
 import RemoteData exposing (RemoteData(..), WebData)
-import Json.Decode exposing (Decoder, Value, decodeString, decodeValue, string, bool)
+import Json.Decode exposing (Value)
 import DataTypes
     exposing
         ( QueryResults
@@ -177,16 +177,8 @@ initialModel =
 init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
 init flags location =
     let
-        decodeSessionFromJson : Value -> Maybe LocalStorageSession
-        decodeSessionFromJson json =
-            json
-                |> decodeValue string
-                |> Result.toMaybe
-                |> Debug.log ("t")
-                |> Maybe.andThen (decodeString Decoders.session >> Result.toMaybe)
-
         session =
-            decodeSessionFromJson flags.session
+            Decoders.decodeSessionFromJson flags.session
 
         user =
             session
