@@ -3,6 +3,7 @@ module DataTypes exposing (..)
 import Dict exposing (Dict)
 import DictList exposing (DictList)
 import Set exposing (Set)
+import Date exposing (Date)
 
 
 type alias FeedbackResults =
@@ -56,6 +57,21 @@ type alias SnippetFeedback =
     , categoryMenuOpen : Bool
     , snippetData : SnippetFeedbackData
     , dialogOpen : Bool
+    }
+
+
+type alias SnippetBookmarks =
+    DictList SnippetBookmarkKey SnippetBookmarkMetadata
+
+
+type alias SnippetBookmarkKey =
+    ( SnippetId, CategoryId )
+
+
+type alias SnippetBookmarkMetadata =
+    { createdAt : String
+    , snippetId : SnippetId
+    , categoryId : CategoryId
     }
 
 
@@ -117,8 +133,10 @@ type alias Email =
     String
 
 
-type alias Session =
-    Maybe User
+type alias LocalStorageSession =
+    { user : Maybe User
+    , snippetBookmarks : SnippetBookmarks
+    }
 
 
 type alias User =

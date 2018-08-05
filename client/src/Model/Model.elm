@@ -8,9 +8,10 @@ import ActivitySelect
 import CategorySelect
 import Helpers.Routing exposing (parseLocation)
 import Dict exposing (Dict)
+import DictList exposing (DictList)
 import Set
 import RemoteData exposing (RemoteData(..), WebData)
-import Json.Decode exposing (Decoder, Value, decodeString, decodeValue, string, bool)
+import Json.Decode exposing (Value)
 import DataTypes
     exposing
         ( QueryResults
@@ -28,12 +29,15 @@ import DataTypes
         , FeedbackResults
         , FeedbackType
         , AnalyticsEvent
-        , Session
+        , LocalStorageSession
         , ActivityId
         , CategoryId
         , CategoryCountry
         , SnippetFeedback
         , SnippetFeedbackData
+        , SnippetBookmarkKey
+        , SnippetBookmarkMetadata
+        , SnippetBookmarks
         )
 import Decoders
 
@@ -65,6 +69,10 @@ type Msg
     | SnippetFeedbackDialogOpenClick SnippetFeedbackData
     | SnippetFeedbackDialogCloseClick
     | SnippetOptionsMenuSetFocus (Maybe SnippetId)
+    | SnippetBookmarkClick SnippetBookmarkKey Bool
+    | SnippetBookmarkAdd SnippetBookmarkKey SnippetBookmarkMetadata
+    | SnippetBookmarkRemove SnippetBookmarkKey
+    | SnippetBookmarksHydrate SnippetBookmarks
     | ActivityFeedbackClick ActivityId
     | ActivityMenuFeedbackToggleClick
     | CategoryFeedbackClick CategoryId
@@ -108,8 +116,9 @@ type alias Model =
     , loginEmailResponse : WebData User
     , loginCode : String
     , loginCodeResponse : WebData User
-    , session : Session
+    , user : Maybe User
     , snippetFeedback : SnippetFeedback
+    , snippetBookmarks : SnippetBookmarks
     }
 
 
@@ -159,29 +168,38 @@ initialModel =
         , password = ""
         }
     , config = { apiBaseUrl = "", clientBaseUrl = "" }
-    , session = Nothing
+    , user = Nothing
     , snippetFeedback = initialSnippetFeedback
+    , snippetBookmarks = DictList.empty
     }
 
 
 init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
 init flags location =
-    ( { initialModel
-        | location = parseLocation location
-        , config = flags.config
-        , session =
-            let
-                decodeUserFromJson : Value -> Maybe User
-                decodeUserFromJson json =
-                    json
-                        |> decodeValue string
-                        |> Result.toMaybe
-                        |> Maybe.andThen (decodeString Decoders.user >> Result.toMaybe)
-            in
-                decodeUserFromJson flags.session
-      }
-    , redirectIfRoot location
-    )
+    let
+        session =
+            Decoders.decodeSessionFromJson flags.session
+
+        user =
+            session
+                |> Maybe.andThen .user
+
+        snippetBookmarks =
+            case session of
+                Just session ->
+                    session.snippetBookmarks
+
+                Nothing ->
+                    DictList.empty
+    in
+        ( { initialModel
+            | location = parseLocation location
+            , config = flags.config
+            , user = user
+            , snippetBookmarks = snippetBookmarks
+          }
+        , redirectIfRoot location
+        )
 
 
 redirectIfRoot : Navigation.Location -> Cmd msg

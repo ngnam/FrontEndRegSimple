@@ -14,6 +14,7 @@ import createUserService from './services/user';
 import createJwtService from './services/jwt';
 import createAnalyticsService from './services/analytics';
 import createPdfService from './services/pdf';
+import createBookmarksService from './services/bookmarks';
 
 import cors from './middleware/cors.middleware';
 import errorHandler from './middleware/error-handling.middleware';
@@ -29,7 +30,8 @@ const createApp = async function({
   dbClient,
   jwtService,
   analyticsService,
-  pdfService
+  pdfService,
+  bookmarksService
 }) {
   try {
     emailService = emailService || (await createEmailService({ config }));
@@ -45,6 +47,7 @@ const createApp = async function({
     analyticsService =
       analyticsService || createAnalyticsService({ config })(dbClient);
     pdfService = pdfService || createPdfService({ config });
+    bookmarksService = bookmarksService || createBookmarksService()(dbClient);
 
     const app = express();
 
@@ -68,7 +71,8 @@ const createApp = async function({
         userService,
         jwtService,
         analyticsService,
-        pdfService
+        pdfService,
+        bookmarksService
       })
     );
     app.use(errorHandler());

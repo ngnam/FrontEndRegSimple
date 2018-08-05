@@ -10,7 +10,7 @@ import DataTypes exposing (User)
 
 
 view : Model -> Html Msg
-view { session, loginEmail, loginCode, loginEmailResponse, loginCodeResponse } =
+view { user, loginEmail, loginCode, loginEmailResponse, loginCodeResponse } =
     main_ [ class "main--login" ]
         [ section [ class "h-50 flex justify-center" ]
             [ div [ class "flex justify-center flex-column w-25" ]
@@ -19,7 +19,7 @@ view { session, loginEmail, loginCode, loginEmailResponse, loginCodeResponse } =
                 ]
             ]
         , section [ class "flex justify-center relative" ]
-            [ case ( session, loginEmailResponse ) of
+            [ case ( user, loginEmailResponse ) of
                 ( Just user, _ ) ->
                     logoutForm user
 

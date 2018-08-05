@@ -99,3 +99,25 @@
 .icon--thumbs-down::after {
   background-image: url('../assets/icons/thumbs-down.svg');
 }
+.icon--bookmark-fill::after {
+  background-image: url('../assets/icons/bookmark--fill.svg');
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+.icon--bookmark-fill--list::after {
+  background-image: url('../assets/icons/bookmark--fill.svg');
+  width: 0.8em;
+  height: 0.8em;
+  top: 6px;
+  left: -24px;
+}
+
+.icon--bookmark-outline::after {
+  background-image: url('../assets/icons/bookmark--outline.svg');
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}

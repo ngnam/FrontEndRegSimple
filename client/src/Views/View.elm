@@ -8,7 +8,6 @@ import Model exposing (Model, Msg(..))
 import Views.Header as Header
 import Views.Footer as Footer
 import ContactBanner
-import Dialog.Dialog as Dialog
 
 
 view : Model -> Html Msg

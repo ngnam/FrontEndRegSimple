@@ -1,16 +1,22 @@
-module Encoders exposing (user, snippetSuggest, snippetVote)
+module Encoders exposing (user, snippetVote, snippetSuggest, session)
 
-import Json.Encode exposing (Value, object, string, list)
-import DataTypes exposing (User, Role(..), SnippetFeedback, CategoryId)
+import Json.Encode exposing (Value, object, string, list, null)
+import DataTypes exposing (User, Role(..), SnippetFeedback, LocalStorageSession, SnippetBookmarks, SnippetBookmarkMetadata, CategoryId)
+import DictList
 
 
-user : User -> Value
-user { email, id, role } =
-    object
-        [ ( "email", string email )
-        , ( "id", string id )
-        , ( "role", roleEncoder role )
-        ]
+user : Maybe User -> Value
+user maybeUser =
+    case maybeUser of
+        Just user ->
+            object
+                [ ( "email", string user.email )
+                , ( "id", string user.id )
+                , ( "role", roleEncoder user.role )
+                ]
+
+        Nothing ->
+            null
 
 
 roleEncoder : Role -> Value
@@ -39,4 +45,31 @@ snippetVote : CategoryId -> Value
 snippetVote categoryId =
     object
         [ ( "categoryId", string categoryId )
+        ]
+
+
+snippetBookmarks : SnippetBookmarks -> Value
+snippetBookmarks snippetBookmarks =
+    list
+        (List.map (\( _, bookmarkValue ) -> snippetBookmarkMetadata bookmarkValue)
+            (DictList.toList
+                snippetBookmarks
+            )
+        )
+
+
+snippetBookmarkMetadata : SnippetBookmarkMetadata -> Value
+snippetBookmarkMetadata snippetBookmark =
+    object
+        [ ( "createdAt", string snippetBookmark.createdAt )
+        , ( "snippetId", string snippetBookmark.snippetId )
+        , ( "categoryId", string snippetBookmark.categoryId )
+        ]
+
+
+session : LocalStorageSession -> Value
+session session =
+    object
+        [ ( "user", user session.user )
+        , ( "snippetBookmarks", snippetBookmarks session.snippetBookmarks )
         ]

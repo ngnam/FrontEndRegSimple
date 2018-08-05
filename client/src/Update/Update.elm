@@ -22,6 +22,7 @@ import DataTypes exposing (Taxonomy, emptyTaxonomy, CountryId, CategoryId, Feedb
 import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
+import BookmarksDecoder
 import Ports exposing (copy)
 import Json.Encode exposing (encode, null)
 import Encoders
@@ -147,12 +148,21 @@ removeSnippetFromResults snippetId queryResult =
     }
 
 
-storeSession : User -> Cmd msg
-storeSession user =
-    Encoders.user user
-        |> encode 0
-        |> Just
-        |> Ports.storeSession
+storeSession : Model -> Cmd msg
+storeSession model =
+    let
+        { user, snippetBookmarks } =
+            model
+
+        session =
+            { user = user
+            , snippetBookmarks = snippetBookmarks
+            }
+    in
+        Encoders.session session
+            |> encode 0
+            |> Just
+            |> Ports.storeSession
 
 
 removeSession : Cmd msg
@@ -188,7 +198,11 @@ update msg model =
 
                 appDataCmd =
                     if model.navCount == 0 then
-                        AppDataDecoder.requestCmd newModel
+                        Cmd.batch
+                            [ AppDataDecoder.requestCmd newModel
+                            , BookmarksDecoder.getRequestCmd
+                                newModel
+                            ]
                     else
                         Cmd.none
 
@@ -233,7 +247,7 @@ update msg model =
         LoginCodeFormOnResponse response ->
             ( { model
                 | loginCodeResponse = response
-                , session =
+                , user =
                     case response of
                         Success user ->
                             Just user
@@ -243,7 +257,7 @@ update msg model =
               }
             , case response of
                 Success user ->
-                    Cmd.batch [ storeSession user, Navigation.modifyUrl "/#/" ]
+                    Cmd.batch [ Navigation.modifyUrl "/#/", storeSession ({ model | user = Just user }), BookmarksDecoder.getRequestCmd model ]
 
                 _ ->
                     Cmd.none
@@ -510,6 +524,41 @@ update msg model =
                     { snippetFeedback | categoryMenuOpen = not snippetFeedback.categoryMenuOpen, activityMenuOpen = False }
             in
                 ( { model | snippetFeedback = newSnippetFeedbackModel }, Cmd.none )
+
+        SnippetBookmarkClick snippetBookmarkKey isBookmarked ->
+            case isBookmarked of
+                True ->
+                    ( model, BookmarksDecoder.deleteRequestCmd model snippetBookmarkKey )
+
+                False ->
+                    ( model, BookmarksDecoder.postRequestCmd model snippetBookmarkKey )
+
+        SnippetBookmarkAdd snippetBookmarkKey snippetBookmarkMetadata ->
+            let
+                snippetBookmarks =
+                    DictList.cons snippetBookmarkKey snippetBookmarkMetadata model.snippetBookmarks
+
+                newModel =
+                    { model | snippetBookmarks = snippetBookmarks }
+            in
+                ( { model | snippetBookmarks = snippetBookmarks }, storeSession newModel )
+
+        SnippetBookmarkRemove snippetBookmarkKey ->
+            let
+                snippetBookmarks =
+                    DictList.remove snippetBookmarkKey model.snippetBookmarks
+
+                newModel =
+                    { model | snippetBookmarks = snippetBookmarks }
+            in
+                ( { model | snippetBookmarks = snippetBookmarks }, storeSession newModel )
+
+        SnippetBookmarksHydrate snippetBookmarks ->
+            let
+                newModel =
+                    { model | snippetBookmarks = snippetBookmarks }
+            in
+                ( newModel, storeSession newModel )
 
         QueryResultListRemoveClick categoryCountry ->
             let

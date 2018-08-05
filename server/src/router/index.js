@@ -13,6 +13,7 @@ import loginCodeSchema from '../validations/login-code.validation';
 import feedbackSnippetSuggestSchema from '../validations/feedback-snippet-suggest.validation';
 import feedbackSnippetVoteSchema from '../validations/feedback-snippet-vote.validation';
 import analyticsSchema from '../validations/analytics.validation';
+import bookmarksSchema from '../validations/bookmarks.validation';
 
 import loginEmail from './login-email.route';
 import loginCode from './login-code.route';
@@ -24,10 +25,12 @@ import feedbackSnippetVoteUp from './feedback-snippet-vote-up.route';
 import feedbackSnippetVoteDown from './feedback-snippet-vote-down.route';
 import analytics from './analytics.route';
 import queryPdf from './query-pdf.route';
+import getBookmarks from './bookmark-get.route';
+import addBookmark from './bookmark-post.route';
+import removeBookmark from './bookmark-delete.route';
 
 const createRouter = dependencies => {
   const router = Router();
-
   router.use(authenticate(dependencies));
 
   router.post(
@@ -70,6 +73,23 @@ const createRouter = dependencies => {
 
   router.get('/app-data', appData(dependencies));
   router.post('/analytics', validate(analyticsSchema), analytics(dependencies));
+  router.post(
+    '/bookmark',
+    authorise({ minRole: ROLE_USER }),
+    validate(bookmarksSchema),
+    addBookmark(dependencies)
+  );
+  router.delete(
+    '/bookmark',
+    authorise({ minRole: ROLE_USER }),
+    validate(bookmarksSchema),
+    removeBookmark(dependencies)
+  );
+  router.get(
+    '/bookmark',
+    authorise({ minRole: ROLE_USER }),
+    getBookmarks(dependencies)
+  );
 
   return router;
 };
