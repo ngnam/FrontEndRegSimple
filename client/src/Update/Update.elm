@@ -15,6 +15,7 @@ import Helpers.Routing exposing (onUrlChange)
 import Helpers.QueryString exposing (queryString, removeFromQueryString)
 import Helpers.AppData exposing (getActivities, getCategories, getCountries, getCountriesDict)
 import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry)
+import Helpers.EmptyValues exposing (emptyQueryResultMatch)
 import Set
 import Dict
 import Util exposing ((!!))
@@ -23,6 +24,7 @@ import RemoteData exposing (RemoteData(..), WebData)
 import DictList
 import FeedbackDecoder
 import BookmarksDecoder
+import DetailedBookmarksDecoder
 import Ports exposing (copy)
 import Json.Encode exposing (encode, null)
 import Encoders
@@ -214,6 +216,14 @@ update msg model =
                         _ ->
                             Cmd.none
 
+                snippetBookmarkDetailsCmd =
+                    case newModel.location.hash of
+                        "#/bookmarks" ->
+                            DetailedBookmarksDecoder.requestCmd newModel
+
+                        _ ->
+                            Cmd.none
+
                 updatedModel =
                     case newModel.location.hash of
                         "#/query" ->
@@ -226,7 +236,7 @@ update msg model =
                     | navCount = model.navCount + 1
                     , queryResults = Loading
                   }
-                , Cmd.batch [ appDataCmd, queryCmd ]
+                , Cmd.batch [ appDataCmd, queryCmd, snippetBookmarkDetailsCmd ]
                 )
 
         LoginEmailFormOnInput email ->
@@ -265,6 +275,9 @@ update msg model =
 
         SetActiveCategory categoryId ->
             ( { model | activeCategory = Just categoryId }, Cmd.none )
+
+        SetActiveBookmark snippetId ->
+            ( { model | activeBookmark = Just snippetId }, Cmd.none )
 
         FilterTextOnInput filterText ->
             let
@@ -538,27 +551,57 @@ update msg model =
                 snippetBookmarks =
                     DictList.cons snippetBookmarkKey snippetBookmarkMetadata model.snippetBookmarks
 
+                detailedSnippetBookmarks =
+                    DictList.cons snippetBookmarkKey emptyQueryResultMatch model.detailedSnippetBookmarks
+
                 newModel =
-                    { model | snippetBookmarks = snippetBookmarks }
+                    { model | snippetBookmarks = snippetBookmarks, detailedSnippetBookmarks = detailedSnippetBookmarks }
             in
-                ( { model | snippetBookmarks = snippetBookmarks }, storeSession newModel )
+                ( newModel, storeSession newModel )
 
         SnippetBookmarkRemove snippetBookmarkKey ->
             let
                 snippetBookmarks =
                     DictList.remove snippetBookmarkKey model.snippetBookmarks
 
+                detailedSnippetBookmarks =
+                    DictList.remove snippetBookmarkKey model.detailedSnippetBookmarks
+
                 newModel =
-                    { model | snippetBookmarks = snippetBookmarks }
+                    { model | snippetBookmarks = snippetBookmarks, detailedSnippetBookmarks = detailedSnippetBookmarks }
             in
-                ( { model | snippetBookmarks = snippetBookmarks }, storeSession newModel )
+                ( newModel, storeSession newModel )
 
         SnippetBookmarksHydrate snippetBookmarks ->
             let
+                detailedSnippetBookmarks =
+                    snippetBookmarks
+                        |> DictList.keys
+                        |> List.map (\snippetBookmarkKey -> ( snippetBookmarkKey, emptyQueryResultMatch ))
+                        |> DictList.fromList
+
                 newModel =
-                    { model | snippetBookmarks = snippetBookmarks }
+                    { model
+                        | snippetBookmarks = snippetBookmarks
+                        , detailedSnippetBookmarks = detailedSnippetBookmarks
+                    }
             in
                 ( newModel, storeSession newModel )
+
+        SetDetailedSnippetBookmarks webDataResult ->
+            let
+                { detailedSnippetBookmarks } =
+                    model
+
+                hello =
+                    webDataResult
+                        |> Debug.log "???"
+
+                newDetailedSnippetBookmarks =
+                    List.map2 (,) (DictList.keys detailedSnippetBookmarks) webDataResult
+                        |> DictList.fromList
+            in
+                ( { model | detailedSnippetBookmarks = newDetailedSnippetBookmarks }, Cmd.none )
 
         QueryResultListRemoveClick categoryCountry ->
             let

@@ -4,7 +4,7 @@ import Model exposing (Model)
 import CountrySelect
 import Dict
 import DictList
-import DataTypes exposing (CountryId)
+import DataTypes exposing (CountryId, CountryName)
 
 
 getCountrySelect : Int -> Model -> CountrySelect.Model
@@ -32,3 +32,11 @@ getSelectedCountryIds model =
 
         Nothing ->
             []
+
+
+
+-- getCountryName : Model -> CountryId -> CountryName
+-- getCountryName model countryId =
+--     model
+--         |> .appData
+-- |> DictList.get countryId

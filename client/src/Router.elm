@@ -5,6 +5,7 @@ import Views.Home
 import Views.Query
 import Views.Login
 import Views.About
+import Views.Bookmarks
 import Model exposing (Model, Msg)
 
 
@@ -22,6 +23,9 @@ matchView model =
 
         "#/about" ->
             Views.About.view model
+
+        "#/bookmarks" ->
+            Views.Bookmarks.view model
 
         _ ->
             div [] [ text "you're not supposed to be here, 404" ]

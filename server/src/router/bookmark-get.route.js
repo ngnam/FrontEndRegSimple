@@ -8,9 +8,10 @@ export default ({ bookmarksService }) => async (req, res, next) => {
       userId
     });
     const bookmarks = bookmarkResponse.map(
-      ({ snippet_id, category_id, created_at }) => ({
+      ({ snippet_id, category_id, created_at, country_id }) => ({
         snippetId: snippet_id,
         categoryId: category_id,
+        countryId: country_id,
         createdAt: created_at
       })
     );

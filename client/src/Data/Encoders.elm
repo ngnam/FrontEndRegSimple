@@ -1,4 +1,4 @@
-module Encoders exposing (user, snippetVote, snippetSuggest, session)
+module Encoders exposing (user, snippetVote, snippetSuggest, session, detailedSnippetBookmarks)
 
 import Json.Encode exposing (Value, object, string, list, null)
 import DataTypes exposing (User, Role(..), SnippetFeedback, LocalStorageSession, SnippetBookmarks, SnippetBookmarkMetadata, CategoryId)
@@ -58,12 +58,23 @@ snippetBookmarks snippetBookmarks =
         )
 
 
+detailedSnippetBookmarks : SnippetBookmarks -> Value
+detailedSnippetBookmarks snippetBookmarks =
+    list
+        (List.map (\( _, bookmarkValue ) -> string bookmarkValue.snippetId)
+            (DictList.toList
+                snippetBookmarks
+            )
+        )
+
+
 snippetBookmarkMetadata : SnippetBookmarkMetadata -> Value
 snippetBookmarkMetadata snippetBookmark =
     object
         [ ( "createdAt", string snippetBookmark.createdAt )
         , ( "snippetId", string snippetBookmark.snippetId )
         , ( "categoryId", string snippetBookmark.categoryId )
+        , ( "countryId", string snippetBookmark.countryId )
         ]
 
 

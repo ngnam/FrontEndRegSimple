@@ -10,10 +10,10 @@ const createBookmarksService = () => dbClient => {
     return res.rows;
   };
 
-  const addBookmark = async ({ userId, snippetId, categoryId }) => {
+  const addBookmark = async ({ userId, snippetId, categoryId, countryId }) => {
     const query = {
-      text: 'INSERT INTO bookmarks VALUES($1, $2, $3) RETURNING *',
-      values: [userId, snippetId, categoryId]
+      text: 'INSERT INTO bookmarks VALUES($1, $2, $3, $4) RETURNING *',
+      values: [userId, snippetId, categoryId, countryId]
     };
 
     const res = await dbClient.query(query);

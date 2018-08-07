@@ -133,7 +133,6 @@
   --yellow: #ffd700;
   --light-yellow: #fbf1a9;
   --purple: #5e2ca5;
-  --light-purple: #a463f2;
   --dark-pink: #d5008f;
   --hot-pink: #ff41b4;
   --pink: #ff80cc;
@@ -160,6 +159,7 @@
   /* moon-gray used as a darker border color */
   --moon-gray: #dfe0e6;
   --dark-gray: #959bac;
+  --light-purple: #3C406C;
 
   --h--banner: 38px;
   --h--header: 114px;

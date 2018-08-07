@@ -14,6 +14,7 @@ import feedbackSnippetSuggestSchema from '../validations/feedback-snippet-sugges
 import feedbackSnippetVoteSchema from '../validations/feedback-snippet-vote.validation';
 import analyticsSchema from '../validations/analytics.validation';
 import bookmarksSchema from '../validations/bookmarks.validation';
+import detailedBookmarksSchema from '../validations/detailed-bookmarks.validation';
 
 import loginEmail from './login-email.route';
 import loginCode from './login-code.route';
@@ -28,6 +29,7 @@ import queryPdf from './query-pdf.route';
 import getBookmarks from './bookmark-get.route';
 import addBookmark from './bookmark-post.route';
 import removeBookmark from './bookmark-delete.route';
+import getDetailedBookmarks from './detailed-bookmark.route';
 
 const createRouter = dependencies => {
   const router = Router();
@@ -89,6 +91,12 @@ const createRouter = dependencies => {
     '/bookmark',
     authorise({ minRole: ROLE_USER }),
     getBookmarks(dependencies)
+  );
+  router.get(
+    '/bookmark/detail',
+    authorise({ minRole: ROLE_USER }),
+    // validate(detailedBookmarksSchema),
+    getDetailedBookmarks(dependencies)
   );
 
   return router;

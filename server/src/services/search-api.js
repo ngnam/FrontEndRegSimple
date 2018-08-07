@@ -62,6 +62,15 @@ const createSearchApiService = ({ config }) => {
     });
   };
 
+  const fetchSnippetDetails = async ({ blocks }) => {
+    return axios({
+      method: 'GET',
+      url: `${REGSIMPLE_SEARCH_API}/blocks`,
+      data: { blocks },
+      headers: { 'Content-Type': 'application/json' }
+    });
+  };
+
   const feedbackSnippet = async ({
     snippetId,
     user,
@@ -88,6 +97,7 @@ const createSearchApiService = ({ config }) => {
     fetchCountries,
     fetchTaxonomy,
     feedbackSnippet,
+    fetchSnippetDetails,
     multiCategoryCountrySearch: multiCategoryCountrySearch(fetchResults)
   };
 };

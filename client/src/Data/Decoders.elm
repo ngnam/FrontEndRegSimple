@@ -1,8 +1,8 @@
-module Decoders exposing (user, snippetBookmarkMetadata, snippetBookmarks, session, decodeSessionFromJson)
+module Decoders exposing (user, snippetBookmarkMetadata, snippetBookmarks, session, decodeSessionFromJson, queryResultMatch)
 
-import Json.Decode exposing (Decoder, Value, string, list, dict, andThen, succeed, at, fail, map, map2, map3, field, decodeString, decodeValue)
+import Json.Decode exposing (Decoder, Value, string, list, dict, andThen, succeed, oneOf, nullable, null, int, float, at, fail, map, map3, map4, field, decodeString, decodeValue)
 import Json.Decode.Pipeline exposing (decode, required, optional)
-import DataTypes exposing (User, Role(..), SnippetBookmarkMetadata, SnippetBookmarks, LocalStorageSession)
+import DataTypes exposing (User, Role(..), SnippetBookmarkMetadata, SnippetBookmarks, LocalStorageSession, QueryResultMatch, QueryResultMatchBody)
 import Helpers.Session exposing (roles)
 import DictList
 
@@ -35,19 +35,51 @@ snippetBookmarkMetadata =
         |> required "createdAt" string
         |> required "snippetId" string
         |> required "categoryId" string
+        |> required "countryId" string
+
+
+nullableString : Decoder String
+nullableString =
+    oneOf [ string, null "" ]
+
+
+queryResultMatch : Decoder QueryResultMatch
+queryResultMatch =
+    decode QueryResultMatch
+        |> optional "score" float 0
+        |> required "title" string
+        |> required "type" nullableString
+        |> required "country" string
+        |> required "year" (nullable int)
+        |> required "url" string
+        |> required "id" string
+        |> optional "body" (list matchBodyDecoder) []
+
+
+matchBodyDecoder : Decoder QueryResultMatchBody
+matchBodyDecoder =
+    decode QueryResultMatchBody
+        |> required "tags" (list string)
+        |> required "text" string
+        |> required "offset" int
+        |> optional "summary" string ""
+        |> required "url" string
+        |> required "page" int
+        |> required "id" string
 
 
 snippetBookmarks : Decoder SnippetBookmarks
 snippetBookmarks =
     let
         keyDecoder =
-            map2 (,) (field "snippetId" string) (field "categoryId" string)
+            map3 (,,) (field "snippetId" string) (field "categoryId" string) (field "countryId" string)
 
         valueDecoder =
-            map3 SnippetBookmarkMetadata
+            map4 SnippetBookmarkMetadata
                 (at [ "createdAt" ] string)
                 (at [ "snippetId" ] string)
                 (at [ "categoryId" ] string)
+                (at [ "countryId" ] string)
     in
         DictList.decodeArray2
             keyDecoder

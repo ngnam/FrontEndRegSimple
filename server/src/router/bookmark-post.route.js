@@ -1,21 +1,23 @@
 import boom from 'boom';
 
 export default ({ bookmarksService }) => async (req, res, next) => {
-  const { snippetId, categoryId } = req.body;
+  const { snippetId, categoryId, countryId } = req.body;
   const { id: userId } = req.user;
 
   try {
     const bookmarkResponse = await bookmarksService.addBookmark({
       userId,
       snippetId,
-      categoryId
+      categoryId,
+      countryId
     });
     const { created_at: createdAt } = bookmarkResponse;
     res.json({
       data: {
         createdAt,
         snippetId,
-        categoryId
+        categoryId,
+        countryId
       }
     });
   } catch (e) {

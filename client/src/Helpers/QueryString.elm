@@ -5,7 +5,6 @@ import Helpers.Routing exposing (parseParams)
 import Helpers.CountrySelect exposing (getCountrySelect, getSelectedCountry, getSelectedCountryIds)
 import Dict
 import DataTypes exposing (SearchParsed, CountryId, CategoryId, ActivityId)
-import Util exposing ((!!))
 import Validation exposing (Validation(..))
 
 

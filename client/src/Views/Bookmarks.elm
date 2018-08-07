@@ -1,11 +1,11 @@
-module Views.Query exposing (..)
+module Views.Bookmarks exposing (..)
 
 import Model exposing (Model, Msg(..))
 import Html exposing (Html, main_, text, div, p, h1, span, ul, li, header)
 import Html.Attributes exposing (class, tabindex, classList)
 import QueryNavBar
 import SideNavBar
-import SelectedCategories
+import SavedCategories
 import QueryResultList
 import Helpers.AppData exposing (getCategoryById)
 import Helpers.CountrySelect exposing (getSelectedCountry, getSelectedCountryIds)
@@ -64,7 +64,7 @@ view model =
             , div [ class "flex-1 flex flex-column" ]
                 [ QueryNavBar.view model
                 , div [ class "flex-1 flex" ]
-                    [ SelectedCategories.view model
+                    [ SavedCategories.view model
                     , div [ resultsContainerClass ]
                         [ viewHeader name description
                         , case ( queryValidation model, queryResults, appData ) of
@@ -108,7 +108,7 @@ view model =
                                 div [] [ text "There was a problem connecting to our servers. Please check your internet connection and try again." ]
 
                             ( _, Failure error, _ ) ->
-                                div [] [ text "There was an error loading your search results." ]
+                                div [] [ text "There was an error loading your bookmarks." ]
 
                             ( _, Loading, _ ) ->
                                 div

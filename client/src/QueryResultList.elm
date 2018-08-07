@@ -199,7 +199,7 @@ view viewModel =
                                 Set.member snippet.id accordionsOpen
 
                             snippetBookmarkKey =
-                                ( snippet.id, categoryId )
+                                ( snippet.id, categoryId, countryId )
 
                             isBookmarked =
                                 DictList.member snippetBookmarkKey snippetBookmarks

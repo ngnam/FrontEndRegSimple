@@ -7,14 +7,14 @@ import Model exposing (Model, Msg(..))
 import Json.Encode as Encode
 import Json.Decode exposing (at)
 import Decoders
-import DictList
 
 
 encoder : SnippetBookmarkKey -> Encode.Value
-encoder ( snippetId, categoryId ) =
+encoder ( snippetId, categoryId, countryId ) =
     Encode.object
         [ ( "snippetId", Encode.string snippetId )
         , ( "categoryId", Encode.string categoryId )
+        , ( "countryId", Encode.string countryId )
         ]
 
 

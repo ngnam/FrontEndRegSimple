@@ -38,6 +38,8 @@ import DataTypes
         , SnippetBookmarkKey
         , SnippetBookmarkMetadata
         , SnippetBookmarks
+        , DetailedSnippetBookmarks
+        , QueryResultMatch
         )
 import Decoders
 
@@ -57,6 +59,7 @@ type Msg
     | FetchQueryResults (WebData QueryResults)
     | FetchAppData (WebData AppDataResults)
     | SetActiveCategory CategoryId
+    | SetActiveBookmark SnippetBookmarkKey
     | FilterTextOnInput String
     | OnQueryUpdate
     | SnippetSuggestClick SnippetFeedbackData
@@ -73,6 +76,7 @@ type Msg
     | SnippetBookmarkAdd SnippetBookmarkKey SnippetBookmarkMetadata
     | SnippetBookmarkRemove SnippetBookmarkKey
     | SnippetBookmarksHydrate SnippetBookmarks
+    | SetDetailedSnippetBookmarks (List QueryResultMatch)
     | ActivityFeedbackClick ActivityId
     | ActivityMenuFeedbackToggleClick
     | CategoryFeedbackClick CategoryId
@@ -105,6 +109,7 @@ type alias Model =
     , activitySelect : ActivitySelect.Model
     , categorySelect : CategorySelect.Model
     , activeCategory : Maybe CategoryId
+    , activeBookmark : Maybe SnippetBookmarkKey
     , filterText : String
     , categorySubMenuOpen : Maybe CategoryId
     , snippetOptionsMenuOpen : Maybe SnippetId
@@ -119,6 +124,7 @@ type alias Model =
     , user : Maybe User
     , snippetFeedback : SnippetFeedback
     , snippetBookmarks : SnippetBookmarks
+    , detailedSnippetBookmarks : DetailedSnippetBookmarks
     }
 
 
@@ -147,6 +153,7 @@ initialModel =
     , activitySelect = ActivitySelect.initialModel
     , categorySelect = CategorySelect.initialModel
     , activeCategory = Nothing
+    , activeBookmark = Nothing
     , filterText = ""
     , categorySubMenuOpen = Nothing
     , snippetOptionsMenuOpen = Nothing
@@ -171,6 +178,7 @@ initialModel =
     , user = Nothing
     , snippetFeedback = initialSnippetFeedback
     , snippetBookmarks = DictList.empty
+    , detailedSnippetBookmarks = DictList.empty
     }
 
 

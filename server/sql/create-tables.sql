@@ -37,6 +37,7 @@ CREATE TABLE bookmarks
   user_id character(36) REFERENCES users(id) ON DELETE CASCADE,
   snippet_id text not null,
   category_id text not null,
+  country_id text not null,
   created_at timestamp not null default now(),
   PRIMARY KEY (user_id, snippet_id)
 );

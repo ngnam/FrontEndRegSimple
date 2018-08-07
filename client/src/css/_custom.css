@@ -112,6 +112,15 @@ button {
 .h3rem {
   height: 3rem;
 }
+
+.h1px {
+  height: 1px;
+}
+
+.h2px {
+  height: 2px;
+}
+
 .options-menu {
   left: 100%;
   margin-left: -1.3rem;

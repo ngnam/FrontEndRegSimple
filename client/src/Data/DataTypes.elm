@@ -3,7 +3,6 @@ module DataTypes exposing (..)
 import Dict exposing (Dict)
 import DictList exposing (DictList)
 import Set exposing (Set)
-import Date exposing (Date)
 
 
 type alias FeedbackResults =
@@ -64,14 +63,19 @@ type alias SnippetBookmarks =
     DictList SnippetBookmarkKey SnippetBookmarkMetadata
 
 
+type alias DetailedSnippetBookmarks =
+    DictList SnippetBookmarkKey QueryResultMatch
+
+
 type alias SnippetBookmarkKey =
-    ( SnippetId, CategoryId )
+    ( SnippetId, CategoryId, CountryId )
 
 
 type alias SnippetBookmarkMetadata =
     { createdAt : String
     , snippetId : SnippetId
     , categoryId : CategoryId
+    , countryId : CountryId
     }
 
 
