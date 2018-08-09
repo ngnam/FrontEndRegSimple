@@ -631,7 +631,7 @@ update msg model =
             ( model, FeedbackDecoder.requestCmd model <| SnippetVoteDown snippetCategory )
 
         FeedbackRequest feedbackType results ->
-            ( model
+            ( { model | snippetOptionsMenuOpen = Nothing }
             , Cmd.none
             )
 

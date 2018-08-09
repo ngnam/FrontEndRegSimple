@@ -21,8 +21,7 @@ import logout from './logout.route';
 import query from './query.route';
 import appData from './app-data.route';
 import feedbackSnippetSuggest from './feedback-snippet-suggest.route';
-import feedbackSnippetVoteUp from './feedback-snippet-vote-up.route';
-import feedbackSnippetVoteDown from './feedback-snippet-vote-down.route';
+import feedbackSnippetVote from './feedback-snippet-vote.route';
 import analytics from './analytics.route';
 import queryPdf from './query-pdf.route';
 import getBookmarks from './bookmark-get.route';
@@ -59,16 +58,10 @@ const createRouter = dependencies => {
     feedbackSnippetSuggest(dependencies)
   );
   router.put(
-    '/feedback/snippet/:snippetId/vote/up',
+    '/feedback/snippet/:snippetId/vote/:voteDirection',
     authorise({ minRole: ROLE_USER }),
     validate(feedbackSnippetVoteSchema),
-    feedbackSnippetVoteUp(dependencies)
-  );
-  router.put(
-    '/feedback/snippet/:snippetId/vote/down',
-    authorise({ minRole: ROLE_USER }),
-    validate(feedbackSnippetVoteSchema),
-    feedbackSnippetVoteDown(dependencies)
+    feedbackSnippetVote(dependencies)
   );
 
   router.get('/app-data', appData(dependencies));
