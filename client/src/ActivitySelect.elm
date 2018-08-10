@@ -83,13 +83,13 @@ activityMenu model menuClass =
 
                                 labelClass =
                                     classList
-                                        [ ( "relative db fl pl4 pt1 pb2 w-50 tl f6"
+                                        [ ( "relative fl pl4 pt1 pb2 w-50 tl f6"
                                           , True
                                           )
-                                        , ( "o-30"
+                                        , ( "dn"
                                           , isDisabled
                                           )
-                                        , ( "pointer"
+                                        , ( "pointer db"
                                           , not isDisabled
                                           )
                                         ]

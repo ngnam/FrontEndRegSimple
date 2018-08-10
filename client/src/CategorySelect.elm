@@ -182,8 +182,9 @@ view model { inputAlignment, loadingButtonInner } =
 
                                         labelClass =
                                             classList
-                                                [ ( "relative db fl w-50 pt1 pb2 pl4 pr2 pointer outline-0 f6", True )
-                                                , ( "o-30", isDisabled )
+                                                [ ( "relative fl w-50 pt1 pb2 pl4 pr2 pointer outline-0 f6", True )
+                                                , ( "dn", isDisabled )
+                                                , ( "db", not isDisabled )
                                                 ]
 
                                         optionBgClass =
