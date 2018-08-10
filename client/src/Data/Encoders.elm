@@ -19,6 +19,16 @@ user maybeUser =
             null
 
 
+activeCategory : Maybe CategoryId -> Value
+activeCategory maybeActiveCategory =
+    case maybeActiveCategory of
+        Just activeCategory ->
+            string activeCategory
+
+        Nothing ->
+            null
+
+
 roleEncoder : Role -> Value
 roleEncoder role =
     string
@@ -72,4 +82,5 @@ session session =
     object
         [ ( "user", user session.user )
         , ( "snippetBookmarks", snippetBookmarks session.snippetBookmarks )
+        , ( "activeCategory", activeCategory session.activeCategory )
         ]

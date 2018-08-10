@@ -2,7 +2,7 @@ module Decoders exposing (user, snippetBookmarkMetadata, snippetBookmarks, sessi
 
 import Json.Decode exposing (Decoder, Value, string, list, dict, andThen, succeed, at, fail, map, map2, map3, field, decodeString, decodeValue)
 import Json.Decode.Pipeline exposing (decode, required, optional)
-import DataTypes exposing (User, Role(..), SnippetBookmarkMetadata, SnippetBookmarks, LocalStorageSession)
+import DataTypes exposing (User, Role(..), SnippetBookmarkMetadata, SnippetBookmarks, LocalStorageSession, CategoryId)
 import Helpers.Session exposing (roles)
 import DictList
 
@@ -13,6 +13,11 @@ user =
         |> required "id" string
         |> required "email" string
         |> required "role" role
+
+
+activeCategory : Decoder CategoryId
+activeCategory =
+    string
 
 
 role : Decoder Role
@@ -59,6 +64,7 @@ session =
     decode LocalStorageSession
         |> optional "user" (map Just user) Nothing
         |> optional "snippetBookmarks" snippetBookmarks DictList.empty
+        |> optional "activeCategory" (map Just activeCategory) Nothing
 
 
 decodeSessionFromJson : Value -> Maybe LocalStorageSession

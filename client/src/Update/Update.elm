@@ -151,12 +151,13 @@ removeSnippetFromResults snippetId queryResult =
 storeSession : Model -> Cmd msg
 storeSession model =
     let
-        { user, snippetBookmarks } =
+        { user, snippetBookmarks, activeCategory } =
             model
 
         session =
             { user = user
             , snippetBookmarks = snippetBookmarks
+            , activeCategory = activeCategory
             }
     in
         Encoders.session session
@@ -264,7 +265,11 @@ update msg model =
             )
 
         SetActiveCategory categoryId ->
-            ( { model | activeCategory = Just categoryId }, Cmd.none )
+            let
+                newModel =
+                    { model | activeCategory = Just categoryId }
+            in
+                ( newModel, storeSession newModel )
 
         FilterTextOnInput filterText ->
             let
