@@ -67,3 +67,7 @@ Using the script `npm run css-build`, the compiled css is output `style.min.css`
 ## Logs & Monitoring - https://papertrailapp.com/systems/reg-simple/events
 
 We've connected our heroku app to Papertrail for logging. Any errors that get thrown up are posted to the `app` slack channel every hour.
+
+## Postgres Update
+
+If a change gets made to `server/sql/create-tables.sql` then you will need to run `cat server/sql/create-tables.sql | heroku pg:psql` in a terminal window from the root of the project. If you don't have a remote called `heroku` set up then you will need to add `--app reg-simple` to the command.
