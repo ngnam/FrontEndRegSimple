@@ -70,4 +70,4 @@ We've connected our heroku app to Papertrail for logging. Any errors that get th
 
 ## Postgres Update
 
-If a change gets made to `server/sql/create-tables.sql` then you will need to run `cat server/sql/create-tables.sql | heroku pg:psql` in a terminal window from the root of the project. If you dont have a remote called `heroku` set up then you will need to add `--app reg-simple` to the command.
+If a change gets made to `server/sql/create-tables.sql` then you will need to run `cat server/sql/create-tables.sql | heroku pg:psql` in a terminal window from the root of the project. If you don't have a remote called `heroku` set up then you will need to add `--app reg-simple` to the command.
